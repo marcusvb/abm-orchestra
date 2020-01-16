@@ -1,12 +1,15 @@
 import glfw
 from OpenGL.GL import *
 import random
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from gfx.MazeTexture import MazeTexture
 from model.direction_map.DirectionMap import DirectionMap
 from model.environment.line import Point
 from gfx.AgentManager import AgentManager
 from resources.handling.reading import load_direction_from_file, load_map_from_file
+from resources.handling.generatingHeatmap import heatmap_from_map
 from model.gradient.gradient_map import gradient_from_direction_map
 
 import numpy as np
@@ -33,8 +36,10 @@ map_filename = "resources/ready/concertgebouwmap.txt" # Seems to be the maze
 maze_original = load_map_from_file(map_filename)
 maze = load_map_from_file(map_filename)
 
-# exit points are generated here. Not sure how the gradient based model makes the agents use the exit points.
-# I think this param is probably used for the on-the-fly gradient based simulation. For now going to None before refactor.
+heatmap = heatmap_from_map(maze)
+exit_points = []
+for i in range(40, 60):
+    exit_points.append(Point(99, i))
 
 # exit_points = []
 # for i in range(10, 20):
@@ -59,10 +64,14 @@ tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset +
 
 # Window config end
 
-agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, direct)
+agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, direct, heatmap)
 
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
+def plot_heatmap(map):
+    Tmap = [[row[i] for row in map] for i in range(len(map[0]))]
+    sns.heatmap(Tmap, cmap='jet')
+    plt.show()
 
 """
 Model control via IO.
@@ -157,7 +166,6 @@ while not glfw.window_should_close(window):
     intensity = random.randint(0, 100)
     if intensity < global_intensity:
 
-
         # Random postion where out agents start, lower right bottom
         pos = [68, random.randint(16, 22)] # ZUID 2 INGANG
         pos2 = [68, random.randint(77, 83)] # ZUID 1 INGANG
@@ -173,6 +181,8 @@ while not glfw.window_should_close(window):
         # pos = [randint(2, 90), 2]
         # which_map = randint(2, 3)
         # agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
+
+plot_heatmap(agents.heatmap)
 
 mazeTexture.release()
 glfw.terminate()
