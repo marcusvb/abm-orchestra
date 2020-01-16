@@ -1,12 +1,15 @@
 import glfw
 from OpenGL.GL import *
 import random
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from gfx.MazeTexture import MazeTexture
 from model.direction_map.DirectionMap import DirectionMap
 from model.environment.line import Point
 from gfx.AgentManager import AgentManager
 from resources.handling.reading import load_direction_from_file, load_map_from_file
+from resources.handling.generatingHeatmap import heatmap_from_map
 from model.gradient.gradient_map import gradient_from_direction_map
 
 from random import randint
@@ -30,9 +33,11 @@ if not window:
 
 map_filename = "resources/ready/galeria_krakowska_maze100x100.txt"
 
+
+
 maze_original = load_map_from_file(map_filename)
 maze = load_map_from_file(map_filename)
-
+heatmap = heatmap_from_map(maze)
 exit_points = []
 for i in range(40, 60):
     exit_points.append(Point(99, i))
@@ -52,10 +57,14 @@ offset = 20
 
 tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset + 1)) / len(maze)]
 
-agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, direct)
+agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, direct, heatmap)
 
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
+def plot_heatmap(map):
+    Tmap = [[row[i] for row in map] for i in range(len(map[0]))]
+    sns.heatmap(Tmap, cmap='jet')
+    plt.show()
 
 def mouse_button_callback(window, button, action, mods):
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
@@ -143,11 +152,13 @@ while not glfw.window_should_close(window):
     if intensity < global_intensity:
         pos = [randint(50, 99), 98]
         which_map = randint(0, 1)
-        agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
+        agents.add_new(pos, 33.0, [.0, .0, .9  ], which_map)
 
         pos = [randint(2, 90), 2]
         which_map = randint(2, 3)
         agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
+
+plot_heatmap(agents.heatmap)
 
 mazeTexture.release()
 glfw.terminate()
