@@ -69,8 +69,7 @@ agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, dire
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
 def plot_heatmap(map):
-    Tmap = [[row[i] for row in map] for i in range(len(map[0]))]
-    sns.heatmap(Tmap, cmap='jet')
+    sns.heatmap(map, cmap='jet')
     plt.show()
 
 """

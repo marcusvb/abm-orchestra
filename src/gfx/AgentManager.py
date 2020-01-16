@@ -65,7 +65,7 @@ class AgentManager:
 
             for agent in moving_lsit:
                 ag_x, ag_y = agent.agent.current_pos
-                self.heatmap[ag_y][ag_x] += 1
+                self.heatmap[ag_x][ag_y] += 1
                 try:
                     anger = agent.move()
                 except ExitReached:
