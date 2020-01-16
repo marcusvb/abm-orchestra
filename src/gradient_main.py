@@ -32,7 +32,7 @@ if not window:
     exit(1)
 
 map_filename = "resources/ready/galeria_krakowska_maze100x100.txt"
-
+# map_filename = "resources/concertgebouwmap.txt"
 
 
 maze_original = load_map_from_file(map_filename)
