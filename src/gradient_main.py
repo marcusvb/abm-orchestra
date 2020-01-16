@@ -1,25 +1,28 @@
 import glfw
 from OpenGL.GL import *
 import random
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from gfx.MazeTexture import MazeTexture
 from model.direction_map.DirectionMap import DirectionMap
 from model.environment.line import Point
 from gfx.AgentManager import AgentManager
 from resources.handling.reading import load_direction_from_file, load_map_from_file
+from resources.handling.generatingHeatmap import heatmap_from_map
 from model.gradient.gradient_map import gradient_from_direction_map
 
-from random import randint
+import numpy as np
 
 if not glfw.init():
     exit(1)
 
-# global intensity
-global global_intensity
+# global_intensity: This dictates how many agents we will spawn somewhere in the simulation.
+# global global_intensity # irrelevant global call
 
 global_intensity = 50
 
-window = glfw.create_window(1280, 720, "Modelowanie i Symulacja Systemów - Symulacja (0 FPS)", None, None)
+window = glfw.create_window(1280, 720, "Here comes out project title.", None, None)
 glfw.make_context_current(window)
 
 simulation_running = True
@@ -28,40 +31,60 @@ if not window:
     glfw.terminate()
     exit(1)
 
-map_filename = "resources/ready/galeria_krakowska_maze100x100.txt"
+map_filename = "resources/ready/concertgebouwmap.txt" # Seems to be the maze
 
 maze_original = load_map_from_file(map_filename)
 maze = load_map_from_file(map_filename)
 
+heatmap = heatmap_from_map(maze)
 exit_points = []
 for i in range(40, 60):
     exit_points.append(Point(99, i))
 
-# directions = direction_map(maze, exit_points, 1)
-direction1 = gradient_from_direction_map("resources/ready/GK_directionmap_one_100x100.txt")
-direction2 = gradient_from_direction_map("resources/ready/GK_directionmap_two_100x100.txt")
-direction3 = gradient_from_direction_map("resources/ready/GK_directionmap_three_100x100.txt")
-direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_100x100.txt")
+# exit_points = []
+# for i in range(10, 20):
+#     exit_points.append(Point(99, i))
+exit_points = None
 
-direct = [direction1, direction2, direction3, direction4]
+# directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
+direction1 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
+# direction2 = gradient_from_direction_map("resources/ready/GK_directionmap_two_100x100.txt")
+# direction3 = gradient_from_direction_map("resources/ready/GK_directionmap_three_100x100.txt")
+# direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_100x100.txt")
 
+direct = [direction1]
+
+# Config for the window
 w_prev = 1280
 h_prev = 720
 
 offset = 20
 
-tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset + 1)) / len(maze)]
+tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset + 1)) / len(maze)] # agent title size
 
-agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, direct)
+# Window config end
+
+agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, direct, heatmap)
 
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
+def plot_heatmap(map):
+    sns.heatmap(map, cmap='jet')
+    plt.show()
 
+"""
+Model control via IO.
+This should actually go to a separate handler in folder, and then cleanup missing references
+to global variables etc. etc. 
+"""
 def mouse_button_callback(window, button, action, mods):
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
         pos_x, pos_y = glfw.get_cursor_pos(window)
         pos_x -= offset
         pos_y -= offset
+
+        print("x, y", pos_x, pos_y)
+
         pos = [-1, -1]
         for it in range(len(maze)):
             if tile_size[1] * it < pos_y < tile_size[1] * (it + 1):
@@ -139,15 +162,26 @@ while not glfw.window_should_close(window):
 
     glfw.swap_buffers(window)
 
-    intensity = randint(0, 100)
+    intensity = random.randint(0, 100)
     if intensity < global_intensity:
-        pos = [randint(50, 99), 98]
-        which_map = randint(0, 1)
-        agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
 
-        pos = [randint(2, 90), 2]
-        which_map = randint(2, 3)
-        agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
+        # Random postion where out agents start, lower right bottom
+        pos = [68, random.randint(16, 22)] # ZUID 2 INGANG
+        pos2 = [68, random.randint(77, 83)] # ZUID 1 INGANG
+
+
+        if np.random.uniform() > 0.675 : #if we're higher we take second entry
+            pos = pos2
+
+        "Here we add agents randomly uniform between either map 0 and 1"
+        agents.add_new(pos, 33.0, [.0, .0, .9], 0)
+
+        "Here we add agents randomly uniform between either map 0 and 1"
+        # pos = [randint(2, 90), 2]
+        # which_map = randint(2, 3)
+        # agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
+
+plot_heatmap(agents.heatmap)
 
 mazeTexture.release()
 glfw.terminate()

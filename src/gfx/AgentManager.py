@@ -6,7 +6,7 @@ from model.agent.Agent import ExitReached
 
 class AgentManager:
     def __init__(self, initial_tile_size: [float, float], client_width: int, client_height: int, map_offset: int,
-                 exit, maze, direct):
+                 exit, maze, direct, heatmap):
         self.agent_list = list()
         self.tile_size = initial_tile_size
         self.agent_radius = (initial_tile_size[1] - initial_tile_size[1] / 5) / 2
@@ -17,12 +17,18 @@ class AgentManager:
         self.maze = maze
         self.maze_for_agent=copy.deepcopy(maze)
         self.direct = direct
+        self.heatmap = heatmap
+
+
+
 
     def set_client_tile_size(self, client_width: int, client_height: int, tile_size: [float, float]):
         self.width = client_width
         self.height = client_height
         self.tile_size = tile_size
         self.agent_radius = (tile_size[1] - tile_size[1] / 5) / 2
+
+
 
         for agent in self.agent_list:
             correct_pos = [
@@ -34,6 +40,8 @@ class AgentManager:
     def draw_all(self):
         for agent in self.agent_list:
             agent.draw(self.agent_radius)
+
+
 
     def add_new(self, position: [int, int], angle: float, color: [float, float, float], which_map):
 
@@ -56,6 +64,8 @@ class AgentManager:
             any_moved = False
 
             for agent in moving_lsit:
+                ag_x, ag_y = agent.agent.current_pos
+                self.heatmap[ag_x][ag_y] += 1
                 try:
                     anger = agent.move()
                 except ExitReached:
@@ -67,7 +77,8 @@ class AgentManager:
                         any_moved = True
                         moving_lsit.remove(agent)
 
-                        agent.map_position = agent.agent.current_pos
+                        agent.map_position = (ag_x, ag_y)
+
                         agent.fx_pos = [
                             0 + self.offset + 1 + (agent.map_position[1] * self.tile_size[0]) + (self.tile_size[0] / 2),
                             self.height - self.offset - 1 - (agent.map_position[0] * self.tile_size[1]) - (
