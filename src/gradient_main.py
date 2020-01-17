@@ -16,6 +16,9 @@ import numpy as np
 
 if not glfw.init():
     exit(1)
+def klootzak():
+    return 'klaas'
+
 
 # global_intensity: This dictates how many agents we will spawn somewhere in the simulation.
 # global global_intensity # irrelevant global call
@@ -31,7 +34,7 @@ if not window:
     glfw.terminate()
     exit(1)
 
-map_filename = "resources/ready/concertgebouwmap.txt" # Seems to be the maze
+map_filename = "resources/concertgebouwmap.txt" # Seems to be the maze
 
 maze_original = load_map_from_file(map_filename)
 maze = load_map_from_file(map_filename)
