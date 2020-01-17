@@ -62,13 +62,13 @@ for subarray in output:
 
 f.close()
 
-exits = [Point(20,22)]
+exits = [Point(99,1)]
 
 
 mazeGK = load_map_from_file("concertgebouwmap.txt")
 print(mazeGK)
 directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("ready/small_garderobe", directions)
+create_txt_form_direction_map("ready/small_garderobe2", directions)
 
 # load the text file
 

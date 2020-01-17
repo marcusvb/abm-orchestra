@@ -47,19 +47,15 @@ for i in range(40, 60):
 exit_points = None
 
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
-direction1 = gradient_from_direction_map("resources/ready/small_garderobe")
+direction1 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
 
 # TODO: still have to add the directions for the concertgebouw!
-direction2 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
+direction2 = gradient_from_direction_map("resources/ready/small_garderobe2")
 direction3 = gradient_from_direction_map("resources/ready/GK_directionmap_three_100x100.txt")
 direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_100x100.txt")
 
 direct = [direction1, direction2]
-# direction_map = open("direction_map_gradient.txt", "w")
-# direction_map.write(str(direction1))
-# direction_map.close()
-print(direction2)
-print(direction1)
+
 
 # Config for the window
 w_prev = 1280
@@ -100,7 +96,7 @@ def mouse_button_callback(window, button, action, mods):
             if tile_size[0] * it < pos_x < tile_size[0] * (it + 1):
                 pos[1] = it
         if pos[0] != -1 and pos[1] != -1 and maze[pos[0]][pos[1]] != 1:
-            agents.add_new(pos, 33.0, [.0, .0, .9], 0)
+            agents.add_new(pos, 33.0, [.9, .9, .9], 0)
 
 
 def key_callback(window, key, scancode, action, mods):
@@ -180,8 +176,13 @@ while not glfw.window_should_close(window):
         if np.random.uniform() > 0.675 : #if we're higher we take second entry
             pos = pos2
 
-        "Here we add agents randomly uniform between either map 0 and 1"
-        agents.add_new(pos, 33.0, [.0, .0, .9], 0)
+        # 5 % will have direction 1 (stairs garderobe) as begin direction
+        garderobe_choice = random.random()
+        if garderobe_choice < 0.05:
+            which_map = 1
+        else:
+            which_map = 0
+        agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
 
         "Here we add agents randomly uniform between either map 0 and 1"
         # pos = [randint(2, 90), 2]

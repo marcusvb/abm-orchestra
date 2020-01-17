@@ -1,5 +1,6 @@
 from copy import deepcopy
 from random import randint
+import numpy as np
 
 import model.navigator.navigator as nav
 from model.agent.Agent import ExitReached
@@ -40,6 +41,11 @@ class Agent:
         self.number_to_reach = 2
         self.nr_directions = len(gradient_maps)
 
+        # array that decides the chances for next movement
+        # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
+        self.chance_next = [[0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0, 0.3, 0.4, 0.3], [0, 0, 0.5, 0, 0.4, 0.1], [0, 0, 0.5, 0.2, 0, 0.3], [0, 0, 0, 0, 0, 0]]
+        # tijdelijk voor testen
+        self.chance_next2 = [[0.5, 0.5], [0.5, 0.5]]
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
@@ -144,16 +150,28 @@ class Agent:
         self.unblock_point(self.current_pos)
 
         if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < 65:
-            self.number_reached += 1
-            if self.number_reached >= self.number_to_reach:
-                self.update_gradient(-self.value)
+            # self.number_reached += 1
+            # if self.number_reached >= self.number_to_reach:
+            #     self.update_gradient(-self.value)
+            #
+            #     raise ExitReached
+            # else:
 
+            # check if agent is at a location where it should be removed.
+            # TODO: als alle maps er zijn: ook bij de tweede locatie verwijderen! want dat is die trappengang
+            if self.which_gradient_map == len(self.all_gradients) - 1:
+                # agent is at end location! remove.
+                self.update_gradient(-self.value)
                 raise ExitReached
             else:
-                new_direction = randint(0, self.nr_directions - 1)
+                # chance of new direction depends on direction that was just finished
+                new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
+                print(new_direction)
+
+                # new_direction = randint(0, self.nr_directions - 1)
                 # while new_direction == self.which_gradient_map:
                 #     new_direction = randint(0, self.nr_directions - 1)
-                self.which_gradient_map = new_direction
+                self.which_gradient_map = new_direction[0]
                 # if self.which_gradient_map > 3:
                 #     self.which_gradient_map = 0
                 self.direction_map = self.all_gradients[self.which_gradient_map]
