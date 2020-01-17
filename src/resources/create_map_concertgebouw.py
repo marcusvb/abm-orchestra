@@ -60,10 +60,13 @@ for subarray in output:
     print(tmp)
 
 
+
+
 f.close()
 
 
-mazeGK = load_map_from_file("concertgebouwmap.txt")
+
+concertgebouw = load_map_from_file("concertgebouwmap.txt")
 
 
 # Define exit point ; garderobe, 6 ingangen
@@ -75,30 +78,49 @@ garderobe_4 = Point(23,45)
 garderobe_5 = Point(23,57)
 
 # aan de zijkant zaal bij binnekomst
-exit_1 = Point(37,6)
-exit_2 = Point(81,6)
+zaal_1 = Point(37,6)
+zaal_2 = Point(81,6)
 
 # aan de zijkant zaal tegenover concertzaal bij binnekomst
-exit_3 = Point(37,95)
-exit_4 = Point(81,95)
+zaal_3 = Point(37,95)
+zaal_4 = Point(81,95)
 
 # aan de voorkant van het gebouw
 
-exit_5 = Point(95, 20)
-exit_6 = Point(95, 34)
-exit_7 = Point(95, 49)
+zaal_5 = Point(95, 20)
+zaal_6 = Point(95, 34)
+zaal_7 = Point(95, 49)
+
+koffiebar_1 = Point(59, 69)
+koffiebar_2 = Point(59, 0)
+
+trappenhuis_1 = Point(6,0)
+trappenhuis_2 = Point(6,69)
 
 # garderobe exits
 
-exits= [garderobe_1,garderobe_2,garderobe_3,garderobe_4,garderobe_5]
+garderobe = [garderobe_1,garderobe_2,garderobe_3,garderobe_4,garderobe_5]
+zaal = [zaal_1, zaal_2, zaal_3, zaal_4, zaal_5, zaal_6, zaal_7]
+koffiebar = [koffiebar_1, koffiebar_2]
+trappenhuis = [trappenhuis_1, trappenhuis_2]
+
 
 # deur exits
 
 # exits = [exit_1, exit_2, exit_3, exit_4, exit_5, exit_6, exit_7]
 
-directions = direction_map(mazeGK, exits, 1)
+directionmap_garderobe = direction_map(concertgebouw, garderobe, 1)
+directionmap_zaal = direction_map(concertgebouw, zaal, 1)
+directionmap_koffiebar =  direction_map(concertgebouw, zaal, 1)
 
-# directions = direction_map(mazeGK, exits, 1)
+
+
+create_txt_form_direction_map("resources/ready/concertgebouw_garderobe.txt", directionmap_garderobe)
+create_txt_form_direction_map("resources/ready/", directionmap_zaal)
+create_txt_form_direction_map("resources/ready/", directionmap_koffiebar)
+
+
+
 
 
 # load the text file
