@@ -56,7 +56,6 @@ direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_1
 
 direct = [direction1, direction2]
 
-
 # Config for the window
 w_prev = 1280
 h_prev = 720
