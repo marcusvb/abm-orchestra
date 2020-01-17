@@ -48,9 +48,11 @@ exit_points = None
 
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
 direction1 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
-# direction2 = gradient_from_direction_map("resources/ready/GK_directionmap_two_100x100.txt")
-# direction3 = gradient_from_direction_map("resources/ready/GK_directionmap_three_100x100.txt")
-# direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_100x100.txt")
+
+# TODO: still have to add the directions for the concertgebouw!
+direction2 = gradient_from_direction_map("resources/ready/GK_directionmap_two_100x100.txt")
+direction3 = gradient_from_direction_map("resources/ready/GK_directionmap_three_100x100.txt")
+direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_100x100.txt")
 
 direct = [direction1]
 
