@@ -74,7 +74,7 @@ class Agent:
                 if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
                     continue
 
-                if self.collision_map[x][y] == Env.EXIT or self.collision_map[x][y] == Env.OBSTACLE:  # TODO check this validation and the 65 thing
+                if self.collision_map[y][x] == Env.OBSTACLE or self.collision_map[y][x] == Env.EXIT:  # TODO check this validation and the 65 thing
                     continue
 
                 available_spots.append((self.direction_map[y][x], (y, x)))
