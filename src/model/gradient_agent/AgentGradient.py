@@ -23,12 +23,13 @@ class Agent:
 
         self.all_gradients = gradient_maps
 
-        self.value_threshold = 10
-        self.value = self.value_threshold
+        self.agent_weight = 1
+        self.direction_cost = 200
+        self.viewing_range = 1
 
         self.gradient_space_size = 4
 
-        self.update_gradient(self.value)
+        self.update_gradient(self.agent_weight)
 
         self.id = randint(0, 1000)
 
@@ -38,7 +39,6 @@ class Agent:
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
         self.number_reached = 0
-        self.viewing_range = 1
         self.planning_range = 4
         self.number_to_reach = 2
         self.nr_directions = len(gradient_maps)
@@ -104,17 +104,36 @@ class Agent:
 
         return available_moves
 
+    def add_diagonal_weight_to_moves(self, available_moves):
+        diagonal_weighted_moves = []
+        for move in available_moves:
+            source_step = move[0]
+            weight = move[1][0]
+            dest_step = move[1][1]
+
+            if source_step[0] != dest_step[0] and source_step[1] != dest_step[1]:  # if diagonal, aka both y,x coords are different we add weight
+                new_weight = weight + self.direction_cost #TODO: we could also do this as a percent of the sqaure weight
+                move = (source_step, (new_weight, dest_step))
+
+            diagonal_weighted_moves.append(move)
+
+        return diagonal_weighted_moves
+
     def get_available_moves(self, current_position):
         # print("position", current_position)
         available_moves = self.get_viewable_moves(source=current_position, available_moves=set(), visited=set(), depth=None)
-        print("current_position", current_position)
-        print("avail moves:")
-        for move in available_moves:
-            print(move)
 
         # Agent is blocked even within viewing range.
         if available_moves is None:
             return None
+
+        # Add diagonal weight to moves, to make agents want to keep walking forward instead of choosing to zigzag
+        available_moves = self.add_diagonal_weight_to_moves(available_moves)
+
+        print("current_position", current_position)
+        print("avail moves:")
+        for move in available_moves:
+            print(move)
 
         next_step = trans.best_move(current_position, available_moves)
         # print(next_step)
@@ -187,6 +206,8 @@ class Agent:
             # self.update_gradient(self.value)
             return 0
 
+        # TODO: no more than 2 agents in 1 sqaure, this should be extracted to other validation place.
+
         self.unblock_point(self.current_pos)
 
         if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < 65:
@@ -201,7 +222,7 @@ class Agent:
             # TODO: als alle maps er zijn: ook bij de tweede locatie verwijderen! want dat is die trappengang
             if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
-                self.update_gradient(-self.value)
+                self.update_gradient(-self.agent_weight)
                 raise ExitReached
             else:
                 # chance of new direction depends on direction that was just finished
@@ -219,12 +240,12 @@ class Agent:
 
         self.update_facing_angle(best_pos)
 
-        self.update_gradient(-self.value)
+        self.update_gradient(-self.agent_weight)
 
         self.current_pos = best_pos
         self.block_point(self.current_pos)
 
-        self.update_gradient(self.value)
+        self.update_gradient(self.agent_weight)
 
         return 0
 
