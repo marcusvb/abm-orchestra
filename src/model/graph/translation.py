@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 src = None
+G = nx.Graph()
 
 def draw_graph(G, visited, outter):
     edges = []
@@ -28,7 +29,7 @@ def draw_graph(G, visited, outter):
     plt.clf()
 
 # Returns a set of the furthest seeing points.
-def dfs_furthest_seeing(G, source=None, depth_limit=None, visited=set(), furthest_see_points=set(), first=False):
+def dfs_furthest_seeing(G, visited, furthest_see_points, source=None, depth_limit=None, first=False):
     # Always add the first source to visited, TODO: maybe remove and re-write this.
     if first:
         visited.add(source)
@@ -42,7 +43,7 @@ def dfs_furthest_seeing(G, source=None, depth_limit=None, visited=set(), furthes
         if child not in visited:
             visited.add(child)
 
-            furthest_see_points, _ = dfs_furthest_seeing(G, child, depth_limit, visited=visited)
+            furthest_see_points, visited = dfs_furthest_seeing(G, visited, furthest_see_points, child, depth_limit)
 
             # If only one neighbour next, in other words this is end of map sight range
             if len(list(nx.all_neighbors(G, child))) < 2:
@@ -59,9 +60,11 @@ def sort_on_weight(sub_li):
 
 # Given the viewing graph, return which direction we need to step to
 def find_routes_in_directions(G, source=None):
-    furthest_points, visited = dfs_furthest_seeing(G, source, first=True)
+    furthest_points, visited = dfs_furthest_seeing(G, visited=set(), furthest_see_points=set(), source=source,
+                                                   first=True)
 
-    draw_graph(G, visited, furthest_points)
+    #draw_graph(G, visited, furthest_points)
+    print(len(G))
 
     paths = []
     for target in furthest_points:
@@ -70,8 +73,7 @@ def find_routes_in_directions(G, source=None):
     return sort_on_weight(paths)
 
 
-def viewable_weighted_moves_to_graph(moves):
-    G = nx.Graph()  # networkx graph init
+def generate_graph_from_grid_data(G, moves):
     for source_move in moves:
         G.add_edges_from([
             (source_move[0], source_move[1][1])  # 0'th is the source, 1 is (weight, dest)
@@ -79,15 +81,25 @@ def viewable_weighted_moves_to_graph(moves):
     return G
 
 
-def best_move(move, source):
-    global src
+def best_move(source, move):
+    global src, G
     src = source
 
-    G = viewable_weighted_moves_to_graph(move)
+    print("should always be 0:", len(G))
+    G = generate_graph_from_grid_data(G, move)
     routes = find_routes_in_directions(G, source)
-    # G = None
+    G.clear() # clean the graph object
 
-    best_move = routes[0]
-    for path in best_move[1][1]:  #  weight: shortest_path, [1][1] here refers to the shortest path, instead of the source
-        if path != source:
-            return path
+    #print("routes", routes)
+
+    for path in routes:
+        destination = path[0]
+        weight = path[1][0] # lowest next step which is not itself
+        go_to_path = path[1][1]
+
+        if destination != source:
+            for step in go_to_path:
+                if step != source:
+                    return step
+
+    return None

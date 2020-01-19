@@ -3,6 +3,7 @@ from random import randint
 import numpy as np
 
 import model.navigator.navigator as nav
+import model.graph.translation as trans
 from model.agent.Agent import ExitReached
 from model.environment.environment_enum import Env
 
@@ -37,7 +38,7 @@ class Agent:
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
         self.number_reached = 0
-        self.viewing_range = 2
+        self.viewing_range = 1
         self.planning_range = 4
         self.number_to_reach = 2
         self.nr_directions = len(gradient_maps)
@@ -51,14 +52,17 @@ class Agent:
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
 
-    def get_available_moves(self):
+    # We're using the available moves from a position to navigate which blocks in the distance are also available
+    def get_available_moves_from_tile(self, position):
         available_spots = []
+        print("y ranges", (position[0]-1, position[0]+1))
+        print("x ranges", range(position[1]-1, position[1]+1))
+        # Last range is +2 because the range arg is exclusive the outermost range
+        for y in range(position[0]-1, position[0]+2):
+            for x in range(position[1]-1, position[1]+2):
 
-        for y in range(self.current_pos[0]-1, self.current_pos[0]+2):
-            for x in range(self.current_pos[1]-1, self.current_pos[1]+2):
-
-                # If this point is current point we skip
-                if y == self.current_pos[0] and x == self.current_pos[1]:
+                # If the point is the current square.
+                if y == position[0] and x == position[1]:
                     continue
 
                 # If we out of range we skip
@@ -66,17 +70,55 @@ class Agent:
                         y <= 0 or x <= 0:
                     continue
 
+                # Skip obstacles or EXITS as available moves
                 if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
                     continue
 
-                # if spot has lower gradient value then the current_pos we add it
-                if self.direction_map[y][x] < self.direction_map[self.current_pos[0]][self.current_pos[1]]:
-                    # we create list of ( gradient_value, (y, x) )
-                    available_spots.append((self.direction_map[y][x], (y, x)))
+                if self.collision_map[x][y] == Env.EXIT or self.collision_map[x][y] == Env.OBSTACLE:  # TODO check this validation and the 65 thing
+                    continue
+
+                available_spots.append((self.direction_map[y][x], (y, x)))
 
         available_spots.sort()
 
         return available_spots
+
+    def get_viewable_moves(self, source, available_moves, visited, depth):
+        # We always start looking at depth of 0, which is from the current agent tile.
+        if depth is None:
+            depth = 0
+
+        # If we're out of sight, stop and return till where we can see
+        if depth >= self.viewing_range:
+            return available_moves  # TODO: We can also just keep it passby value, this is probably unneeded
+
+        neighbours = self.get_available_moves_from_tile(source)
+
+        for move in neighbours:
+            if move not in visited:
+                visited.add(move[1])  # only add the coord, not the weight
+                depth += 1
+                available_moves = self.get_viewable_moves(move[1], available_moves, visited, depth)
+                available_moves.add((source, move))
+                depth -= 1
+
+        return available_moves
+
+    def get_available_moves(self, current_position):
+        # print("position", current_position)
+        available_moves = self.get_viewable_moves(source=current_position, available_moves=set(), visited=set(), depth=None)
+        print("current_position", current_position)
+        print("avail moves:")
+        for move in available_moves:
+            print(move)
+
+        # Agent is blocked even within viewing range.
+        if available_moves is None:
+            return None
+
+        next_step = trans.best_move(current_position, available_moves)
+        # print(next_step)
+        return next_step
 
     def get_best_move(self, available_spots: [(int, (int, int))]):
 
@@ -136,12 +178,11 @@ class Agent:
 
     def move(self):
 
-        available_positions = self.get_available_moves()
-
-        best_pos = self.get_best_move(available_positions)
+        best_pos = self.get_available_moves(self.current_pos)
+        # print("bp", best_pos)
 
         if best_pos is None:
-            print("agent blocked")
+            # print("agent blocked")
             # self.value += self.value
             # self.update_gradient(self.value)
             return 0
@@ -165,7 +206,7 @@ class Agent:
             else:
                 # chance of new direction depends on direction that was just finished
                 new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
-                print(new_direction)
+                #print(new_direction)
 
                 # new_direction = randint(0, self.nr_directions - 1)
                 # while new_direction == self.which_gradient_map:
