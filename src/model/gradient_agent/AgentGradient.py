@@ -34,13 +34,14 @@ class Agent:
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
-        self.viewing_range = 1
+        self.viewing_range = 3
         self.nr_directions = len(gradient_maps)
 
         self.value = 10
         self.update_gradient(self.value)
 
-        self.agent_weight_percent = 0.05
+        self.agent_weight_percent = 0.10
+        self.go_to_path = None
 
         # array that decides the chances for next movement
         # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
@@ -58,6 +59,7 @@ class Agent:
         self.collision_map[position[0]][position[1]] = 0
 
     def update_graph_map(self):
+        self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map]) # clean graphmap copy
         for y in range(self.current_pos[0]-self.viewing_range, self.current_pos[0]+self.viewing_range):
             for x in range(self.current_pos[1]-self.viewing_range, self.current_pos[1]+self.viewing_range):
                 if y == self.current_pos[0] and x == self.current_pos[1]:
@@ -182,12 +184,50 @@ class Agent:
                 for i in range(0, len(self.all_gradients)):
                     self.all_gradients[i][local_y][local_x] += tmp_value * 2
 
+    def valid_step(self, step):
+        y = step[0]
+        x = step[1]
+
+        # If we out of range we skip
+        if y >= len(self.collision_map) or x >= len(self.collision_map[0]) or \
+                y <= 0 or x <= 0:
+            return False
+
+        # Skip obstacles or EXITS as available moves
+        if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
+            return False
+
+        if self.collision_map[y][x] == Env.OBSTACLE or self.collision_map[y][x] == Env.EXIT:  # TODO: check this
+            return False
+
+        return True
+
+    def gen_step_and_return_next_step(self):
+        self.go_to_path = self.get_available_moves(self.current_pos)
+        if self.go_to_path == None:
+            return None
+
+        next_step = self.go_to_path.pop(0)
+        if self.valid_step(next_step):
+            return next_step
+
+        return None
+
+    def step(self):
+        if self.go_to_path is None or len(self.go_to_path) == 0:
+            best_pos = self.gen_step_and_return_next_step()
+        else:
+            next_step = self.go_to_path.pop(0)
+            if self.valid_step(next_step):
+                best_pos = next_step
+            else:
+                best_pos = self.gen_step_and_return_next_step()
+
+        return best_pos
+
     def move(self):
-
         self.update_graph_map()
-
-        # Get next position using the dijkstra + viewing range method in translation layer
-        best_pos = self.get_available_moves(self.current_pos)
+        best_pos = self.step()
 
         # Validation for agent that has no next move
         if best_pos is None:
