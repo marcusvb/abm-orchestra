@@ -7,6 +7,7 @@ import model.graph.translation as trans
 from model.agent.Agent import ExitReached
 from model.environment.environment_enum import Env
 
+GOAL_THRESHOLD = 65
 
 class Agent:
     id = 0
@@ -23,13 +24,10 @@ class Agent:
 
         self.all_gradients = gradient_maps
 
-        self.agent_weight = 1
-        self.direction_cost = 200
-        self.viewing_range = 1
+        self.direction_cost = 2
 
         self.gradient_space_size = 4
 
-        self.update_gradient(self.agent_weight)
 
         self.id = randint(0, 1000)
 
@@ -38,10 +36,13 @@ class Agent:
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
-        self.number_reached = 0
-        self.planning_range = 4
-        self.number_to_reach = 2
+        self.viewing_range = 1
         self.nr_directions = len(gradient_maps)
+
+        self.value = 10
+        self.update_gradient(self.value)
+
+        self.agent_weight = 200  # TODO: this can also be a percentage
 
         # array that decides the chances for next movement
         # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
@@ -52,11 +53,28 @@ class Agent:
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
 
+    def block_point(self, position):
+        self.collision_map[position[0]][position[1]] = 1
+
+    def unblock_point(self, position):
+        self.collision_map[position[0]][position[1]] = 0
+
+    def update_graph_map(self):
+        for y in range(self.current_pos[0]-self.viewing_range, self.current_pos[0]+self.viewing_range):
+            for x in range(self.current_pos[1]-self.viewing_range, self.current_pos[1]+self.viewing_range):
+                if y == self.current_pos[0] and x == self.current_pos[1]:
+                    continue
+                try:
+                    if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
+                        continue
+                    else:
+                        self.graph_map[y][x] = self.direction_map[y][x] + self.collision_map[y][x] * self.agent_weight
+                except:
+                    continue
+
     # We're using the available moves from a position to navigate which blocks in the distance are also available
     def get_available_moves_from_tile(self, position):
         available_spots = []
-        print("y ranges", (position[0]-1, position[0]+1))
-        print("x ranges", range(position[1]-1, position[1]+1))
         # Last range is +2 because the range arg is exclusive the outermost range
         for y in range(position[0]-1, position[0]+2):
             for x in range(position[1]-1, position[1]+2):
@@ -74,12 +92,13 @@ class Agent:
                 if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
                     continue
 
-                if self.collision_map[y][x] == Env.OBSTACLE or self.collision_map[y][x] == Env.EXIT:  # TODO check this validation and the 65 thing
+                if self.collision_map[y][x] == Env.OBSTACLE or self.collision_map[y][x] == Env.EXIT:  # TODO: check this
                     continue
 
-                available_spots.append((self.direction_map[y][x], (y, x)))
+                weight = self.graph_map[y][x]
+                available_spots.append((self.graph_map[y][x], (y, x)))
 
-        available_spots.sort()
+        available_spots.sort() # returns the move with a weight.
 
         return available_spots
 
@@ -104,21 +123,6 @@ class Agent:
 
         return available_moves
 
-    def add_diagonal_weight_to_moves(self, available_moves):
-        diagonal_weighted_moves = []
-        for move in available_moves:
-            source_step = move[0]
-            weight = move[1][0]
-            dest_step = move[1][1]
-
-            if source_step[0] != dest_step[0] and source_step[1] != dest_step[1]:  # if diagonal, aka both y,x coords are different we add weight
-                new_weight = weight + self.direction_cost #TODO: we could also do this as a percent of the sqaure weight
-                move = (source_step, (new_weight, dest_step))
-
-            diagonal_weighted_moves.append(move)
-
-        return diagonal_weighted_moves
-
     def get_available_moves(self, current_position):
         # print("position", current_position)
         available_moves = self.get_viewable_moves(source=current_position, available_moves=set(), visited=set(), depth=None)
@@ -128,34 +132,24 @@ class Agent:
             return None
 
         # Add diagonal weight to moves, to make agents want to keep walking forward instead of choosing to zigzag
-        available_moves = self.add_diagonal_weight_to_moves(available_moves)
+        #available_moves = self.add_diagonal_weight_to_moves(available_moves)  # TODO: re-write this as an extra sort in trans
 
-        print("current_position", current_position)
-        print("avail moves:")
+        available_moves = list(available_moves)
+        available_moves = trans.sort_on_weight(available_moves)
+
+        print("Current Position:", current_position, "weight", self.graph_map[current_position[0]][current_position[1]])
+
+        print("Avail Moves:")
         for move in available_moves:
             print(move)
 
         next_step = trans.best_move(current_position, available_moves)
-        # print(next_step)
+        print(next_step)
+
+        print("----")
+        trans.plt.clf()
+
         return next_step
-
-    def get_best_move(self, available_spots: [(int, (int, int))]):
-
-        if len(available_spots) == 0:
-            return None
-
-        for i in range(0, len(available_spots)):
-            a_y, a_x = available_spots[i][1]
-            if self.collision_map[a_y][a_x] == 0:
-                return available_spots[i][1]
-
-        return None
-
-    def block_point(self, position):
-        self.collision_map[position[0]][position[1]] = 1
-
-    def unblock_point(self, position):
-        self.collision_map[position[0]][position[1]] = 0
 
     def update_gradient(self, value):
         for y in range(-self.gradient_space_size, self.gradient_space_size + 1):
@@ -197,20 +191,28 @@ class Agent:
 
     def move(self):
 
+        # Start with updating the graphmap
+        self.update_graph_map()
+
         best_pos = self.get_available_moves(self.current_pos)
         # print("bp", best_pos)
 
+        # Validation for agent that has no next move
         if best_pos is None:
-            # print("agent blocked")
-            # self.value += self.value
-            # self.update_gradient(self.value)
             return 0
 
-        # TODO: no more than 2 agents in 1 sqaure, this should be extracted to other validation place.
+        # Validation for not stepping on other agent if the next step is where an agent already is
+        if self.collision_map[best_pos[0]][best_pos[1]]:
+            return 0
+
+        """
+        Agent is good to move to next position
+        """
 
         self.unblock_point(self.current_pos)
 
-        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < 65:
+        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < GOAL_THRESHOLD:
+
             # self.number_reached += 1
             # if self.number_reached >= self.number_to_reach:
             #     self.update_gradient(-self.value)
@@ -222,7 +224,7 @@ class Agent:
             # TODO: als alle maps er zijn: ook bij de tweede locatie verwijderen! want dat is die trappengang
             if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
-                self.update_gradient(-self.agent_weight)
+                self.update_gradient(-self.value)
                 raise ExitReached
             else:
                 # chance of new direction depends on direction that was just finished
@@ -238,14 +240,18 @@ class Agent:
                 self.direction_map = self.all_gradients[self.which_gradient_map]
                 self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 
+        # UPDATING HAPPENS HERE
+
+        self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+
         self.update_facing_angle(best_pos)
 
-        self.update_gradient(-self.agent_weight)
+        self.update_gradient(-self.value)
 
         self.current_pos = best_pos
         self.block_point(self.current_pos)
 
-        self.update_gradient(self.agent_weight)
+        self.update_gradient(self.value)
 
         return 0
 

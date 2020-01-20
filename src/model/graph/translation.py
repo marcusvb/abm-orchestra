@@ -24,9 +24,8 @@ def draw_graph(G, visited, outter):
 
     nx.draw_networkx_nodes(G, pos, nodelist=[src], node_color='y')
 
-    # nx.draw_networkx_edge_labels(G, pos)
+    nx.draw_networkx_edge_labels(G, pos)
     plt.show()
-    plt.clf()
 
 # Returns a set of the furthest seeing points.
 def dfs_furthest_seeing(G, visited, furthest_see_points, source=None, depth_limit=None, first=False):
@@ -63,8 +62,7 @@ def find_routes_in_directions(G, source=None):
     furthest_points, visited = dfs_furthest_seeing(G, visited=set(), furthest_see_points=set(), source=source,
                                                    first=True)
 
-    #draw_graph(G, visited, furthest_points)
-    print(len(G))
+    # draw_graph(G, visited, furthest_points)
 
     paths = []
     for target in furthest_points:
@@ -85,16 +83,15 @@ def best_move(source, move):
     global src, G
     src = source
 
-    print("should always be 0:", len(G))
     G = generate_graph_from_grid_data(G, move)
     routes = find_routes_in_directions(G, source)
     G.clear() # clean the graph object
 
-    #print("routes", routes)
+    print("routes", routes)
 
     for path in routes:
         destination = path[0]
-        weight = path[1][0] # lowest next step which is not itself
+        weight = path[1][0]  # lowest next step which is not itself
         go_to_path = path[1][1]
 
         if destination != source:
