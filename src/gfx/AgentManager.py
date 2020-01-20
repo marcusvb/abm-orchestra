@@ -53,6 +53,7 @@ class AgentManager:
         if self.maze_for_agent[position[0]][position[1]] == 0:
             self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, self.direct, which_map))
         else:
+            print(position)
             print('Agent can not be adde on this pos')
 
     def step(self):
