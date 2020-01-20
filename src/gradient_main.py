@@ -104,7 +104,7 @@ def mouse_button_callback(window, button, action, mods):
             if tile_size[0] * it < pos_x < tile_size[0] * (it + 1):
                 pos[1] = it
         if pos[0] != -1 and pos[1] != -1 and maze[pos[0]][pos[1]] != 1:
-            agents.add_new(pos, 33.0, [.9, .9, .9], 0)
+            agents.add_new(33.0, [.9, .9, .9])
 
 
 def key_callback(window, key, scancode, action, mods):
