@@ -54,9 +54,9 @@ exit_points = None
 
 # TODO: still have to add the directions for the concertgebouw!
 direction1 = gradient_from_direction_map("resources/ready/Garderobe1")
-# direction2 = gradient_from_direction_map("resources/ready/Bars")
-# ingangen = [direction1, direction2]
-ingangen = [direction1]
+direction2 = gradient_from_direction_map("resources/ready/Bars")
+ingangen = [direction1, direction2]
+# ingangen = [direction1]
 
 uitgangen = []
 backhall1 = gradient_from_direction_map("resources/ready/achteringang1")
