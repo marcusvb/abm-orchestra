@@ -24,8 +24,6 @@ class Agent:
 
         self.all_gradients = gradient_maps
 
-        self.direction_cost = 2
-
         self.gradient_space_size = 4
 
 
@@ -42,7 +40,7 @@ class Agent:
         self.value = 10
         self.update_gradient(self.value)
 
-        self.agent_weight = 200  # TODO: this can also be a percentage
+        self.agent_weight_percent = 0.05
 
         # array that decides the chances for next movement
         # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
@@ -68,7 +66,7 @@ class Agent:
                     if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
                         continue
                     else:
-                        self.graph_map[y][x] = self.direction_map[y][x] + self.collision_map[y][x] * self.agent_weight
+                        self.graph_map[y][x] = self.direction_map[y][x] + self.collision_map[y][x] * self.agent_weight_percent * self.direction_map[y][x] # Add a scale of the agent weight to the tile
                 except:
                     continue
 
@@ -131,24 +129,19 @@ class Agent:
         if available_moves is None:
             return None
 
-        # Add diagonal weight to moves, to make agents want to keep walking forward instead of choosing to zigzag
-        #available_moves = self.add_diagonal_weight_to_moves(available_moves)  # TODO: re-write this as an extra sort in trans
-
         available_moves = list(available_moves)
         available_moves = trans.sort_on_weight(available_moves)
 
-        print("Current Position:", current_position, "weight", self.graph_map[current_position[0]][current_position[1]])
+        # print("Current Position:", current_position, "weight", self.graph_map[current_position[0]][current_position[1]])
 
-        print("Avail Moves:")
-        for move in available_moves:
-            print(move)
+        # print("Avail Moves:")
+        # for move in available_moves:
+        #     print(move)
 
         next_step = trans.best_move(current_position, available_moves)
-        print(next_step)
 
-        print("----")
-        trans.plt.clf()
-
+        # print(next_step)
+        # print("----")
         return next_step
 
     def update_gradient(self, value):
@@ -191,11 +184,10 @@ class Agent:
 
     def move(self):
 
-        # Start with updating the graphmap
         self.update_graph_map()
 
+        # Get next position using the dijkstra + viewing range method in translation layer
         best_pos = self.get_available_moves(self.current_pos)
-        # print("bp", best_pos)
 
         # Validation for agent that has no next move
         if best_pos is None:
@@ -205,9 +197,7 @@ class Agent:
         if self.collision_map[best_pos[0]][best_pos[1]]:
             return 0
 
-        """
-        Agent is good to move to next position
-        """
+        # Validations passed, move the agent
 
         self.unblock_point(self.current_pos)
 
@@ -240,7 +230,7 @@ class Agent:
                 self.direction_map = self.all_gradients[self.which_gradient_map]
                 self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 
-        # UPDATING HAPPENS HERE
+        # UPDATING ATTRIBUTES
 
         self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 
