@@ -50,14 +50,23 @@ for i in range(40, 60):
 exit_points = None
 
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
-direction1 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
+# direction1 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
 
 # TODO: still have to add the directions for the concertgebouw!
-direction2 = gradient_from_direction_map("resources/ready/small_garderobe2")
-direction3 = gradient_from_direction_map("resources/ready/GK_directionmap_three_100x100.txt")
-direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_100x100.txt")
+direction1 = gradient_from_direction_map("resources/ready/Garderobe1")
+# direction2 = gradient_from_direction_map("resources/ready/Bars")
+# ingangen = [direction1, direction2]
+ingangen = [direction1]
 
-direct = [direction1, direction2]
+uitgangen = []
+backhall1 = gradient_from_direction_map("resources/ready/achteringang1")
+backhall2 = gradient_from_direction_map("resources/ready/achteringang2")
+backhall3 = gradient_from_direction_map("resources/ready/achteringang3")
+upstairslefttop = gradient_from_direction_map("resources/ready/linksboven")
+upstairsrighttop = gradient_from_direction_map("resources/ready/rechtsboven")
+upstairsleftbottom = gradient_from_direction_map("resources/ready/linksonder")
+upstairsrighbottom = gradient_from_direction_map("resources/ready/rechtssonder")
+uitgangen=[backhall1,backhall2,backhall3,upstairslefttop,upstairsrighttop,upstairsleftbottom,upstairsrighbottom]
 
 # Config for the window
 w_prev = 1280
@@ -69,7 +78,7 @@ tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset +
 
 # Window config end
 
-agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, direct, heatmap)
+agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, ingangen, heatmap)
 
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
@@ -85,10 +94,9 @@ to global variables etc. etc.
 def mouse_button_callback(window, button, action, mods):
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
         pos_x, pos_y = glfw.get_cursor_pos(window)
+
         pos_x -= offset
         pos_y -= offset
-
-        print("x, y", pos_x, pos_y)
 
         pos = [-1, -1]
         for it in range(len(maze)):
@@ -98,6 +106,7 @@ def mouse_button_callback(window, button, action, mods):
             if tile_size[0] * it < pos_x < tile_size[0] * (it + 1):
                 pos[1] = it
         if pos[0] != -1 and pos[1] != -1 and maze[pos[0]][pos[1]] != 1:
+            print(pos)
             agents.add_new(pos, 33.0, [.9, .9, .9], 0)
 
 
@@ -171,17 +180,17 @@ while not glfw.window_should_close(window):
     if intensity < global_intensity:
 
         # Random postion where out agents start, lower right bottom
-        pos = [68, random.randint(16, 22)] # ZUID 2 INGANG
-        pos2 = [68, random.randint(77, 83)] # ZUID 1 INGANG
-
+        pos = [random.randint(130,150), random.randint(85,90)] # ZUID 2 INGANG
+        pos2 = [random.randint(130,150), random.randint(165,170)] # ZUID 1 INGANG
 
         if np.random.uniform() > 0.675 : #if we're higher we take second entry
             pos = pos2
 
-        # 5 % will have direction 1 (stairs garderobe) as begin direction
+        # # 5 % will have direction 1 (stairs garderobe) as begin direction
         garderobe_choice = random.random()
-        if garderobe_choice < 0.05:
+        if garderobe_choice < 0.1:
             which_map = 1
+
         else:
             which_map = 0
         agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
