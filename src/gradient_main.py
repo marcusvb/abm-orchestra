@@ -53,6 +53,11 @@ exit_points = None
 JuulBeaSpiegelChamp = gradient_from_direction_map("FINAL_MAPS/Gradient/JuulBeaSpiegelChamp")
 NoordZuid = gradient_from_direction_map("FINAL_MAPS/Gradient/NoordZuid")
 
+Garderobe1 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q4")
+directUpstairs = gradient_from_direction_map("FINAL_MAPS/NoordZuid")
+FirstMovementMaps = [Garderobe1, directUpstairs]
+
+
 # TODO: still have to add the directions for the concertgebouw!
 linksonder = gradient_from_direction_map("resources/ready/linksboven")
 linksboven = gradient_from_direction_map("resources/ready/linksonder")
@@ -61,7 +66,7 @@ rechtsboven = gradient_from_direction_map("resources/ready/rechtssonder")
 garderobe1 = gradient_from_direction_map("resources/ready/Garderobe1")
 
 # define type of gradient maps
-start_goals = [garderobe1, rechtsonder]
+start_goals = [Garderobe1, rechtsonder]
 end_goals = [linksonder, rechtsonder]
 mid_goals = [rechtsboven, linksboven]
 
