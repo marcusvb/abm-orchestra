@@ -33,7 +33,7 @@ if not window:
     glfw.terminate()
     exit(1)
 
-map_filename = "resources/concertgebouwmap.txt" # Seems to be the maze
+map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
 # map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
 
 maze_original = load_map_from_file(map_filename)
@@ -50,14 +50,15 @@ for i in range(40, 60):
 exit_points = None
 
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
-direction1 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
+linksboven = gradient_from_direction_map("resources/ready/linksboven.txt")
 
 # TODO: still have to add the directions for the concertgebouw!
-direction2 = gradient_from_direction_map("resources/ready/small_garderobe2")
-direction3 = gradient_from_direction_map("resources/ready/GK_directionmap_three_100x100.txt")
-direction4 = gradient_from_direction_map("resources/ready/GK_directionmap_four_100x100.txt")
+linksonder = gradient_from_direction_map("resources/ready/linksonder.txt")
+rechtsboven = gradient_from_direction_map("resources/ready/rechtsboven.txt")
+rechtssonder = gradient_from_direction_map("resources/ready/rechtssonder.txt")
+garderobe1 = gradient_from_direction_map("resources/ready/Garderobe1.txt")
 
-direct = [direction1, direction2]
+direct = [rechtsboven, garderobe1, rechtssonder, linksboven, linksonder]
 
 # Config for the window
 w_prev = 1280
@@ -181,9 +182,9 @@ while not glfw.window_should_close(window):
         # 5 % will have direction 1 (stairs garderobe) as begin direction
         garderobe_choice = random.random()
         if garderobe_choice < 0.05:
-            which_map = 1
-        else:
             which_map = 0
+        else:
+            which_map = 1
         agents.add_new(pos, 33.0, [.0, .0, .9], which_map)
 
         "Here we add agents randomly uniform between either map 0 and 1"

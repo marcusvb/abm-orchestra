@@ -44,10 +44,10 @@ class Agent:
         self.agent_weight = 700
 
         # array that decides the chances for next movement
-        # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
+        # volgorde: trap-garderobe, garderobe, koffie, wc, randomlopen, eindlocatie
         self.chance_next = [[0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0, 0.3, 0.4, 0.3], [0, 0, 0.5, 0, 0.4, 0.1], [0, 0, 0.5, 0.2, 0, 0.3], [0, 0, 0, 0, 0, 0]]
         # tijdelijk voor testen
-        self.chance_next2 = [[0.5, 0.5], [0.5, 0.5]]
+        self.chance_next2 = [[0, 0, 0.5, 0.1, 0.3, 0.0], [0, 0, 0.5, 0.1, 0.3, 0.0], [0, 0, 0, 0.3, 0.4, 0.0], [0, 0, 0.5, 0, 0.4, 0.0], [0, 0, 0.5, 0.2, 0, 0.0], [0, 0, 0, 0, 0, 0]]
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
@@ -178,10 +178,13 @@ class Agent:
                 # agent is at end location! remove.
                 self.update_gradient(-self.value)
                 raise ExitReached
+            elif self.which_gradient_map == 0:
+                # agent goes opstairs
+                self.update_gradient(-self.value)
+                raise ExitReached
             else:
                 # chance of new direction depends on direction that was just finished
                 new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
-                print(new_direction)
 
                 # new_direction = randint(0, self.nr_directions - 1)
                 # while new_direction == self.which_gradient_map:
