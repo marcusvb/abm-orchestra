@@ -63,6 +63,21 @@ start_goals = [garderobe1, rechtsonder]
 end_goals = [linksonder, rechtsonder]
 mid_goals = [rechtsboven, linksboven]
 
+# # TODO: still have to add the directions for the concertgebouw!
+# direction1 = gradient_from_direction_map("resources/ready/Garderobe1")
+# direction2 = gradient_from_direction_map("resources/ready/Bars")
+# ingangen = [direction1, direction2]
+# # ingangen = [direction1]
+#
+# uitgangen = []
+# backhall1 = gradient_from_direction_map("resources/ready/achteringang1")
+# backhall2 = gradient_from_direction_map("resources/ready/achteringang2")
+# backhall3 = gradient_from_direction_map("resources/ready/achteringang3")
+# upstairslefttop = gradient_from_direction_map("resources/ready/linksboven")
+# upstairsrighttop = gradient_from_direction_map("resources/ready/rechtsboven")
+# upstairsleftbottom = gradient_from_direction_map("resources/ready/linksonder")
+# upstairsrighbottom = gradient_from_direction_map("resources/ready/rechtssonder")
+# uitgangen=[backhall1,backhall2,backhall3,upstairslefttop,upstairsrighttop,upstairsleftbottom,upstairsrighbottom]
 
 # Config for the window
 w_prev = 1280
@@ -76,6 +91,7 @@ tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset +
 
 # Here we give the direction maps to the agent manager
 agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, start_goals, mid_goals, end_goals, heatmap)
+# agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, ingangen, heatmap)
 
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
@@ -91,10 +107,9 @@ to global variables etc. etc.
 def mouse_button_callback(window, button, action, mods):
     if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
         pos_x, pos_y = glfw.get_cursor_pos(window)
+
         pos_x -= offset
         pos_y -= offset
-
-        print("x, y", pos_x, pos_y)
 
         pos = [-1, -1]
         for it in range(len(maze)):
@@ -176,7 +191,6 @@ while not glfw.window_should_close(window):
 
     intensity = random.randint(0, 100)
     if intensity < global_intensity:
-
         agents.add_new(33.0, [.0, .0, .9])
 
 plot_heatmap(agents.heatmap)
