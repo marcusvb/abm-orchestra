@@ -52,6 +52,11 @@ exit_points = None
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
 linksonder = gradient_from_direction_map("resources/ready/linksboven")
 
+Garderobe1 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q4")
+directUpstairs = gradient_from_direction_map("FINAL_MAPS/NoordZuid")
+FirstMovementMaps = [Garderobe1, directUpstairs]
+
+
 # TODO: still have to add the directions for the concertgebouw!
 linksboven = gradient_from_direction_map("resources/ready/linksonder")
 rechtsonder = gradient_from_direction_map("resources/ready/rechtsboven")
@@ -59,7 +64,7 @@ rechtsboven = gradient_from_direction_map("resources/ready/rechtssonder")
 garderobe1 = gradient_from_direction_map("resources/ready/Garderobe1")
 
 # define type of gradient maps
-start_goals = [garderobe1, rechtsonder]
+start_goals = [Garderobe1, rechtsonder]
 end_goals = [linksonder, rechtsonder]
 mid_goals = [rechtsboven, linksboven]
 
