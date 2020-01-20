@@ -33,8 +33,8 @@ if not window:
     glfw.terminate()
     exit(1)
 
-map_filename = "resources/concertgebouwmap.txt" # Seems to be the maze
-map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
+map_filename = "FINAL_MAPS/FINAL_concertgebouwmap.txt" # Seems to be the maze
+# map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
 
 maze_original = load_map_from_file(map_filename)
 maze = load_map_from_file(map_filename)
@@ -53,10 +53,9 @@ exit_points = None
 # direction1 = gradient_from_direction_map("resources/ready/concertgebouw_direction_100x100.txt")
 
 # TODO: still have to add the directions for the concertgebouw!
-direction1 = gradient_from_direction_map("resources/ready/Garderobe1")
-direction2 = gradient_from_direction_map("resources/ready/Bars")
-ingangen = [direction1, direction2]
-# ingangen = [direction1]
+Garderobe1 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q4")
+directUpstairs = gradient_from_direction_map("FINAL_MAPS/NoordZuid")
+FirstMovementMaps = [Garderobe1, directUpstairs]
 
 uitgangen = []
 backhall1 = gradient_from_direction_map("resources/ready/achteringang1")
@@ -78,7 +77,7 @@ tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset +
 
 # Window config end
 
-agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, ingangen, heatmap)
+agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, FirstMovementMaps, heatmap)
 
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
@@ -106,7 +105,6 @@ def mouse_button_callback(window, button, action, mods):
             if tile_size[0] * it < pos_x < tile_size[0] * (it + 1):
                 pos[1] = it
         if pos[0] != -1 and pos[1] != -1 and maze[pos[0]][pos[1]] != 1:
-            print(pos)
             agents.add_new(pos, 33.0, [.9, .9, .9], 0)
 
 
@@ -180,15 +178,15 @@ while not glfw.window_should_close(window):
     if intensity < global_intensity:
 
         # Random postion where out agents start, lower right bottom
-        pos = [random.randint(130,150), random.randint(85,90)] # ZUID 2 INGANG
-        pos2 = [random.randint(130,150), random.randint(165,170)] # ZUID 1 INGANG
+        pos = [139, np.random.randint(83,89)] # ZUID 2 INGANG
+        pos2 = [139, np.random.randint(162,168)] # ZUID 1 INGANG
 
         if np.random.uniform() > 0.675 : #if we're higher we take second entry
             pos = pos2
 
         # # 5 % will have direction 1 (stairs garderobe) as begin direction
-        garderobe_choice = random.random()
-        if garderobe_choice < 0.1:
+        garderobe_choice = np.random.uniform()
+        if garderobe_choice < 0.05:
             which_map = 1
 
         else:

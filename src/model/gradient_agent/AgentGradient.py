@@ -158,23 +158,23 @@ class Agent:
 
             # check if agent is at a location where it should be removed.
             # TODO: als alle maps er zijn: ook bij de tweede locatie verwijderen! want dat is die trappengang
-            if self.which_gradient_map == len(self.all_gradients) - 1:
+            # if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
-                self.update_gradient(-self.value)
-                raise ExitReached
-            else:
-                # chance of new direction depends on direction that was just finished
-                new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
-                print(new_direction)
-
-                # new_direction = randint(0, self.nr_directions - 1)
-                # while new_direction == self.which_gradient_map:
-                #     new_direction = randint(0, self.nr_directions - 1)
-                self.which_gradient_map = new_direction[0]
-                # if self.which_gradient_map > 3:
-                #     self.which_gradient_map = 0
-                self.direction_map = self.all_gradients[self.which_gradient_map]
-                self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+            self.update_gradient(-self.value)
+            raise ExitReached
+            # else:
+            #     # chance of new direction depends on direction that was just finished
+            #     new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
+            #     print(new_direction)
+            #
+            #     # new_direction = randint(0, self.nr_directions - 1)
+            #     # while new_direction == self.which_gradient_map:
+            #     #     new_direction = randint(0, self.nr_directions - 1)
+            #     self.which_gradient_map = new_direction[0]
+            #     # if self.which_gradient_map > 3:
+            #     #     self.which_gradient_map = 0
+            #     self.direction_map = self.all_gradients[self.which_gradient_map]
+            #     self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 
         self.update_facing_angle(best_pos)
 
