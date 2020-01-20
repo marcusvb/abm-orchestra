@@ -11,7 +11,7 @@ class Agent:
     id = 0
 
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
-                 collision_map: [[(int, int)]], which_gradient_map=0, bound_size=2):
+                 collision_map: [[(int, int)]], stairs_garderobe, which_gradient_map=0, bound_size=2):
         self.start = start_position
         self.end = end_position
         self.current_pos = self.start
@@ -47,7 +47,8 @@ class Agent:
         # volgorde: trap-garderobe, garderobe, koffie, wc, randomlopen, eindlocatie
         self.chance_next = [[0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0, 0.3, 0.4, 0.3], [0, 0, 0.5, 0, 0.4, 0.1], [0, 0, 0.5, 0.2, 0, 0.3], [0, 0, 0, 0, 0, 0]]
         # tijdelijk voor testen
-        self.chance_next2 = [[0, 0, 0.5, 0.1, 0.3, 0.0], [0, 0, 0.5, 0.1, 0.3, 0.0], [0, 0, 0, 0.3, 0.4, 0.0], [0, 0, 0.5, 0, 0.4, 0.0], [0, 0, 0.5, 0.2, 0, 0.0], [0, 0, 0, 0, 0, 0]]
+        self.chance_next2 = [[0, 0.5, 0.2, 0.3], [0, 0, 0.5, 0.5], [0, 0.5, 0, 0.5], [0, 0.5, 0.5, 0]]
+        self.stairs_garderobe = stairs_garderobe
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
@@ -178,13 +179,17 @@ class Agent:
                 # agent is at end location! remove.
                 self.update_gradient(-self.value)
                 raise ExitReached
-            elif self.which_gradient_map == 0:
-                # agent goes opstairs
+            if self.stairs_garderobe == 1:
+                print('yes')
                 self.update_gradient(-self.value)
                 raise ExitReached
+            # elif self.which_gradient_map == 0:
+            #     # agent goes opstairs
+            #     self.update_gradient(-self.value)
+            #     raise ExitReached
             else:
-                # chance of new direction depends on direction that was just finished
-                new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
+                # chance of new direction depends on direction that was just finished TODO: random number weghalen
+                new_direction = np.random.choice(4, 1, p=self.chance_next2[self.which_gradient_map])
 
                 # new_direction = randint(0, self.nr_directions - 1)
                 # while new_direction == self.which_gradient_map:

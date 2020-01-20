@@ -2,11 +2,12 @@ import copy
 
 from gfx.AgentGfx import AgentGfx
 from model.agent.Agent import ExitReached
+import numpy as np
 
 
 class AgentManager:
     def __init__(self, initial_tile_size: [float, float], client_width: int, client_height: int, map_offset: int,
-                 exit, maze, direct, heatmap):
+                 exit, maze, start_goals, direct, end_goals, heatmap):
         self.agent_list = list()
         self.tile_size = initial_tile_size
         self.agent_radius = (initial_tile_size[1] - initial_tile_size[1] / 5) / 2
@@ -18,6 +19,8 @@ class AgentManager:
         self.maze_for_agent=copy.deepcopy(maze)
         self.direct = direct
         self.heatmap = heatmap
+        self.start_goals = start_goals
+        self.end_goals = end_goals
 
 
 
@@ -43,7 +46,8 @@ class AgentManager:
 
 
 
-    def add_new(self, position: [int, int], angle: float, color: [float, float, float], which_map):
+    def add_new(self, angle: float, color: [float, float, float], which_map = 0):
+        all_directions, stairs_garderobe, position = self.get_specifics()
 
         correct_pos = [
             0 + self.offset + 1 + (position[1] * self.tile_size[0]) + (self.tile_size[0] / 2),
@@ -51,9 +55,9 @@ class AgentManager:
         ]
 
         if self.maze_for_agent[position[0]][position[1]] == 0:
-            self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, self.direct, which_map))
+            self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, all_directions, stairs_garderobe))
         else:
-            print('Agent can not be adde on this pos')
+            print('Agent can not be added on this pos')
 
     def step(self):
         moving_lsit = sorted(self.agent_list, key=lambda agt: agt.agent.anger, reverse=True)
@@ -86,3 +90,32 @@ class AgentManager:
                         ]
 
                         agent.position = agent.fx_pos
+
+    def get_specifics(self):
+
+        # decide start position of the agent
+        # Random postion where out agents start, lower right bottom
+        pos1 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
+        pos2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
+
+        if np.random.uniform() > 0.675:  # if we're higher we take second entry
+            start_pos = pos2
+        else:
+            start_pos = pos1
+
+        # create directions array with specific start and end position
+        all_directions = []
+
+        # 5 % will go to the stairs garderobe (start map 1)
+        garderobe_choice = np.random.random()
+        if garderobe_choice < 0.05:
+            all_directions.append(self.start_goals[1])
+            stairs_garderobe = 1
+        else:
+            all_directions.append(self.start_goals[0])
+            stairs_garderobe = 0
+
+        all_directions = all_directions + self.direct
+        entrance_choice = np.random.choice(len(self.end_goals), 1)
+        all_directions.append(self.end_goals[entrance_choice[0]])
+        return all_directions, stairs_garderobe, start_pos
