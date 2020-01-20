@@ -36,11 +36,12 @@ class Agent:
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
-        self.number_reached = 0
+        # self.number_reached = 0
         self.viewing_range = 2
-        self.planning_range = 4
-        self.number_to_reach = 2
+        # self.planning_range = 4
+        # self.number_to_reach = 2
         self.nr_directions = len(gradient_maps)
+        self.agent_weight = 700
 
         # array that decides the chances for next movement
         # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
@@ -50,6 +51,21 @@ class Agent:
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
+
+    def update_graph_map(self):
+
+        for y in range(self.current_pos[0] - self.viewing_range, self.current_pos[0] + self.viewing_range):
+            for x in range(self.current_pos[1] - self.viewing_range, self.current_pos[1] + self.viewing_range):
+                if y == self.current_pos[0] and x == self.current_pos[1]:
+                    continue
+                try:
+                    if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
+                        continue
+                    else:
+                        self.graph_map[y][x] = self.direction_map[y][x] + self.collision_map[y][x] * self.agent_weight
+                except:
+                    continue
+
 
     def get_available_moves(self):
         available_spots = []

@@ -112,24 +112,33 @@ trappenhuis = [trappenhuis_1, trappenhuis_2]
 
 # exits = [exit_1, exit_2, exit_3, exit_4, exit_5, exit_6, exit_7]
 
+print("creating directions")
 directionmap_garderobe = direction_map(concertgebouw, garderobe, 1)
-directionmap_zaal = direction_map(concertgebouw, zaal, 1)
-directionmap_koffiebar =  direction_map(concertgebouw, zaal, 1)
-
-
-
 create_txt_form_direction_map("resources/ready/concertgebouw_garderobe.txt", directionmap_garderobe)
-create_txt_form_direction_map("resources/ready/", directionmap_zaal)
-create_txt_form_direction_map("resources/ready/", directionmap_koffiebar)
+print('concertgebouw_garderobe finished')
+directionmap_zaal = direction_map(concertgebouw, zaal, 1)
+create_txt_form_direction_map("resources/ready/zaal.txt", directionmap_zaal)
+print("zaal finished")
+directionmap_koffiebar =  direction_map(concertgebouw, koffiebar, 1)
+create_txt_form_direction_map("resources/ready/koffie.txt", directionmap_koffiebar)
+print("koffie finished")
+directionmap_trappenhuis = direction_map(concertgebouw, trappenhuis, 1)
+create_txt_form_direction_map("resources/ready/trappenhuis.txt", directionmap_trappenhuis)
+print("trappenhuis finished")
 
 
 
 
 
-mazeGK = load_map_from_file("concertgebouwmap.txt")
-print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("ready/small_garderobe2", directions)
+
+
+
+
+
+# mazeGK = load_map_from_file("concertgebouwmap.txt")
+# print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("ready/small_garderobe2", directions)
 
 
 # load the text file

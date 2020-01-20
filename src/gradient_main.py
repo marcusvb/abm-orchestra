@@ -34,7 +34,7 @@ if not window:
     exit(1)
 
 map_filename = "resources/concertgebouwmap.txt" # Seems to be the maze
-map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
+# map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
 
 maze_original = load_map_from_file(map_filename)
 maze = load_map_from_file(map_filename)
