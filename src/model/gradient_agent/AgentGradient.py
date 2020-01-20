@@ -11,7 +11,7 @@ class Agent:
     id = 0
 
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
-                 collision_map: [[(int, int)]], which_gradient_map=0, bound_size=2):
+                 collision_map: [[(int, int)]], stairs_garderobe, which_gradient_map=0, bound_size=2):
         self.start = start_position
         self.end = end_position
         self.current_pos = self.start
@@ -36,20 +36,37 @@ class Agent:
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
-        self.number_reached = 0
+        # self.number_reached = 0
         self.viewing_range = 2
-        self.planning_range = 4
-        self.number_to_reach = 2
+        # self.planning_range = 4
+        # self.number_to_reach = 2
         self.nr_directions = len(gradient_maps)
+        self.agent_weight = 700
 
         # array that decides the chances for next movement
-        # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
+        # volgorde: trap-garderobe, garderobe, koffie, wc, randomlopen, eindlocatie
         self.chance_next = [[0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0, 0.3, 0.4, 0.3], [0, 0, 0.5, 0, 0.4, 0.1], [0, 0, 0.5, 0.2, 0, 0.3], [0, 0, 0, 0, 0, 0]]
         # tijdelijk voor testen
-        self.chance_next2 = [[0.5, 0.5], [0.5, 0.5]]
+        self.chance_next2 = [[0, 0.5, 0.2, 0.3], [0, 0, 0.5, 0.5], [0, 0.5, 0, 0.5], [0, 0.5, 0.5, 0]]
+        self.stairs_garderobe = stairs_garderobe
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
+
+    def update_graph_map(self):
+
+        for y in range(self.current_pos[0] - self.viewing_range, self.current_pos[0] + self.viewing_range):
+            for x in range(self.current_pos[1] - self.viewing_range, self.current_pos[1] + self.viewing_range):
+                if y == self.current_pos[0] and x == self.current_pos[1]:
+                    continue
+                try:
+                    if self.direction_map[y][x] == Env.OBSTACLE or self.direction_map[y][x] == Env.EXIT:
+                        continue
+                    else:
+                        self.graph_map[y][x] = self.direction_map[y][x] + self.collision_map[y][x] * self.agent_weight
+                except:
+                    continue
+
 
     def get_available_moves(self):
         available_spots = []
@@ -158,23 +175,30 @@ class Agent:
 
             # check if agent is at a location where it should be removed.
             # TODO: als alle maps er zijn: ook bij de tweede locatie verwijderen! want dat is die trappengang
-            # if self.which_gradient_map == len(self.all_gradients) - 1:
+            if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
-            self.update_gradient(-self.value)
-            raise ExitReached
-            # else:
-            #     # chance of new direction depends on direction that was just finished
-            #     new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
-            #     print(new_direction)
-            #
-            #     # new_direction = randint(0, self.nr_directions - 1)
-            #     # while new_direction == self.which_gradient_map:
-            #     #     new_direction = randint(0, self.nr_directions - 1)
-            #     self.which_gradient_map = new_direction[0]
-            #     # if self.which_gradient_map > 3:
-            #     #     self.which_gradient_map = 0
-            #     self.direction_map = self.all_gradients[self.which_gradient_map]
-            #     self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+                self.update_gradient(-self.value)
+                raise ExitReached
+            if self.stairs_garderobe == 1:
+                print('yes')
+                self.update_gradient(-self.value)
+                raise ExitReached
+            # elif self.which_gradient_map == 0:
+            #     # agent goes opstairs
+            #     self.update_gradient(-self.value)
+            #     raise ExitReached
+            else:
+                # chance of new direction depends on direction that was just finished TODO: random number weghalen
+                new_direction = np.random.choice(4, 1, p=self.chance_next2[self.which_gradient_map])
+
+                # new_direction = randint(0, self.nr_directions - 1)
+                # while new_direction == self.which_gradient_map:
+                #     new_direction = randint(0, self.nr_directions - 1)
+                self.which_gradient_map = new_direction[0]
+                # if self.which_gradient_map > 3:
+                #     self.which_gradient_map = 0
+                self.direction_map = self.all_gradients[self.which_gradient_map]
+                self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 
         self.update_facing_angle(best_pos)
 
