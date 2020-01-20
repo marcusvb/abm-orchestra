@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import numpy as np
 
 src = None
 G = nx.Graph()
@@ -53,9 +54,12 @@ def dfs_furthest_seeing(G, visited, furthest_see_points, source=None, depth_limi
 
 # Sorts the possible paths based on the weight
 def sort_on_weight(sub_li):
-    sub_li.sort(key=lambda x: x[1][0])
+    sub_li.sort(key=lambda x: (x[1][0]))
     return sub_li
 
+def sort_on_diagonals(sub_li):
+    sub_li.sort(key=lambda x: (x[2]))
+    return sub_li
 
 # Given the viewing graph, return which direction we need to step to
 def find_routes_in_directions(G, source=None):
@@ -78,6 +82,30 @@ def generate_graph_from_grid_data(G, moves):
         ], weight=source_move[1][0])  # push weight attribute on edge
     return G
 
+def sort_weights_if_multiple_by_straight_first(source, routes):
+    lowest_weight = None
+    lowest_weights = []
+    for path in routes:
+        destination = path[0]
+        weight = path[1][0]
+        go_to_path = path[1][1]
+
+        # Filter out bs, only good paths
+        if destination != source:
+
+            # Check if first for weight, else if there is a weight diff we break because we'll find suboptimal
+            if lowest_weight is None:
+                lowest_weight = weight
+            elif lowest_weight != weight:
+                break
+
+            for step in go_to_path:
+                if step != source:
+                    diff = np.abs(step[0] - source[0]) + np.abs(step[1] - source[1])
+                    lowest_weights.append((destination, (weight, go_to_path), diff))
+
+    return sort_on_diagonals(lowest_weights)
+
 
 def best_move(source, move):
     global src, G
@@ -87,9 +115,15 @@ def best_move(source, move):
     routes = find_routes_in_directions(G, source)
     G.clear() # clean the graph object
 
+    if routes is None:
+        return None
+
+    diff_routes = sort_weights_if_multiple_by_straight_first(source, routes)
+
+    print("diff_routes", diff_routes)
     print("routes", routes)
 
-    for path in routes:
+    for path in diff_routes:
         destination = path[0]
         weight = path[1][0]  # lowest next step which is not itself
         go_to_path = path[1][1]
@@ -98,5 +132,3 @@ def best_move(source, move):
             for step in go_to_path:
                 if step != source:
                     return step
-
-    return None
