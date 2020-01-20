@@ -33,7 +33,7 @@ if not window:
     glfw.terminate()
     exit(1)
 
-map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
+map_filename = "FINAL_MAPS/FINAL_concertgebouwmap.txt" # Seems to be the maze
 # map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
 
 maze_original = load_map_from_file(map_filename)
@@ -50,9 +50,11 @@ for i in range(40, 60):
 exit_points = None
 
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
-linksonder = gradient_from_direction_map("resources/ready/linksboven")
+JuulBeaSpiegelChamp = gradient_from_direction_map("FINAL_MAPS/Gradient/JuulBeaSpiegelChamp")
+NoordZuid = gradient_from_direction_map("FINAL_MAPS/Gradient/NoordZuid")
 
 # TODO: still have to add the directions for the concertgebouw!
+linksonder = gradient_from_direction_map("resources/ready/linksboven")
 linksboven = gradient_from_direction_map("resources/ready/linksonder")
 rechtsonder = gradient_from_direction_map("resources/ready/rechtsboven")
 rechtsboven = gradient_from_direction_map("resources/ready/rechtssonder")
@@ -62,6 +64,9 @@ garderobe1 = gradient_from_direction_map("resources/ready/Garderobe1")
 start_goals = [garderobe1, rechtsonder]
 end_goals = [linksonder, rechtsonder]
 mid_goals = [rechtsboven, linksboven]
+
+# for the final gradient maps
+mid_goals_final = [JuulBeaSpiegelChamp, NoordZuid]
 
 # # TODO: still have to add the directions for the concertgebouw!
 # direction1 = gradient_from_direction_map("resources/ready/Garderobe1")
