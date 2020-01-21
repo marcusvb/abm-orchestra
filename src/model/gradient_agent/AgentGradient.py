@@ -1,5 +1,4 @@
 from copy import deepcopy
-from random import randint
 import numpy as np
 
 import model.navigator.navigator as nav
@@ -10,9 +9,8 @@ from model.environment.environment_enum import Env
 from model.gradient_agent.RunConf import RunConf
 from model.gradient_agent.MapConfs import MapConfs
 
-class Agent:
-    id = 0
 
+class Agent:
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
                  collision_map: [[(int, int)]], stairs_garderobe, moving_chance = 0.7, which_gradient_map=0, bound_size=2, pathing_config=RunConf.GRADIENT):
         self.start = start_position
@@ -22,16 +20,11 @@ class Agent:
         self.direction_map = gradient_maps[which_gradient_map]
         self.collision_map = collision_map
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, end_position[0])
-        self.GOAL_THRESHOLD = MapConfs.GOAL_THRESHOLD
-
         self.all_gradients = gradient_maps
-
-        self.PATHING_CONFIG = pathing_config
         self.gradient_space_size = 4
 
-
-        self.id = randint(0, 1000)
-
+        self.PATHING_CONFIG = pathing_config
+        self.GOAL_THRESHOLD = MapConfs.GOAL_THRESHOLD
         self.anger = 0
 
         # added for graph map
@@ -42,7 +35,6 @@ class Agent:
         self.value = 10
         self.update_gradient(self.value)
         self.agent_weight_percent = 0.10
-
         self.go_to_path = None
 
         self.chance_next = [[0, 0.5, 0.2, 0.3], [0, 0, 0.5, 0.5], [0, 0.5, 0, 0.5], [0, 0.5, 0.5, 0]]
