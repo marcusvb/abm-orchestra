@@ -273,8 +273,9 @@ class Agent:
         available_positions = self.get_available_moves_gradient()
         best_pos = self.get_best_move_gradient(available_positions)
         if best_pos is None:
-            print("agent blocked")
-            return 0
+            print("agent blocked, trying with dijkstra...")
+            # self.PATHING_CONFIG=RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
+            return self.run_dijkstra()
 
         self.unblock_point(self.current_pos)
 
