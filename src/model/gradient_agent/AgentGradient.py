@@ -5,10 +5,10 @@ import numpy as np
 import model.navigator.navigator as nav
 import model.graph.translation as trans
 from model.agent.Agent import ExitReached
+
 from model.environment.environment_enum import Env
 from model.gradient_agent.RunConf import RunConf
-
-GOAL_THRESHOLD = 65
+from model.gradient_agent.MapConfs import MapConfs
 
 class Agent:
     id = 0
@@ -22,6 +22,7 @@ class Agent:
         self.direction_map = gradient_maps[which_gradient_map]
         self.collision_map = collision_map
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, end_position[0])
+        self.GOAL_THRESHOLD = MapConfs.GOAL_THRESHOLD
 
         self.all_gradients = gradient_maps
 
@@ -36,17 +37,12 @@ class Agent:
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
-
-
         self.nr_directions = len(gradient_maps)
-        self.agent_weight = 700
-
-
         self.viewing_range = 2
         self.value = 10
         self.update_gradient(self.value)
-
         self.agent_weight_percent = 0.10
+
         self.go_to_path = None
 
         self.chance_next = [[0, 0.5, 0.2, 0.3], [0, 0, 0.5, 0.5], [0, 0.5, 0, 0.5], [0, 0.5, 0.5, 0]]
@@ -221,7 +217,7 @@ class Agent:
 
         # Validations passed, move the agent
         self.unblock_point(self.current_pos)
-        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < GOAL_THRESHOLD:
+        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.GOAL_THRESHOLD:
 
             # check if agent is at a location where it should be removed.
             if self.which_gradient_map == len(self.all_gradients) - 1:
@@ -290,7 +286,7 @@ class Agent:
 
         self.unblock_point(self.current_pos)
 
-        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < GOAL_THRESHOLD:
+        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.GOAL_THRESHOLD:
             # check if agent is at a location where it should be removed.
             if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
