@@ -1,9 +1,13 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import numpy as np
 
 src = None
+G = nx.Graph()
+viewing_range = None
 
-def draw_graph(G, visited, outter):
+
+def draw_graph(G, outer, path=None):
     edges = []
     for n1, n2, attr in G.edges(data=True):
         attrs = (n1, n2, attr["weight"])
@@ -14,54 +18,119 @@ def draw_graph(G, visited, outter):
     nx.draw_networkx_edges(G, pos, edgelist=edges)
     nx.draw_networkx_labels(G, pos)
 
+    if outer is not None:
+        for e in outer:
+            nx.draw_networkx_nodes(G, pos, nodelist=[e], node_color='r')
 
-    for v in visited:
-        nx.draw_networkx_nodes(G, pos, nodelist=[v], node_color='g')
-
-    for e in outter:
-        nx.draw_networkx_nodes(G, pos, nodelist=[e], node_color='r')
-
+    # Start point and edge labels
     nx.draw_networkx_nodes(G, pos, nodelist=[src], node_color='y')
+    nx.draw_networkx_edge_labels(G, pos)
 
-    # nx.draw_networkx_edge_labels(G, pos)
+    if path is not None:
+        nx.draw_networkx_nodes(G, pos, nodelist=path, node_color='r')
+
     plt.show()
-    plt.clf()
 
-# Returns a set of the furthest seeing points.
-def dfs_furthest_seeing(G, source=None, depth_limit=None, visited=set(), furthest_see_points=set(), first=False):
-    # Always add the first source to visited, TODO: maybe remove and re-write this.
-    if first:
-        visited.add(source)
 
-    # No depth limits as our viewing-range is dictated by the framework
-    if depth_limit is None:
-        depth_limit = len(G)
+def generate_graph_from_grid_data(G, moves):
+    for source_move in moves:
+        G.add_edges_from([
+            (source_move[0], source_move[1][1])  # 0'th is the source, 1 is (weight, dest)
+        ], weight=source_move[1][0])  # push weight attribute on edge
+    return G
 
-    neighbours = list(nx.all_neighbors(G, source))
-    for child in neighbours:
-        if child not in visited:
-            visited.add(child)
 
-            furthest_see_points, _ = dfs_furthest_seeing(G, child, depth_limit, visited=visited)
+def moore_neighbourhood_col_and_row(G, source):
+    # find the min and max x values for which we'll iterate
+    min_x = None
+    max_x = None
+    for node in list(G.nodes):
+        x = node[1]
+        # Set for first time
+        if min_x is None and max_x is None:
+            min_x = x
+            max_x = x
 
-            # If only one neighbour next, in other words this is end of map sight range
-            if len(list(nx.all_neighbors(G, child))) < 2:
-                furthest_see_points.add(child)
+        if x < min_x:
+            min_x = x
+        if x > max_x:
+            max_x = x
 
-    return furthest_see_points, visited
+    furthest_see_points = set()
+
+    for x_iter in (min_x, source[1], max_x): # min_x, source_x and max_x
+        min_y = None
+        max_y = None
+
+        # current column
+        for node in list(G.nodes):
+            node_y = node[0]
+            node_x = node[1]
+
+            if node_x == x_iter:
+                if min_y is None and max_y is None:
+                    min_y = node_y
+                    max_y = node_y
+                else:
+                    if node_y < min_y:
+                        min_y = node_y
+                    if node_y > max_y:
+                        max_y = node_y
+
+        # For this column we append the min and maxes
+        furthest_see_points.add((min_y, x_iter))
+        furthest_see_points.add((max_y, x_iter))
+
+    #  Add the row for using the source row moore method
+    furthest_see_points = row_search_moore_neighbourhood(G, source, furthest_see_points)
+
+    return furthest_see_points
+
+
+def row_search_moore_neighbourhood(G, source, furthest_see_points):
+
+    # find the min and max x values for which we'll iterate
+    min_x = None
+    max_x = None
+
+    for node in list(G.nodes):
+        node_y = node[0]
+        node_x = node[1]
+        # Set for first time
+        if node_y == source[0]:
+            if min_x is None and max_x is None:
+                min_x = node_x
+                max_x = node_x
+            else:
+                if node_x < min_x:
+                    min_x = node_x
+                if node_x > max_x:
+                    max_x = node_x
+
+    # For this column we append the min and maxes
+    furthest_see_points.add((source[0], min_x))
+    furthest_see_points.add((source[0], max_x))
+
+    return furthest_see_points
 
 
 # Sorts the possible paths based on the weight
 def sort_on_weight(sub_li):
-    sub_li.sort(key=lambda x: x[1][0])
+    sub_li.sort(key=lambda x: (x[1][0]))
+    return sub_li
+
+
+def sort_on_diagonals(sub_li):
+    sub_li.sort(key=lambda x: (x[2]))
     return sub_li
 
 
 # Given the viewing graph, return which direction we need to step to
 def find_routes_in_directions(G, source=None):
-    furthest_points, visited = dfs_furthest_seeing(G, source, first=True)
 
-    draw_graph(G, visited, furthest_points)
+    furthest_points = moore_neighbourhood_col_and_row(G, source)
+
+    # draw_graph(G, outer=furthest_points, path=None)
 
     paths = []
     for target in furthest_points:
@@ -70,24 +139,58 @@ def find_routes_in_directions(G, source=None):
     return sort_on_weight(paths)
 
 
-def viewable_weighted_moves_to_graph(moves):
-    G = nx.Graph()  # networkx graph init
-    for source_move in moves:
-        G.add_edges_from([
-            (source_move[0], source_move[1][1])  # 0'th is the source, 1 is (weight, dest)
-        ], weight=source_move[1][0])  # push weight attribute on edge
-    return G
+def sort_weights_if_multiple_by_straight_first(source, routes):
+    lowest_weight = None
+    lowest_weights = []
+    for path in routes:
+        destination = path[0]
+        weight = path[1][0]
+        go_to_path = path[1][1]
+
+        # Filter out bs, only good paths
+        if destination != source:
+
+            # Check if first for weight, else if there is a weight diff we break because we'll find suboptimal
+            if lowest_weight is None:
+                lowest_weight = weight
+            elif lowest_weight != weight:
+                break
+
+            for step in go_to_path:
+                if step != source:
+                    diff = np.abs(step[0] - source[0]) + np.abs(step[1] - source[1])
+                    lowest_weights.append((destination, (weight, go_to_path), diff))
+
+    return sort_on_diagonals(lowest_weights)
 
 
-def best_move(move, source):
-    global src
+def best_move(source, move, view_range):
+    global src, G, viewing_range
     src = source
+    viewing_range = view_range
 
-    G = viewable_weighted_moves_to_graph(move)
+    G = generate_graph_from_grid_data(G, move)
     routes = find_routes_in_directions(G, source)
-    # G = None
 
-    best_move = routes[0]
-    for path in best_move[1][1]:  #  weight: shortest_path, [1][1] here refers to the shortest path, instead of the source
-        if path != source:
-            return path
+    if routes is None:
+        return None
+
+    diff_routes = sort_weights_if_multiple_by_straight_first(source, routes)
+    # draw_graph(G, None, diff_routes[0][1][1])
+    
+    G.clear()  # clean the graph object
+    plt.clf()
+
+    # print("current agent_pos", source)
+    # print("routes", routes)
+    # print("diff_routes", diff_routes)
+
+    for path in diff_routes:
+        destination = path[0]
+        weight = path[1][0]  # lowest next step which is not itself
+        go_to_path = path[1][1]
+
+        # Filter junk weights
+        if destination != source:
+            go_to_path.pop(0) # delete the first which networkx always returns
+            return go_to_path
