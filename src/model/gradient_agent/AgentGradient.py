@@ -34,9 +34,9 @@ class Agent:
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
-        self.viewing_range = 3
         self.nr_directions = len(gradient_maps)
 
+        self.viewing_range = 2
         self.value = 10
         self.update_gradient(self.value)
 
@@ -140,7 +140,7 @@ class Agent:
         # for move in available_moves:
         #     print(move)
 
-        next_step = trans.best_move(current_position, available_moves)
+        next_step = trans.best_move(current_position, available_moves, self.viewing_range)
 
         # print(next_step)
         # print("----")

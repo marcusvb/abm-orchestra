@@ -6,6 +6,7 @@ src = None
 G = nx.Graph()
 viewing_range = None
 
+
 def draw_graph(G, outer, path=None):
     edges = []
     for n1, n2, attr in G.edges(data=True):
@@ -30,8 +31,17 @@ def draw_graph(G, outer, path=None):
 
     plt.show()
 
-def dfs_furthest_seeing_fixed(G, source):
-    # We always start looking at depth of 0, which is from the current agent tile.
+
+def generate_graph_from_grid_data(G, moves):
+    for source_move in moves:
+        G.add_edges_from([
+            (source_move[0], source_move[1][1])  # 0'th is the source, 1 is (weight, dest)
+        ], weight=source_move[1][0])  # push weight attribute on edge
+    return G
+
+
+def moore_neighbourhood_col_and_row(G, source):
+    # find the min and max x values for which we'll iterate
     min_x = None
     max_x = None
     for node in list(G.nodes):
@@ -47,6 +57,7 @@ def dfs_furthest_seeing_fixed(G, source):
             max_x = x
 
     furthest_see_points = set()
+
     for x_iter in (min_x, source[1], max_x): # min_x, source_x and max_x
         min_y = None
         max_y = None
@@ -70,6 +81,36 @@ def dfs_furthest_seeing_fixed(G, source):
         furthest_see_points.add((min_y, x_iter))
         furthest_see_points.add((max_y, x_iter))
 
+    #  Add the row for using the source row moore method
+    furthest_see_points = row_search_moore_neighbourhood(G, source, furthest_see_points)
+
+    return furthest_see_points
+
+
+def row_search_moore_neighbourhood(G, source, furthest_see_points):
+
+    # find the min and max x values for which we'll iterate
+    min_x = None
+    max_x = None
+
+    for node in list(G.nodes):
+        node_y = node[0]
+        node_x = node[1]
+        # Set for first time
+        if node_y == source[0]:
+            if min_x is None and max_x is None:
+                min_x = node_x
+                max_x = node_x
+            else:
+                if node_x < min_x:
+                    min_x = node_x
+                if node_x > max_x:
+                    max_x = node_x
+
+    # For this column we append the min and maxes
+    furthest_see_points.add((source[0], min_x))
+    furthest_see_points.add((source[0], max_x))
+
     return furthest_see_points
 
 
@@ -78,6 +119,7 @@ def sort_on_weight(sub_li):
     sub_li.sort(key=lambda x: (x[1][0]))
     return sub_li
 
+
 def sort_on_diagonals(sub_li):
     sub_li.sort(key=lambda x: (x[2]))
     return sub_li
@@ -85,28 +127,16 @@ def sort_on_diagonals(sub_li):
 
 # Given the viewing graph, return which direction we need to step to
 def find_routes_in_directions(G, source=None):
-    # furthest_points, visited = dfs_furthest_seeing_(G, visited=set(), furthest_see_points=set(), source=source,
-    #                                                first=True)
-    furthest_points = dfs_furthest_seeing_fixed(G, source)
 
-    # non_transient = visited.difference(furthest_points)
-    # transient = visited.difference(furthest_points)
+    furthest_points = moore_neighbourhood_col_and_row(G, source)
 
-    # draw_graph(G, None, furthest_points, path=None)
+    # draw_graph(G, outer=furthest_points, path=None)
 
     paths = []
     for target in furthest_points:
         paths.append((target, nx.single_source_dijkstra(G, source, target, weight="weight")))
 
     return sort_on_weight(paths)
-
-
-def generate_graph_from_grid_data(G, moves):
-    for source_move in moves:
-        G.add_edges_from([
-            (source_move[0], source_move[1][1])  # 0'th is the source, 1 is (weight, dest)
-        ], weight=source_move[1][0])  # push weight attribute on edge
-    return G
 
 
 def sort_weights_if_multiple_by_straight_first(source, routes):
@@ -142,14 +172,14 @@ def best_move(source, move, view_range):
     G = generate_graph_from_grid_data(G, move)
     routes = find_routes_in_directions(G, source)
 
-
     if routes is None:
         return None
 
     diff_routes = sort_weights_if_multiple_by_straight_first(source, routes)
-    draw_graph(G, None, diff_routes[0][1][1])
+    # draw_graph(G, None, diff_routes[0][1][1])
     
     G.clear()  # clean the graph object
+    plt.clf()
 
     # print("current agent_pos", source)
     # print("routes", routes)
