@@ -13,7 +13,7 @@ class Agent:
     id = 0
 
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
-                 collision_map: [[(int, int)]], which_gradient_map=0, bound_size=2):
+                 collision_map: [[(int, int)]], stairs_garderobe, which_gradient_map=0, bound_size=2):
         self.start = start_position
         self.end = end_position
         self.current_pos = self.start
@@ -34,7 +34,10 @@ class Agent:
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
+
+
         self.nr_directions = len(gradient_maps)
+        self.agent_weight = 700
 
         self.viewing_range = 2
         self.value = 10
@@ -44,13 +47,15 @@ class Agent:
         self.go_to_path = None
 
         # array that decides the chances for next movement
-        # volgorde: garderobe, trap-garderobe, koffie, wc, randomlopen, eindlocatie
-        self.chance_next = [[0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0, 0.3, 0.4, 0.3], [0, 0, 0.5, 0, 0.4, 0.1], [0, 0, 0.5, 0.2, 0, 0.3], [0, 0, 0, 0, 0, 0]]
+        # volgorde: trap-garderobe, garderobe, koffie, wc, randomlopen, eindlocatie
+        #self.chance_next = [[0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0, 0.3, 0.4, 0.3], [0, 0, 0.5, 0, 0.4, 0.1], [0, 0, 0.5, 0.2, 0, 0.3], [0, 0, 0, 0, 0, 0]]
         # tijdelijk voor testen
-        self.chance_next2 = [[0.5, 0.5], [0.5, 0.5]]
+        self.chance_next = [[0, 0.5, 0.2, 0.3], [0, 0, 0.5, 0.5], [0, 0.5, 0, 0.5], [0, 0.5, 0.5, 0]]
+        self.stairs_garderobe = stairs_garderobe
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
+
 
     def block_point(self, position):
         self.collision_map[position[0]][position[1]] = 1
@@ -124,7 +129,6 @@ class Agent:
         return available_moves
 
     def get_available_moves(self, current_position):
-        # print("position", current_position)
         available_moves = self.get_viewable_moves(source=current_position, available_moves=set(), visited=set(), depth=None)
 
         # Agent is blocked even within viewing range.
@@ -133,17 +137,7 @@ class Agent:
 
         available_moves = list(available_moves)
         available_moves = trans.sort_on_weight(available_moves)
-
-        # print("Current Position:", current_position, "weight", self.graph_map[current_position[0]][current_position[1]])
-
-        # print("Avail Moves:")
-        # for move in available_moves:
-        #     print(move)
-
         next_step = trans.best_move(current_position, available_moves, self.viewing_range)
-
-        # print(next_step)
-        # print("----")
         return next_step
 
     def update_gradient(self, value):
@@ -256,10 +250,17 @@ class Agent:
                 # agent is at end location! remove.
                 self.update_gradient(-self.value)
                 raise ExitReached
+            if self.stairs_garderobe == 1:
+                print('yes')
+                self.update_gradient(-self.value)
+                raise ExitReached
+            # elif self.which_gradient_map == 0:
+            #     # agent goes opstairs
+            #     self.update_gradient(-self.value)
+            #     raise ExitReached
             else:
                 # chance of new direction depends on direction that was just finished
-                new_direction = np.random.choice(2, 1, p=self.chance_next2[self.which_gradient_map])
-                #print(new_direction)
+                new_direction = np.random.choice(len(self.chance_next), 1, p=self.chance_next[self.which_gradient_map])
 
                 # new_direction = randint(0, self.nr_directions - 1)
                 # while new_direction == self.which_gradient_map:
