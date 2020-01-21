@@ -52,38 +52,23 @@ exit_points = None
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
 JuulBeaSpiegelChamp = gradient_from_direction_map("FINAL_MAPS/Gradient/JuulBeaSpiegelChamp")
 NoordZuid = gradient_from_direction_map("FINAL_MAPS/Gradient/NoordZuid")
-Garderobe1 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q4")
+GarderobeQ1 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q1")
+GarderobeQ2 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q2")
+GarderobeQ3 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q3")
+GarderobeQ4 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q4")
+Trappenhuis_LB = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LB")
+Trappenhuis_LO = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LO")
+Trappenhuis_RB = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RB")
+Trappenhuis_RO = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RO")
+DirectUpstairs = gradient_from_direction_map("FINAL_MAPS/Gradient/DirectUpstairs")
 
-
-# TODO: still have to add the directions for the concertgebouw!
-linksonder = gradient_from_direction_map("resources/ready/linksboven")
-linksboven = gradient_from_direction_map("resources/ready/linksonder")
-rechtsonder = gradient_from_direction_map("resources/ready/rechtsboven")
-rechtsboven = gradient_from_direction_map("resources/ready/rechtssonder")
+garderobes = [GarderobeQ1, GarderobeQ2, GarderobeQ3, GarderobeQ4]
 
 # define type of gradient maps
-start_goals = [Garderobe1, NoordZuid]
-end_goals = [NoordZuid]
+start_goals = [garderobes[3], DirectUpstairs]
+end_goals = [Trappenhuis_RO, Trappenhuis_LB, Trappenhuis_LO, Trappenhuis_RB]
 mid_goals = [JuulBeaSpiegelChamp, NoordZuid]
 
-# for the final gradient maps
-mid_goals_final = [JuulBeaSpiegelChamp, NoordZuid]
-
-# # TODO: still have to add the directions for the concertgebouw!
-# direction1 = gradient_from_direction_map("resources/ready/Garderobe1")
-# direction2 = gradient_from_direction_map("resources/ready/Bars")
-# ingangen = [direction1, direction2]
-# # ingangen = [direction1]
-#
-# uitgangen = []
-# backhall1 = gradient_from_direction_map("resources/ready/achteringang1")
-# backhall2 = gradient_from_direction_map("resources/ready/achteringang2")
-# backhall3 = gradient_from_direction_map("resources/ready/achteringang3")
-# upstairslefttop = gradient_from_direction_map("resources/ready/linksboven")
-# upstairsrighttop = gradient_from_direction_map("resources/ready/rechtsboven")
-# upstairsleftbottom = gradient_from_direction_map("resources/ready/linksonder")
-# upstairsrighbottom = gradient_from_direction_map("resources/ready/rechtssonder")
-# uitgangen=[backhall1,backhall2,backhall3,upstairslefttop,upstairsrighttop,upstairsleftbottom,upstairsrighbottom]
 
 # Config for the window
 w_prev = 1280
@@ -151,12 +136,22 @@ glfw.set_key_callback(window, key_callback)
 old_step_time = glfw.get_time()
 previous_time = glfw.get_time()
 frame_count = 0
+agent_colors = [[1.0, 1.0, 1.0],[1.0, 0.5, 0.31], [0.0, 1.0, 0.0]]
+agent_color_nr = 0
 
 while not glfw.window_should_close(window):
 
     current_time = glfw.get_time()
 
     frame_count += 1
+
+    # change garderobe after 150 frames
+    if frame_count % 150 == 0:
+        if len(garderobes) > 1:
+            del garderobes[-1]
+            agents.start_goals = [garderobes[-1], DirectUpstairs]
+            agent_color_nr += 1
+            agent_color_nr = agent_color_nr % 3
 
     if simulation_running:
         agents.step()
@@ -165,7 +160,8 @@ while not glfw.window_should_close(window):
         title = "Crowd Simulation ( " + str(frame_count) + " FPS | Number Of Agents: " + str(
             len(agents.agent_list)) + " )" + " intensity: " + str(global_intensity)
         glfw.set_window_title(window, title)
-        frame_count = 0
+        # I commented this so I could use frame_count for changing the garderobe
+        # frame_count = 0
         previous_time = current_time
 
     glfw.poll_events()
@@ -197,7 +193,7 @@ while not glfw.window_should_close(window):
 
     intensity = random.randint(0, 100)
     if intensity < global_intensity:
-        agents.add_new(33.0, [.0, .0, .9])
+        agents.add_new(33.0, agent_colors[agent_color_nr])
 
 plot_heatmap(agents.heatmap)
 

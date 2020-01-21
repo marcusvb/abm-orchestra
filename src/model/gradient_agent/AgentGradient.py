@@ -13,7 +13,7 @@ class Agent:
     id = 0
 
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
-                 collision_map: [[(int, int)]], stairs_garderobe, which_gradient_map=0, bound_size=2):
+                 collision_map: [[(int, int)]], stairs_garderobe, moving_chance = 0.7, which_gradient_map=0, bound_size=2):
         self.start = start_position
         self.end = end_position
         self.current_pos = self.start
@@ -39,6 +39,7 @@ class Agent:
         self.nr_directions = len(gradient_maps)
         self.agent_weight = 700
 
+
         self.viewing_range = 2
         self.value = 10
         self.update_gradient(self.value)
@@ -46,11 +47,10 @@ class Agent:
         self.agent_weight_percent = 0.10
         self.go_to_path = None
 
-        # array that decides the chances for next movement
-        # volgorde: trap-garderobe, garderobe, koffie, wc, randomlopen, eindlocatie
-        #self.chance_next = [[0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0.5, 0.1, 0.3, 0.1], [0, 0, 0, 0.3, 0.4, 0.3], [0, 0, 0.5, 0, 0.4, 0.1], [0, 0, 0.5, 0.2, 0, 0.3], [0, 0, 0, 0, 0, 0]]
-        # tijdelijk voor testen
         self.chance_next = [[0, 0.5, 0.2, 0.3], [0, 0, 0.5, 0.5], [0, 0.5, 0, 0.5], [0, 0.5, 0.5, 0]]
+
+        # to make sure everyone moves at their own pace
+        self.moving_chance = moving_chance
         self.stairs_garderobe = stairs_garderobe
 
     def update_facing_angle(self, new_pos):
@@ -220,6 +220,11 @@ class Agent:
         return best_pos
 
     def move(self):
+
+        moving_random = np.random.random()
+        if moving_random > self.moving_chance:
+            return 0
+
         self.update_graph_map()
         best_pos = self.step()
 
@@ -232,9 +237,7 @@ class Agent:
             return 0
 
         # Validations passed, move the agent
-
         self.unblock_point(self.current_pos)
-
         if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < GOAL_THRESHOLD:
 
             # self.number_reached += 1
@@ -245,29 +248,21 @@ class Agent:
             # else:
 
             # check if agent is at a location where it should be removed.
-            # TODO: als alle maps er zijn: ook bij de tweede locatie verwijderen! want dat is die trappengang
             if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
                 self.update_gradient(-self.value)
                 raise ExitReached
-            if self.stairs_garderobe == 1:
-                print('yes')
+
+            # if agent went to directUpstairs, remove
+            elif self.stairs_garderobe == 1:
                 self.update_gradient(-self.value)
                 raise ExitReached
-            # elif self.which_gradient_map == 0:
-            #     # agent goes opstairs
-            #     self.update_gradient(-self.value)
-            #     raise ExitReached
             else:
                 # chance of new direction depends on direction that was just finished
                 new_direction = np.random.choice(len(self.chance_next), 1, p=self.chance_next[self.which_gradient_map])
-
-                # new_direction = randint(0, self.nr_directions - 1)
-                # while new_direction == self.which_gradient_map:
-                #     new_direction = randint(0, self.nr_directions - 1)
                 self.which_gradient_map = new_direction[0]
-                # if self.which_gradient_map > 3:
-                #     self.which_gradient_map = 0
+
+                # update the gradient map and graph map
                 self.direction_map = self.all_gradients[self.which_gradient_map]
                 self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 

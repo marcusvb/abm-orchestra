@@ -36,8 +36,8 @@ class AgentGfx:
         glEnd()
 
         # draw circle outline
-        glLineWidth(0.1)
-        glColor3f(1.0, 1.0, 1.0)
+        glLineWidth(0.2)
+        glColor3f(self.color[0], self.color[1], self.color[2])
 
         glBegin(GL_LINE_LOOP)
         for vertex in range(sides):
@@ -53,7 +53,7 @@ class AgentGfx:
         vec[1] = vec[1] / vec_len * radius
 
         glLineWidth(0.1)
-        glColor3f(1.0, 1.0, 1.0)
+        glColor3f(self.color[0], self.color[1], self.color[2])
         glBegin(GL_LINES)
         glVertex2f(self.position[0], self.position[1])
         glVertex2f(self.position[0] + vec[0], self.position[1] - vec[1])
