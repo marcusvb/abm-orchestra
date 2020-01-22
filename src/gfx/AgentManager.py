@@ -106,7 +106,7 @@ class AgentManager:
         all_directions = all_directions + self.direct
 
         entrance_choice = np.random.random()
-        if entrance_choice > 0.014:
+        if entrance_choice < 0.14:
             # torentje entrances
             entrances = self.end_goals[0]
         else:
