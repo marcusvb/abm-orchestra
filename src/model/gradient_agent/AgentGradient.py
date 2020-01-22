@@ -238,19 +238,10 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
             else:
-                # go to end location if you should!
-                if self.current_frame >= self.end_goal_frame:
-                    self.which_gradient_map = len(self.all_gradients) - 1
-                    self.direction_map = self.all_directions[-1]
-
-
-                # else, choose random other location
-                else:
-
-                    # choose 1 of the directions in between
-                    new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
-                    self.which_gradient_map = new_direction[0]
-                    self.direction_map = self.all_gradients[self.which_gradient_map]
+                # choose 1 of the directions in between
+                new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
+                self.which_gradient_map = new_direction[0]
+                self.direction_map = self.all_gradients[self.which_gradient_map]
 
         # UPDATING ATTRIBUTES
         self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
@@ -313,19 +304,10 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
             else:
-                # go to end location if you should!
-                if self.current_frame >= self.end_goal_frame:
-                    self.which_gradient_map = len(self.all_gradients) - 1
-                    self.direction_map = self.all_directions[self.which_gradient_map]
-
-
-                # else, choose random other location
-                else:
-
-                    # choose 1 of the directions in between
-                    new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
-                    self.which_gradient_map = new_direction[0]
-                    self.direction_map = self.all_gradients[self.which_gradient_map]
+                # choose 1 of the directions in between
+                new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
+                self.which_gradient_map = new_direction[0]
+                self.direction_map = self.all_gradients[self.which_gradient_map]
 
             self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 
@@ -344,6 +326,13 @@ class Agent:
 
     def move(self):
         self.current_frame += 1
+
+        # go to end location if you should!
+        if self.current_frame == self.end_goal_frame:
+            self.which_gradient_map = len(self.all_gradients) - 1
+            self.direction_map = self.all_directions[self.which_gradient_map]
+            self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+
         moving_random = np.random.random()
         # moving_chance_nr = np.random.choice(self.moving_chance, 1)
         if moving_random > self.moving_chance:

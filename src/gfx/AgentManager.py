@@ -3,6 +3,7 @@ import copy
 from gfx.AgentGfx import AgentGfx
 from model.agent.Agent import ExitReached
 import numpy as np
+from scipy import stats
 
 
 class AgentManager:
@@ -47,7 +48,7 @@ class AgentManager:
 
 
     def add_new(self, position, angle: float, color: [float, float, float], current_frame):
-        all_directions, stairs_garderobe, moving_chance, end_goal_frame = self.get_specifics()
+        all_directions, stairs_garderobe, moving_chance, end_goal_frame = self.get_specifics(current_frame)
 
         correct_pos = [
             0 + self.offset + 1 + (position[1] * self.tile_size[0]) + (self.tile_size[0] / 2),
@@ -91,7 +92,7 @@ class AgentManager:
 
                         agent.position = agent.fx_pos
 
-    def get_specifics(self):
+    def get_specifics(self, current_frame):
         all_directions = []
 
         # 5 % will go to the stairs garderobe (start map 1)
@@ -138,6 +139,23 @@ class AgentManager:
         moving_chance = 0.7
 
         # TODO dit veranderen in distribution
-        end_goal_frame = 100
+
+        end_goal_frame = self.scaleDistribution(current_frame - 1, 8000)
 
         return all_directions, stairs_garderobe, moving_chance, end_goal_frame
+
+
+    def scaleDistribution(self, CurrentFrame, MaxFrame):
+        # If Agent enters building in the last quarter, he is in a hurry. So we sample from normal distribution
+        if CurrentFrame > 0.75 * MaxFrame:
+            sample = int((CurrentFrame + MaxFrame) / 2 + np.random.normal(0, (MaxFrame - CurrentFrame) / 10, 1))
+            return sample
+
+        # Else we sample from a skewed normal distribution, so there is a larger chance that agent enters in the last quarter
+        else:
+            a, loc, scale = 15, 0.1, 1  # Sample from a Skewed Normal Distribution
+            sample = stats.skewnorm(a, loc, scale).rvs(1)[0]
+            scaler = 4
+            sampleScaled = int(MaxFrame - (MaxFrame - CurrentFrame) * sample / scaler)
+
+            return sampleScaled
