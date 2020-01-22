@@ -135,9 +135,15 @@ glfw.set_key_callback(window, key_callback)
 
 old_step_time = glfw.get_time()
 previous_time = glfw.get_time()
+
+# variables for the quarter updates
 frame_count = 0
-agent_colors = [[1.0, 1.0, 1.0],[1.0, 0.5, 0.31], [0.0, 1.0, 0.0]]
+agent_colors = [[1.0, 1.0, 1.0], [1.0, 0.5, 0.31], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+zuid_2_probabilities = [0.2, 0.15, 0.15, 0.1]
+zuid_1_probabilities = [0.1, 0.075, 0.075, 0.05]
 agent_color_nr = 0
+entrance_1_probability = zuid_2_probabilities[0]
+entrance_2_probability = zuid_1_probabilities[0]
 
 while not glfw.window_should_close(window):
 
@@ -145,13 +151,20 @@ while not glfw.window_should_close(window):
 
     frame_count += 1
 
-    # change garderobe after 150 frames
-    if frame_count % 150 == 0:
+    # next quarter changes
+    if frame_count % 200 == 0:
+
+        # if statement can be removed when quarter is 2000 and runtime is 8000
         if len(garderobes) > 1:
             del garderobes[-1]
             agents.start_goals = [garderobes[-1], DirectUpstairs]
             agent_color_nr += 1
             agent_color_nr = agent_color_nr % 3
+
+            del zuid_1_probabilities[0]
+            del zuid_2_probabilities[0]
+            entrance_2_probability = zuid_1_probabilities[0]
+            entrance_1_probability = zuid_2_probabilities[0]
 
     if simulation_running:
         agents.step()
@@ -191,9 +204,19 @@ while not glfw.window_should_close(window):
 
     glfw.swap_buffers(window)
 
-    intensity = random.randint(0, 100)
-    if intensity < global_intensity:
-        agents.add_new(33.0, agent_colors[agent_color_nr])
+    # intensity = random.randint(0, 100)
+    # if intensity < global_intensity:
+    #     agents.add_new(33.0, agent_colors[agent_color_nr])
+
+    entrance1 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
+    entrance2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
+    entrance_1_rv = random.random()
+    if entrance_1_rv < entrance_1_probability:
+        agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr])
+
+    entrance_2_rv = random.random()
+    if entrance_2_rv < entrance_2_probability:
+        agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr])
 
 plot_heatmap(agents.heatmap)
 
