@@ -61,13 +61,28 @@ Trappenhuis_LO = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LO
 Trappenhuis_RB = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RB")
 Trappenhuis_RO = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RO")
 DirectUpstairs = gradient_from_direction_map("FINAL_MAPS/Gradient/DirectUpstairs")
+achteringang1 = gradient_from_direction_map("FINAL_MAPS/Gradient/achteringang1")
+achteringang2 = gradient_from_direction_map("FINAL_MAPS/Gradient/achteringang2")
+achteringang3 = gradient_from_direction_map("FINAL_MAPS/Gradient/achteringang3")
+benedeningang1 = gradient_from_direction_map("FINAL_MAPS/Gradient/benedeningang1")
+benedeningang2 = gradient_from_direction_map("FINAL_MAPS/Gradient/benedeningang2")
+boveningang1 = gradient_from_direction_map("FINAL_MAPS/Gradient/boveningang1")
+boveningang2 = gradient_from_direction_map("FINAL_MAPS/Gradient/boveningang2")
+wcman = gradient_from_direction_map("FINAL_MAPS/Gradient/wcman")
+wcvrouw = gradient_from_direction_map("FINAL_MAPS/Gradient/wcvrouw")
 
 garderobes = [GarderobeQ1, GarderobeQ2, GarderobeQ3, GarderobeQ4]
+torentjes = [Trappenhuis_RO, Trappenhuis_LB, Trappenhuis_LO, Trappenhuis_RB]
+vooringangen = [boveningang1, boveningang2]
+achteringangen = [achteringang1, achteringang2, achteringang3, benedeningang1, benedeningang2]
+zaalingangen = [vooringangen, achteringangen]
+
 
 # define type of gradient maps
 start_goals = [garderobes[3], DirectUpstairs]
-end_goals = [Trappenhuis_RO, Trappenhuis_LB, Trappenhuis_LO, Trappenhuis_RB]
-mid_goals = [JuulBeaSpiegelChamp, NoordZuid]
+mid_goals = [JuulBeaSpiegelChamp, NoordZuid, wcman, wcvrouw]
+end_goals = [torentjes, zaalingangen]
+
 
 
 # Config for the window
@@ -110,7 +125,9 @@ def mouse_button_callback(window, button, action, mods):
             if tile_size[0] * it < pos_x < tile_size[0] * (it + 1):
                 pos[1] = it
         if pos[0] != -1 and pos[1] != -1 and maze[pos[0]][pos[1]] != 1:
-            agents.add_new(33.0, [.9, .9, .9])
+
+            # add agent at entrance 1
+            agents.add_new([139, np.random.randint(83, 89)], 33.0, [.9, .9, .9], frame_count)
 
 
 def key_callback(window, key, scancode, action, mods):
@@ -212,11 +229,12 @@ while not glfw.window_should_close(window):
     entrance2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
     entrance_1_rv = random.random()
     if entrance_1_rv < entrance_1_probability:
-        agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr])
+        agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)
+        agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)
 
     entrance_2_rv = random.random()
     if entrance_2_rv < entrance_2_probability:
-        agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr])
+        agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
 
 plot_heatmap(agents.heatmap)
 

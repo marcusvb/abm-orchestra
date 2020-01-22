@@ -12,7 +12,7 @@ from model.gradient_agent.MapConfs import MapConfs
 
 class Agent:
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
-                 collision_map: [[(int, int)]], stairs_garderobe, moving_chance = 0.7, which_gradient_map=0, bound_size=2, pathing_config=RunConf.GRADIENT):
+                 collision_map: [[(int, int)]], stairs_garderobe, end_goal_frame, current_frame, moving_chance, which_gradient_map=0, bound_size=2, pathing_config=RunConf.GRADIENT):
         self.start = start_position
         self.end = end_position
         self.current_pos = self.start
@@ -21,6 +21,7 @@ class Agent:
         self.collision_map = collision_map
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, end_position[0])
         self.all_gradients = gradient_maps
+        self.all_directions = gradient_maps
         self.gradient_space_size = 4
 
         self.PATHING_CONFIG = pathing_config
@@ -42,6 +43,8 @@ class Agent:
         # to make sure everyone moves at their own pace
         self.moving_chance = moving_chance
         self.stairs_garderobe = stairs_garderobe
+        self.end_goal_frame = end_goal_frame
+        self.current_frame = current_frame
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
@@ -222,13 +225,19 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
             else:
-                # chance of new direction depends on direction that was just finished
-                new_direction = np.random.choice(len(self.chance_next), 1, p=self.chance_next[self.which_gradient_map])
-                self.which_gradient_map = new_direction[0]
+                # go to end location if you should!
+                if self.current_frame >= self.end_goal_frame:
+                    self.which_gradient_map = len(self.direction_map) - 1
+                    self.direction_map = self.all_directions[-1]
 
-                # update the gradient map and graph map
-                self.direction_map = self.all_gradients[self.which_gradient_map]
-                self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+
+                # else, choose random other location
+                else:
+
+                    # choose 1 of the directions in between
+                    new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
+                    self.which_gradient_map = new_direction[0]
+                    self.direction_map = self.all_gradients[self.which_gradient_map]
 
         # UPDATING ATTRIBUTES
         self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
@@ -291,13 +300,23 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
             else:
-                # chance of new direction depends on direction that was just finished
-                new_direction = np.random.choice(len(self.chance_next), 1, p=self.chance_next[self.which_gradient_map])
-                self.which_gradient_map = new_direction[0]
+                # go to end location if you should!
+                if self.current_frame >= self.end_goal_frame:
+                    self.which_gradient_map = 2
+                    self.direction_map = self.all_directions[2]
 
-                # update the gradient map and graph map
-                self.direction_map = self.all_gradients[self.which_gradient_map]
-                self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+
+                # else, choose random other location
+                else:
+
+                    # choose 1 of the directions in between
+                    new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
+                    self.which_gradient_map = new_direction[0]
+                    self.direction_map = self.all_gradients[self.which_gradient_map]
+
+            self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+
+
 
         self.update_facing_angle(best_pos)
 
@@ -311,7 +330,9 @@ class Agent:
         return 0
 
     def move(self):
+        self.current_frame += 1
         moving_random = np.random.random()
+        # moving_chance_nr = np.random.choice(self.moving_chance, 1)
         if moving_random > self.moving_chance:
             return 0
 

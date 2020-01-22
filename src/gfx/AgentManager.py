@@ -46,8 +46,8 @@ class AgentManager:
 
 
 
-    def add_new(self, position, angle: float, color: [float, float, float], which_map = 0):
-        all_directions, stairs_garderobe, moving_chance = self.get_specifics()
+    def add_new(self, position, angle: float, color: [float, float, float], current_frame):
+        all_directions, stairs_garderobe, moving_chance, end_goal_frame = self.get_specifics()
 
         correct_pos = [
             0 + self.offset + 1 + (position[1] * self.tile_size[0]) + (self.tile_size[0] / 2),
@@ -55,7 +55,7 @@ class AgentManager:
         ]
 
         if self.maze_for_agent[position[0]][position[1]] == 0:
-            self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, all_directions, stairs_garderobe))
+            self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, all_directions, stairs_garderobe, end_goal_frame, current_frame, moving_chance))
         else:
             print('Agent can not be added on this pos')
 
@@ -92,16 +92,6 @@ class AgentManager:
                         agent.position = agent.fx_pos
 
     def get_specifics(self):
-
-        # decide start position of the agent
-
-
-        # if np.random.uniform() > 0.675:  # if we're higher we take second entry
-        #     start_pos = pos2
-        # else:
-        #     start_pos = pos1
-
-        # create directions array with specific start and end position
         all_directions = []
 
         # 5 % will go to the stairs garderobe (start map 1)
@@ -114,13 +104,40 @@ class AgentManager:
             stairs_garderobe = 0
 
         all_directions = all_directions + self.direct
-        entrance_choice = np.random.choice(len(self.end_goals), 1)
-        all_directions.append(self.end_goals[entrance_choice[0]])
+
+        entrance_choice = np.random.random()
+        if entrance_choice > 0.014:
+            # torentje entrances
+            entrances = self.end_goals[0]
+        else:
+            # zaal entrances, 1/3 achteringang
+            entrance_choice = np.random.random()
+            if entrance_choice < (1/3):
+
+                # achteringang entrances
+                entrances = self.end_goals[1][1]
+            else:
+
+                # vooringang entrances
+                entrances = self.end_goals[1][0]
+
+        # choose random from selected entrance options
+        entrance_choosing = np.random.choice(len(entrances), 1)
+        entrance = entrances[entrance_choosing[0]]
+
+        # add to direction as final entrance
+        all_directions.append(entrance)
 
         # decide moving chance of the agent with
-        # Random postion where our agents start, lower right bottom
+        # Random position where our agents start, lower right bottom
         s = np.random.exponential(0.75, 1000)
-        s = s * (0.8 / np.amax(s))
-        moving_chance = 1 - s
+        s = s * (0.5 / np.amax(s))
 
-        return all_directions, stairs_garderobe, moving_chance
+        # TODO dit misschien steeds opnieuw doen bij elke move? want anders lopen sommige mensen de hele tijd heel sloom
+        moving_chance = s
+        moving_chance = 0.7
+
+        # TODO dit veranderen in distribution
+        end_goal_frame = 1000
+
+        return all_directions, stairs_garderobe, moving_chance, end_goal_frame
