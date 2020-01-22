@@ -106,7 +106,7 @@ class AgentManager:
         all_directions = all_directions + self.direct
 
         entrance_choice = np.random.random()
-        if entrance_choice > 0.014:
+        if entrance_choice < 0.14:
             # torentje entrances
             entrances = self.end_goals[0]
         else:
@@ -138,6 +138,6 @@ class AgentManager:
         moving_chance = 0.7
 
         # TODO dit veranderen in distribution
-        end_goal_frame = 1000
+        end_goal_frame = 100
 
         return all_directions, stairs_garderobe, moving_chance, end_goal_frame

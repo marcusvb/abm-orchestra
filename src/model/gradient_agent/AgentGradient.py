@@ -240,7 +240,7 @@ class Agent:
             else:
                 # go to end location if you should!
                 if self.current_frame >= self.end_goal_frame:
-                    self.which_gradient_map = len(self.direction_map) - 1
+                    self.which_gradient_map = len(self.all_gradients) - 1
                     self.direction_map = self.all_directions[-1]
 
 
@@ -315,8 +315,8 @@ class Agent:
             else:
                 # go to end location if you should!
                 if self.current_frame >= self.end_goal_frame:
-                    self.which_gradient_map = 2
-                    self.direction_map = self.all_directions[2]
+                    self.which_gradient_map = len(self.all_gradients) - 1
+                    self.direction_map = self.all_directions[self.which_gradient_map]
 
 
                 # else, choose random other location
