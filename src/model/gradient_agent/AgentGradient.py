@@ -1,18 +1,16 @@
 from copy import deepcopy
-from random import randint
 import numpy as np
 
 import model.navigator.navigator as nav
 import model.graph.translation as trans
 from model.agent.Agent import ExitReached
+
 from model.environment.environment_enum import Env
 from model.gradient_agent.RunConf import RunConf
+from model.gradient_agent.MapConfs import MapConfs
 
-GOAL_THRESHOLD = 65
 
 class Agent:
-    id = 0
-
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
                  collision_map: [[(int, int)]], stairs_garderobe, moving_chance = 0.7, which_gradient_map=0, bound_size=2, pathing_config=RunConf.GRADIENT):
         self.start = start_position
@@ -22,30 +20,20 @@ class Agent:
         self.direction_map = gradient_maps[which_gradient_map]
         self.collision_map = collision_map
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, end_position[0])
-
         self.all_gradients = gradient_maps
-
-        self.PATHING_CONFIG = pathing_config
         self.gradient_space_size = 4
 
-
-        self.id = randint(0, 1000)
-
+        self.PATHING_CONFIG = pathing_config
+        self.GOAL_THRESHOLD = MapConfs.GOAL_THRESHOLD
         self.anger = 0
 
         # added for graph map
         self.graph_map = deepcopy(gradient_maps[which_gradient_map])
         self.which_gradient_map = which_gradient_map
-
-
         self.nr_directions = len(gradient_maps)
-        self.agent_weight = 700
-
-
         self.viewing_range = 2
         self.value = 10
         self.update_gradient(self.value)
-
         self.agent_weight_percent = 0.10
         self.go_to_path = None
 
@@ -221,7 +209,7 @@ class Agent:
 
         # Validations passed, move the agent
         self.unblock_point(self.current_pos)
-        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < GOAL_THRESHOLD:
+        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.GOAL_THRESHOLD:
 
             # check if agent is at a location where it should be removed.
             if self.which_gradient_map == len(self.all_gradients) - 1:
@@ -285,12 +273,13 @@ class Agent:
         available_positions = self.get_available_moves_gradient()
         best_pos = self.get_best_move_gradient(available_positions)
         if best_pos is None:
-            print("agent blocked")
-            return 0
+            print("agent blocked, trying with dijkstra...")
+            # self.PATHING_CONFIG=RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
+            return self.run_dijkstra()
 
         self.unblock_point(self.current_pos)
 
-        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < GOAL_THRESHOLD:
+        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.GOAL_THRESHOLD:
             # check if agent is at a location where it should be removed.
             if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
