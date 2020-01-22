@@ -47,7 +47,7 @@ class AgentManager:
 
 
     def add_new(self, angle: float, color: [float, float, float], which_map = 0):
-        all_directions, stairs_garderobe, position = self.get_specifics()
+        all_directions, stairs_garderobe, position, moving_chance = self.get_specifics()
 
         correct_pos = [
             0 + self.offset + 1 + (position[1] * self.tile_size[0]) + (self.tile_size[0] / 2),
@@ -118,4 +118,6 @@ class AgentManager:
         all_directions = all_directions + self.direct
         entrance_choice = np.random.choice(len(self.end_goals), 1)
         all_directions.append(self.end_goals[entrance_choice[0]])
-        return all_directions, stairs_garderobe, start_pos
+
+        moving_chance = 0.7
+        return all_directions, stairs_garderobe, start_pos, moving_chance
