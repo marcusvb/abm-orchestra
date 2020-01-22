@@ -24,7 +24,7 @@ if not glfw.init():
 
 global_intensity = 50
 
-window = glfw.create_window(1280, 720, "Here comes out project title.", None, None)
+window = glfw.create_window(1280, 720, "ABM: Het Concertgebouw simulation", None, None)
 glfw.make_context_current(window)
 
 simulation_running = True
