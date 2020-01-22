@@ -27,7 +27,6 @@ def gradient_from_direction_map(direction_map_txt: str):
     # We don't have the txt files to load pickle from
     pickled = check_if_gradient_exists(full_path)
     if pickled is not None:
-        print("pickled was none::", pickled)
         return pickled
     else:
         direction_map = load_direction_from_file(direction_map_txt)

@@ -138,6 +138,6 @@ class AgentManager:
         moving_chance = 0.7
 
         # TODO dit veranderen in distribution
-        end_goal_frame = 1000
+        end_goal_frame = 100
 
         return all_directions, stairs_garderobe, moving_chance, end_goal_frame
