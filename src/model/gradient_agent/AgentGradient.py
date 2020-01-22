@@ -184,14 +184,23 @@ class Agent:
         return None
 
     def step_dijkstra(self):
-        if self.go_to_path is None or len(self.go_to_path) == 0:
+
+        if self.go_to_path is None:
             best_pos = self.gen_step_and_return_next_step_dijkstra()
+        elif len(self.go_to_path) == 0:
+            # If we're done with our drijkstra run try gradient
+            # If gradient fails, dijkstra will be called again and returns the next step
+            self.PATHING_CONFIG = RunConf.GRADIENT
+            self.go_to_path = None
+            best_pos = self.run_gradient()
         else:
             next_step = self.go_to_path.pop(0)
             if self.valid_step(next_step):
                 best_pos = next_step
             else:
-                best_pos = self.gen_step_and_return_next_step_dijkstra()
+                self.PATHING_CONFIG = RunConf.GRADIENT
+                self.go_to_path = None
+                best_pos = self.run_gradient()
 
         return best_pos
 
@@ -201,6 +210,10 @@ class Agent:
 
         # Validation for agent that has no next move
         if best_pos is None:
+            return 0
+
+        # If dijkstra in dijkstra returns 0, aka super blocked, then agent stops.
+        if best_pos == 0:
             return 0
 
         # Validation for not stepping on other agent if the next step is where an agent already is
@@ -272,9 +285,9 @@ class Agent:
 
         available_positions = self.get_available_moves_gradient()
         best_pos = self.get_best_move_gradient(available_positions)
+
         if best_pos is None:
-            print("agent blocked, trying with dijkstra...")
-            # self.PATHING_CONFIG=RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
+            self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
             return self.run_dijkstra()
 
         self.unblock_point(self.current_pos)
