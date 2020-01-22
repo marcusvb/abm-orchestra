@@ -228,6 +228,10 @@ while not glfw.window_should_close(window):
     entrance1 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
     entrance2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
     entrance_1_rv = random.random()
+
+    if frame_count > 500:
+        continue
+
     if entrance_1_rv < entrance_1_probability:
         agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)
         agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)

@@ -209,120 +209,124 @@ from string import digits
 # #
 
 #
+# start = time.time()
+#
+# exits = []
+# for i,pos in enumerate([(89,80),(89,86),(89,92),(89,98),(89,104)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/Garderobe_Q3", directions)
+# # load the text file
+#
+# end = time.time()
+# print(end - start)
+#
+# start = time.time()
+#
+# exits = []
+# for i,pos in enumerate([(89,92),(89,98),(89,104),(89,110),(89,116)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/Garderobe_Q2", directions)
+# # load the text file
+#
+# end = time.time()
+# print(end - start)
+#
+# start = time.time()
+#
+#
+# exits = []
+# for i,pos in enumerate([(89,104),(89,110),(89,116),(89,122),(89,128)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/Garderobe_Q1", directions)
+# # load the text file
+#
+# end = time.time()
+# print(end - start)
+#
+# start = time.time()
+#
+#
+# exits = []
+# for i,pos in enumerate([(69,140)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LO", directions)
+# # load the text file
+#
+# end = time.time()
+# print(end - start)
+#
+# exits = []
+# for i,pos in enumerate([(177,140)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RO", directions)
+# # load the text file
+#
+# end = time.time()
+# print(end - start)
+#
+# exits = []
+# for i,pos in enumerate([(69,57)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LB", directions)
+# # load the text file
+#
+# end = time.time()
+# print(end - start)
+#
+# exits = []
+# for i,pos in enumerate([(69,140), (177,140)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# #print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/DirectUpstairs", directions)
+#
+# # load the text file
+#
+#
+#
+# exits = []
+# for i,pos in enumerate([(177,57)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RB", directions)
+# # load the text file
+#
+#
+#
+#
+# exits = []
+# for i,pos in enumerate([(177,79)]):
+#     exits.append(Point(pos[0],pos[1]))
+# mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
+# # print(mazeGK)
+# directions = direction_map(mazeGK, exits, 1)
+# create_txt_form_direction_map("FINAL_MAPS/Gradient/achteringang1", directions)
+# # load the text file
+
+
 start = time.time()
 
-exits = []
-for i,pos in enumerate([(89,80),(89,86),(89,92),(89,98),(89,104)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/Garderobe_Q3", directions)
-# load the text file
-
-end = time.time()
-print(end - start)
-
-start = time.time()
-
-exits = []
-for i,pos in enumerate([(89,92),(89,98),(89,104),(89,110),(89,116)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/Garderobe_Q2", directions)
-# load the text file
-
-end = time.time()
-print(end - start)
-
-start = time.time()
-
-
-exits = []
-for i,pos in enumerate([(89,104),(89,110),(89,116),(89,122),(89,128)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/Garderobe_Q1", directions)
-# load the text file
-
-end = time.time()
-print(end - start)
-
-start = time.time()
-
-
-exits = []
-for i,pos in enumerate([(69,140)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LO", directions)
-# load the text file
-
-end = time.time()
-print(end - start)
-
-exits = []
-for i,pos in enumerate([(177,140)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RO", directions)
-# load the text file
-
-end = time.time()
-print(end - start)
-
-exits = []
-for i,pos in enumerate([(69,57)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LB", directions)
-# load the text file
-
-end = time.time()
-print(end - start)
-
-exits = []
-for i,pos in enumerate([(69,140), (177,140)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-#print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/DirectUpstairs", directions)
-
-# load the text file
-
-
-
-exits = []
-for i,pos in enumerate([(177,57)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RB", directions)
-# load the text file
-
-
-
-
-exits = []
-for i,pos in enumerate([(177,79)]):
-    exits.append(Point(pos[0],pos[1]))
-mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
-# print(mazeGK)
-directions = direction_map(mazeGK, exits, 1)
-create_txt_form_direction_map("FINAL_MAPS/Gradient/achteringang1", directions)
-# load the text file
 
 exits = []
 for i,pos in enumerate([(177,99)]):
@@ -333,6 +337,10 @@ directions = direction_map(mazeGK, exits, 1)
 create_txt_form_direction_map("FINAL_MAPS/Gradient/achteringang2", directions)
 # load the text file
 
+end = time.time()
+print(end - start)
+
+start = time.time()
 
 exits = []
 for i,pos in enumerate([(177,119)]):
@@ -343,6 +351,9 @@ directions = direction_map(mazeGK, exits, 1)
 create_txt_form_direction_map("FINAL_MAPS/Gradient/achteringang3", directions)
 # load the text file
 
+end = time.time()
+print(end - start)
+start = time.time()
 
 exits = []
 for i,pos in enumerate([(102,63)]):
@@ -352,7 +363,9 @@ mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
 directions = direction_map(mazeGK, exits, 1)
 create_txt_form_direction_map("FINAL_MAPS/Gradient/benedeningang1", directions)
 # load the text file
-
+end = time.time()
+print(end - start)
+start = time.time()
 
 exits = []
 for i,pos in enumerate([(160,63)]):
@@ -363,6 +376,9 @@ directions = direction_map(mazeGK, exits, 1)
 create_txt_form_direction_map("FINAL_MAPS/Gradient/benedeningang2", directions)
 # load the text file
 
+end = time.time()
+print(end - start)
+start = time.time()
 
 exits = []
 for i,pos in enumerate([(102,134)]):
@@ -373,7 +389,9 @@ directions = direction_map(mazeGK, exits, 1)
 create_txt_form_direction_map("FINAL_MAPS/Gradient/boveningang1", directions)
 # load the text file
 
-
+end = time.time()
+print(end - start)
+start = time.time()
 
 exits = []
 for i,pos in enumerate([(160,134)]):
@@ -383,6 +401,11 @@ mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
 directions = direction_map(mazeGK, exits, 1)
 create_txt_form_direction_map("FINAL_MAPS/Gradient/boveningang2", directions)
 # load the text file
+
+end = time.time()
+print(end - start)
+start = time.time()
+
 
 exits = []
 for i,pos in enumerate([(50,77),(50,80),(50,83),(50,86),(50,89),(78,92),(78,98),(78,104)]):
@@ -394,6 +417,11 @@ create_txt_form_direction_map("FINAL_MAPS/Gradient/wcvrouw", directions)
 # load the text file
 
 
+end = time.time()
+print(end - start)
+start = time.time()
+
+
 exits = []
 for i,pos in enumerate([(50,108),(50,111),(50,114),(50,117),(50,120)]):
     exits.append(Point(pos[0],pos[1]))
@@ -402,3 +430,6 @@ mazeGK = load_map_from_file("FINAL_MAPS/FINAL_concertgebouwmap.txt")
 directions = direction_map(mazeGK, exits, 1)
 create_txt_form_direction_map("FINAL_MAPS/Gradient/wcman", directions)
 # load the text file
+
+end = time.time()
+print(end - start)

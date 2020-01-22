@@ -288,6 +288,7 @@ class Agent:
 
         if best_pos is None:
             self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
+            return 0
             return self.run_dijkstra()
 
         self.unblock_point(self.current_pos)

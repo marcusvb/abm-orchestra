@@ -140,7 +140,7 @@ class AgentManager:
 
         # TODO dit veranderen in distribution
 
-        end_goal_frame = self.scaleDistribution(current_frame - 1, 8000)
+        end_goal_frame = self.scaleDistribution(current_frame - 1, 500)
 
         return all_directions, stairs_garderobe, moving_chance, end_goal_frame
 
