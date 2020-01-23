@@ -171,7 +171,10 @@ while not glfw.window_should_close(window):
     frame_count += 1
 
     # next quarter changes
-    if frame_count % 200 == 0:
+    if frame_count % 100 == 0:
+
+        agents.flowvalidation_update()
+        agents.density_count()
 
         # if statement can be removed when quarter is 2000 and runtime is 8000
         if len(garderobes) > 1:
@@ -241,6 +244,11 @@ while not glfw.window_should_close(window):
     entrance_2_rv = random.random()
     if entrance_2_rv < entrance_2_probability:
         agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
+
+
+print(agents.zuidDensity, agents.noordDensity, agents.gardiDensity)
+print(agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList)
+
 
 plot_heatmap(agents.heatmap)
 
