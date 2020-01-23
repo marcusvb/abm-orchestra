@@ -53,6 +53,12 @@ class Agent:
         self.round_walking_chance = 0.1
         self.round_nr = 0
 
+        # for the random moving and drink drinking
+        self.moving_random = False
+        self.random_moves = 0
+        self.max_random_moves = 0
+        self.drinking_frames = 0
+
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
 
@@ -262,12 +268,13 @@ class Agent:
                 if chance < self.round_walking_chance and self.round_nr == 0:
                     self.round_nr = 1
                     new_direction = np.random.choice(len(self.all_gradients), 1,
-                                                     p=[0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
+                                                     p=[0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
                     self.which_gradient_map = new_direction[0]
                 else:
                     new_direction = np.random.choice(len(self.all_gradients), 1,
-                                                     p=[0, self.bar_chance, self.bar_chance, self.toilet_chance,
-                                                        self.toilet_chance, 0, 0, 0, 0, 0])
+                                                     p=[0, self.jb_chance, self.spiegel_chance, self.champ_chance,
+                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,
+                                                        0, 0, 0, 0, 0])
                     self.which_gradient_map = new_direction[0]
                 self.direction_map = self.all_gradients[self.which_gradient_map]
 
@@ -329,12 +336,17 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
 
+            if 0 < self.which_gradient_map < 5 and self.random_moves == 0:
+                # agent just got a drink, walk random to a random place
+                self.moving_random = True
+                self.max_random_moves = np.random.randint(5, 15, 1)[0]
+
             # if agent went to directUpstairs, remove
             elif self.stairs_garderobe == 1:
                 self.update_gradient(-self.value)
                 raise ExitReached
 
-            # if agent is currently walking in rounds, go to next location
+            # if agent is currently walking in rounds, go to next location TODO: magic numbers weghalen?
             if 0 < self.round_nr < 4:
                 new_direction = self.which_gradient_map + 1
 
@@ -350,12 +362,13 @@ class Agent:
                 if chance < self.round_walking_chance and self.round_nr == 0:
                     self.round_nr = 1
                     new_direction = np.random.choice(len(self.all_gradients), 1,
-                                                     p=[0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
+                                                     p=[0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
                     self.which_gradient_map = new_direction[0]
                 else:
                     new_direction = np.random.choice(len(self.all_gradients), 1,
-                                                     p=[0, self.bar_chance, self.bar_chance, self.toilet_chance / 2,
-                                                        self.toilet_chance / 2, 0, 0, 0, 0, 0])
+                                                     p=[0, self.jb_chance, self.spiegel_chance, self.champ_chance,
+                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,
+                                                        0, 0, 0, 0, 0])
                     self.which_gradient_map = new_direction[0]
                 self.direction_map = self.all_gradients[self.which_gradient_map]
 
@@ -372,6 +385,41 @@ class Agent:
 
         return 0
 
+    def get_random_moves(self):
+        available_spots = []
+        for y in range(self.current_pos[0] - 1, self.current_pos[0] + 2):
+            for x in range(self.current_pos[1] - 1, self.current_pos[1] + 2):
+                if self.valid_step((y, x)):
+                    available_spots.append((self.direction_map[y][x], (y, x)))
+
+        available_spots.sort()
+        return available_spots
+
+    def random_mover(self):
+        available_spots = self.get_random_moves()
+        moves = []
+        for i in range(0, len(available_spots)):
+            a_y, a_x = available_spots[i][1]
+            if self.collision_map[a_y][a_x] == 0:
+                moves.append(available_spots[i][1])
+
+        if len(moves) == 0:
+            return 0
+        new_pos_nr = np.random.choice(len(moves), 1)[0]
+
+        new_pos = moves[new_pos_nr]
+        self.unblock_point(self.current_pos)
+        self.update_facing_angle(new_pos)
+
+        self.update_gradient(-self.value)
+
+        self.current_pos = new_pos
+        self.block_point(self.current_pos)
+
+        self.update_gradient(self.value)
+
+        return 0
+
     def move(self):
         self.current_frame += 1
 
@@ -381,14 +429,34 @@ class Agent:
             self.direction_map = self.all_directions[self.which_gradient_map]
             self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
 
-        moving_random = np.random.random()
+        move_chance = np.random.random()
         # moving_chance_nr = np.random.choice(self.moving_chance, 1)
-        if moving_random > self.moving_chance:
+        if move_chance > self.moving_chance:
             return 0
 
-        if self.PATHING_CONFIG == RunConf.DIJKSTRA:
+        if self.moving_random and self.current_frame < self.end_goal_frame:
+            if self.random_moves <= self.max_random_moves:
+                self.random_moves += 1
+                return self.random_mover()
+            else:
+
+                # walked far enough, now drink your drink for 5 mins (1000 frames)
+                if self.drinking_frames < 1000:
+                    self.drinking_frames += 1
+                    return 0
+
+                # five mins are over, go to next goal in next frame
+                else:
+                    self.moving_random = False
+                    self.drinking_frames = 0
+                    self.random_moves = 0
+                    return 0
+
+
+        elif self.PATHING_CONFIG == RunConf.DIJKSTRA:
             return self.run_dijkstra()
         else:
             return self.run_gradient()
+
 
 

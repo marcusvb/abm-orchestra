@@ -50,7 +50,9 @@ for i in range(40, 60):
 exit_points = None
 
 # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
-JuulBeaSpiegelChamp = gradient_from_direction_map("FINAL_MAPS/Gradient/JuulBeaSpiegelChamp")
+JuulBea = gradient_from_direction_map("FINAL_MAPS/Gradient/JuulBea")
+Spiegel = gradient_from_direction_map("FINAL_MAPS/Gradient/Spiegel")
+Champ = gradient_from_direction_map("FINAL_MAPS/Gradient/Champ")
 NoordZuid = gradient_from_direction_map("FINAL_MAPS/Gradient/NoordZuid")
 GarderobeQ1 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q1")
 GarderobeQ2 = gradient_from_direction_map("FINAL_MAPS/Gradient/Garderobe_Q2")
@@ -68,8 +70,8 @@ benedeningang1 = gradient_from_direction_map("FINAL_MAPS/Gradient/benedeningang1
 benedeningang2 = gradient_from_direction_map("FINAL_MAPS/Gradient/benedeningang2")
 boveningang1 = gradient_from_direction_map("FINAL_MAPS/Gradient/boveningang1")
 boveningang2 = gradient_from_direction_map("FINAL_MAPS/Gradient/boveningang2")
-wcman = gradient_from_direction_map("FINAL_MAPS/Gradient/wcman")
-wcvrouw = gradient_from_direction_map("FINAL_MAPS/Gradient/wcvrouw")
+wcman = gradient_from_direction_map("FINAL_MAPS/Gradient/wcman_verbeterd")
+wcvrouw = gradient_from_direction_map("FINAL_MAPS/Gradient/wcvrouw_verbeterd")
 
 garderobes = [GarderobeQ1, GarderobeQ2, GarderobeQ3, GarderobeQ4]
 torentjes = [Trappenhuis_RO, Trappenhuis_LB, Trappenhuis_LO, Trappenhuis_RB]
@@ -80,7 +82,7 @@ zaalingangen = [vooringangen, achteringangen]
 
 # define type of gradient maps
 start_goals = [garderobes[3], DirectUpstairs]
-mid_goals = [JuulBeaSpiegelChamp, NoordZuid, wcman, wcvrouw, Trappenhuis_RB, Trappenhuis_RO, Trappenhuis_LO, Trappenhuis_LB]
+mid_goals = [JuulBea, Spiegel, Champ, NoordZuid, wcman, wcvrouw, Trappenhuis_RB, Trappenhuis_RO, Trappenhuis_LO, Trappenhuis_LB]
 end_goals = [torentjes, zaalingangen]
 
 
