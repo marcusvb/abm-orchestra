@@ -38,13 +38,20 @@ class Agent:
         self.agent_weight_percent = 0.10
         self.go_to_path = None
 
-        self.chance_next = [[0, 0.5, 0.2, 0.3], [0, 0, 0.5, 0.5], [0, 0.5, 0, 0.5], [0, 0.5, 0.5, 0]]
-
         # to make sure everyone moves at their own pace
         self.moving_chance = moving_chance
         self.stairs_garderobe = stairs_garderobe
         self.end_goal_frame = end_goal_frame
         self.current_frame = current_frame
+
+        # chances where to walk
+        self.toilet_chance = 0.2
+        self.nz_chance = 0.4
+        self.jb_chance = 0.2
+        self.spiegel_chance = 0.15
+        self.champ_chance = 0.05
+        self.round_walking_chance = 0.1
+        self.round_nr = 0
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
@@ -237,10 +244,31 @@ class Agent:
             elif self.stairs_garderobe == 1:
                 self.update_gradient(-self.value)
                 raise ExitReached
+
+            # if agent is currently walking in rounds, go to next location
+            if 0 < self.round_nr < 4:
+                new_direction = self.which_gradient_map + 1
+
+                # go to the first location of the rounds
+                if new_direction > 8:
+                    new_direction = 5
+                self.which_gradient_map = new_direction
+                self.direction_map = self.all_gradients[self.which_gradient_map]
+
+
             else:
-                # choose 1 of the directions in between
-                new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
-                self.which_gradient_map = new_direction[0]
+                # choose 1 of the directions in between or walk around if agent did not already
+                chance = np.random.random()
+                if chance < self.round_walking_chance and self.round_nr == 0:
+                    self.round_nr = 1
+                    new_direction = np.random.choice(len(self.all_gradients), 1,
+                                                     p=[0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
+                    self.which_gradient_map = new_direction[0]
+                else:
+                    new_direction = np.random.choice(len(self.all_gradients), 1,
+                                                     p=[0, self.bar_chance, self.bar_chance, self.toilet_chance,
+                                                        self.toilet_chance, 0, 0, 0, 0, 0])
+                    self.which_gradient_map = new_direction[0]
                 self.direction_map = self.all_gradients[self.which_gradient_map]
 
         # UPDATING ATTRIBUTES
@@ -287,13 +315,14 @@ class Agent:
         best_pos = self.get_best_move_gradient(available_positions)
 
         if best_pos is None:
-            self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
+            # self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
             return 0
             return self.run_dijkstra()
 
         self.unblock_point(self.current_pos)
 
         if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.GOAL_THRESHOLD:
+
             # check if agent is at a location where it should be removed.
             if self.which_gradient_map == len(self.all_gradients) - 1:
                 # agent is at end location! remove.
@@ -304,13 +333,31 @@ class Agent:
             elif self.stairs_garderobe == 1:
                 self.update_gradient(-self.value)
                 raise ExitReached
-            else:
-                # choose 1 of the directions in between
-                new_direction = np.random.choice(len(self.all_gradients[1:-1]), 1) + 1
-                self.which_gradient_map = new_direction[0]
+
+            # if agent is currently walking in rounds, go to next location
+            if 0 < self.round_nr < 4:
+                new_direction = self.which_gradient_map + 1
+
+                # go to the first location of the rounds
+                if new_direction > 8:
+                    new_direction = 5
+                self.which_gradient_map = new_direction
                 self.direction_map = self.all_gradients[self.which_gradient_map]
 
-            self.graph_map = deepcopy(self.all_gradients[self.which_gradient_map])
+            else:
+                # choose 1 of the directions in between or walk around if agent did not already
+                chance = np.random.random()
+                if chance < self.round_walking_chance and self.round_nr == 0:
+                    self.round_nr = 1
+                    new_direction = np.random.choice(len(self.all_gradients), 1,
+                                                     p=[0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
+                    self.which_gradient_map = new_direction[0]
+                else:
+                    new_direction = np.random.choice(len(self.all_gradients), 1,
+                                                     p=[0, self.bar_chance, self.bar_chance, self.toilet_chance / 2,
+                                                        self.toilet_chance / 2, 0, 0, 0, 0, 0])
+                    self.which_gradient_map = new_direction[0]
+                self.direction_map = self.all_gradients[self.which_gradient_map]
 
 
 

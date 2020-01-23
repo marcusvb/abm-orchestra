@@ -136,7 +136,7 @@ class AgentManager:
 
         # TODO dit misschien steeds opnieuw doen bij elke move? want anders lopen sommige mensen de hele tijd heel sloom
         moving_chance = s
-        moving_chance = 0.7
+        moving_chance = 1
 
         # TODO dit veranderen in distribution
 

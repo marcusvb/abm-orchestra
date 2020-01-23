@@ -80,7 +80,7 @@ zaalingangen = [vooringangen, achteringangen]
 
 # define type of gradient maps
 start_goals = [garderobes[3], DirectUpstairs]
-mid_goals = [JuulBeaSpiegelChamp, NoordZuid, wcman, wcvrouw]
+mid_goals = [JuulBeaSpiegelChamp, NoordZuid, wcman, wcvrouw, Trappenhuis_RB, Trappenhuis_RO, Trappenhuis_LO, Trappenhuis_LB]
 end_goals = [torentjes, zaalingangen]
 
 
@@ -187,7 +187,7 @@ while not glfw.window_should_close(window):
         agents.step()
 
     if current_time - previous_time >= 1.0:
-        title = "Crowd Simulation ( " + str(frame_count) + " FPS | Number Of Agents: " + str(
+        title = "Crowd Simulation ( Frame " + str(frame_count) + " | Number Of Agents: " + str(
             len(agents.agent_list)) + " )" + " intensity: " + str(global_intensity)
         glfw.set_window_title(window, title)
         # I commented this so I could use frame_count for changing the garderobe
