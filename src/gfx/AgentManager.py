@@ -23,6 +23,18 @@ class AgentManager:
         self.start_goals = start_goals
         self.end_goals = end_goals
 
+        self.zuidValidationCount = 0
+        self.noordValidationCount = 0
+        self.champagneValidationCount = 0
+
+        self.zuidValidationCountList = []
+        self.noordValidationCountList = []
+        self.champagneValidationCountList = []
+
+        self.noordDensity = []
+        self.zuidDensity = []
+        self.gardiDensity = []
+
 
 
 
@@ -31,8 +43,6 @@ class AgentManager:
         self.height = client_height
         self.tile_size = tile_size
         self.agent_radius = (tile_size[1] - tile_size[1] / 5) / 2
-
-
 
         for agent in self.agent_list:
             correct_pos = [
@@ -45,6 +55,46 @@ class AgentManager:
         for agent in self.agent_list:
             agent.draw(self.agent_radius)
 
+    def density_count(self):
+
+        xmin_Noord = 100
+        xmax_Noord = 149
+        ymin_Noord = 44
+        ymax_Noord = 64
+
+        Noord = 0
+
+        for ag in self.agent_list:
+            ag_y, ag_x = ag.agent.current_pos
+            if ag_x > xmin_Noord and ag_x < xmax_Noord and ag_y > ymin_Noord and ag_y < ymax_Noord:
+                Noord += 1
+        self.noordDensity.append(Noord)
+
+        xmin_Zuid = 94
+        xmax_Zuid = 144
+        ymin_Zuid = 133
+        ymax_Zuid = 154
+
+        Zuid = 0
+
+        for ag in self.agent_list:
+            ag_y, ag_x = ag.agent.current_pos
+            if ag_x > xmin_Zuid and ag_x < xmax_Zuid and ag_y > ymin_Zuid and ag_y < ymax_Zuid:
+                Zuid += 1
+        self.zuidDensity.append(Zuid)
+
+        xmin_Gard = 81
+        xmax_Gard = 90
+        ymin_Gard = 88
+        ymax_Gard = 108
+
+        Garderobe = 0
+
+        for ag in self.agent_list:
+            ag_y, ag_x = ag.agent.current_pos
+            if ag_x > xmin_Gard and ag_x < xmax_Gard and ag_y > ymin_Gard and ag_y < ymax_Gard:
+                Garderobe += 1
+        self.gardiDensity.append(Garderobe)
 
 
     def add_new(self, position, angle: float, color: [float, float, float], current_frame):
@@ -60,6 +110,28 @@ class AgentManager:
         else:
             print('Agent can not be added on this pos')
 
+    def flowvalidation_update(self):
+        self.zuidValidationCountList.append(self.zuidValidationCount)
+        self.noordValidationCountList.append(self.noordValidationCount)
+        self.champagneValidationCountList.append(self.champagneValidationCount)
+
+        self.zuidValidationCount = 0
+        self.noordValidationCount = 0
+        self.champagneValidationCount = 0
+
+
+    def validate_step(self, ag_x, ag_y):
+
+        if ag_x == 94 and ag_y < 141 and ag_y > 133:
+            self.zuidValidationCount += 1
+
+        elif ag_x == 89 and ag_y < 64 and ag_y > 57:
+            self.noordValidationCount += 1
+
+        elif ag_x > 176 and ag_x < 185 and ag_y == 84:
+            self.champagneValidationCount += 1
+
+
     def step(self):
         moving_lsit = sorted(self.agent_list, key=lambda agt: agt.agent.anger, reverse=True)
 
@@ -69,8 +141,11 @@ class AgentManager:
             any_moved = False
 
             for agent in moving_lsit:
-                ag_x, ag_y = agent.agent.current_pos
-                self.heatmap[ag_x][ag_y] += 1
+                ag_y, ag_x = agent.agent.current_pos
+
+                self.validate_step(ag_x, ag_y)
+                self.heatmap[ag_y][ag_x] += 1
+
                 try:
                     anger = agent.move()
                 except ExitReached:
@@ -82,7 +157,7 @@ class AgentManager:
                         any_moved = True
                         moving_lsit.remove(agent)
 
-                        agent.map_position = (ag_x, ag_y)
+                        agent.map_position = (ag_y, ag_x)
 
                         agent.fx_pos = [
                             0 + self.offset + 1 + (agent.map_position[1] * self.tile_size[0]) + (self.tile_size[0] / 2),
