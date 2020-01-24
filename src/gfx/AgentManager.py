@@ -3,7 +3,9 @@ import copy
 from gfx.AgentGfx import AgentGfx
 from model.agent.Agent import ExitReached
 import numpy as np
+import pandas as pd
 from scipy import stats
+
 
 
 class AgentManager:
@@ -27,14 +29,12 @@ class AgentManager:
         self.noordValidationCount = 0
         self.champagneValidationCount = 0
 
-        self.zuidValidationCountList = []
-        self.noordValidationCountList = []
-        self.champagneValidationCountList = []
-
         self.noordDensity = []
         self.zuidDensity = []
         self.gardiDensity = []
 
+        self.ValidationDataFrame =  pd.DataFrame(columns=['Flow Zuid','Flow Noord','Flow Champagne'])
+        self.DensityDataFrame = pd.DataFrame(columns=['Density Zuid', 'Density Noord', 'Density Garderobe'])
 
 
 
@@ -68,7 +68,6 @@ class AgentManager:
             ag_y, ag_x = ag.agent.current_pos
             if ag_x > xmin_Noord and ag_x < xmax_Noord and ag_y > ymin_Noord and ag_y < ymax_Noord:
                 Noord += 1
-        self.noordDensity.append(Noord)
 
         xmin_Zuid = 94
         xmax_Zuid = 144
@@ -81,7 +80,6 @@ class AgentManager:
             ag_y, ag_x = ag.agent.current_pos
             if ag_x > xmin_Zuid and ag_x < xmax_Zuid and ag_y > ymin_Zuid and ag_y < ymax_Zuid:
                 Zuid += 1
-        self.zuidDensity.append(Zuid)
 
         xmin_Gard = 81
         xmax_Gard = 90
@@ -94,7 +92,7 @@ class AgentManager:
             ag_y, ag_x = ag.agent.current_pos
             if ag_x > xmin_Gard and ag_x < xmax_Gard and ag_y > ymin_Gard and ag_y < ymax_Gard:
                 Garderobe += 1
-        self.gardiDensity.append(Garderobe)
+        self.DensityDataFrame.append([Noord, Zuid, Garderobe])
 
 
     def add_new(self, position, angle: float, color: [float, float, float], current_frame):
@@ -111,9 +109,7 @@ class AgentManager:
             print('Agent can not be added on this pos')
 
     def flowvalidation_update(self):
-        self.zuidValidationCountList.append(self.zuidValidationCount)
-        self.noordValidationCountList.append(self.noordValidationCount)
-        self.champagneValidationCountList.append(self.champagneValidationCount)
+        self.ValidationDataFrame.append([self.zuidValidationCount, self.noordValidationCount, self.champagneValidationCount])
 
         self.zuidValidationCount = 0
         self.noordValidationCount = 0
@@ -144,7 +140,10 @@ class AgentManager:
                 ag_y, ag_x = agent.agent.current_pos
 
                 self.validate_step(ag_x, ag_y)
-                self.heatmap[ag_y][ag_x] += 1
+
+                #DO NOT ADD COFFEE DRINKING AGENTS INTO HEATMAP
+                if agent.agent.moving_random == False:
+                    self.heatmap[ag_y][ag_x] += 1
 
                 try:
                     anger = agent.move()
@@ -230,7 +229,7 @@ class AgentManager:
         else:
             a, loc, scale = 15, 0.1, 1  # Sample from a Skewed Normal Distribution
             sample = stats.skewnorm(a, loc, scale).rvs(1)[0]
-            scaler = 4
+            scaler = 4   #max of 10000 samples from the skewednormal lies around 4
             sampleScaled = int(MaxFrame - (MaxFrame - CurrentFrame) * sample / scaler)
 
             return sampleScaled
