@@ -13,6 +13,7 @@ from resources.handling.generatingHeatmap import heatmap_from_map
 from model.gradient.gradient_map import gradient_from_direction_map
 from model.gradient_agent.MapConfs import RunTime
 
+import pandas as pd
 import numpy as np
 
 BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
@@ -253,8 +254,19 @@ while not glfw.window_should_close(window):
     if frame_count > FINAL_FRAME_COUNT:
         glfw.set_window_should_close(window, True)
 
-print(agents.zuidDensity, agents.noordDensity, agents.gardiDensity)
-print(agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList)
+Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
+Validation_dataframe=np.transpose(Validation_dataframe)
+Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
+
+print([agents.noordDensity, agents.zuidDensity, agents.gardiDensity])
+
+Density_dataframe = pd.DataFrame([agents.noordDensity, agents.zuidDensity, agents.gardiDensity])
+print(Density_dataframe)
+Density_dataframe=np.transpose(Density_dataframe)
+Density_dataframe.columns =['Density Zuid', 'Density Noord', 'Density Garderobe']
+
+print(Validation_dataframe)
+print(Density_dataframe)
 
 
 mazeTexture.release()
