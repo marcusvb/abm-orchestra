@@ -11,20 +11,23 @@ from gfx.AgentManager import AgentManager
 from resources.handling.reading import load_direction_from_file, load_map_from_file
 from resources.handling.generatingHeatmap import heatmap_from_map
 from model.gradient.gradient_map import gradient_from_direction_map
+from model.gradient_agent.MapConfs import RunTime
 
 import numpy as np
 
+BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
+FINAL_FRAME_COUNT = RunTime.MAX_FRAMES
+VISUALIZE = True
+
 if not glfw.init():
     exit(1)
-
-
 
 # global_intensity: This dictates how many agents we will spawn somewhere in the simulation.
 # global global_intensity # irrelevant global call
 
 global_intensity = 50
 
-window = glfw.create_window(1280, 720, "ABM: Het Concertgebouw simulation", None, None)
+window = glfw.create_window(1280, 720, BASE_TITLE, None, None)
 glfw.make_context_current(window)
 
 simulation_running = True
@@ -148,9 +151,9 @@ def key_callback(window, key, scancode, action, mods):
         global simulation_running
         simulation_running = not (simulation_running and True)
 
-
-glfw.set_mouse_button_callback(window, mouse_button_callback)
-glfw.set_key_callback(window, key_callback)
+if VISUALIZE:
+    glfw.set_mouse_button_callback(window, mouse_button_callback)
+    glfw.set_key_callback(window, key_callback)
 
 old_step_time = glfw.get_time()
 previous_time = glfw.get_time()
@@ -158,8 +161,8 @@ previous_time = glfw.get_time()
 # variables for the quarter updates
 frame_count = 0
 agent_colors = [[1.0, 1.0, 1.0], [1.0, 0.5, 0.31], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
-zuid_2_probabilities = [0.2, 0.15, 0.15, 0.1]
-zuid_1_probabilities = [0.1, 0.075, 0.075, 0.05]
+zuid_2_probabilities = [RunTime.Z2_Q1, RunTime.Z2_Q2, RunTime.Z2_Q3, RunTime.Z2_Q4]
+zuid_1_probabilities = [RunTime.Z1_Q1, RunTime.Z1_Q2, RunTime.Z1_Q3, RunTime.Z1_Q4]
 agent_color_nr = 0
 entrance_1_probability = zuid_2_probabilities[0]
 entrance_2_probability = zuid_1_probabilities[0]
@@ -171,7 +174,7 @@ while not glfw.window_should_close(window):
     frame_count += 1
 
     # next quarter changes
-    if frame_count % 100 == 0:
+    if frame_count % (RunTime.MAX_FRAMES / 4) == 0:
 
         agents.flowvalidation_update()
         agents.density_count()
@@ -192,39 +195,43 @@ while not glfw.window_should_close(window):
         agents.step()
 
     if current_time - previous_time >= 1.0:
-        title = "Crowd Simulation ( Frame " + str(frame_count) + " | Number Of Agents: " + str(
+        title = BASE_TITLE + " ( FRAME COUNT: " + str(frame_count) + " | Number Of Agents: " + str(
             len(agents.agent_list)) + " )" + " intensity: " + str(global_intensity)
         glfw.set_window_title(window, title)
+
+        # If we don't opengl visualization we print the sim status to stdout
+        if not VISUALIZE:
+            print(title)
+
         # I commented this so I could use frame_count for changing the garderobe
         # frame_count = 0
         previous_time = current_time
 
-    glfw.poll_events()
+    if VISUALIZE:
+        glfw.poll_events()
 
-    glClearColor(0.0, 0.0, 0.0, 1.0)
-    glClear(GL_COLOR_BUFFER_BIT)
+        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glClear(GL_COLOR_BUFFER_BIT)
 
-    w, h = glfw.get_window_size(window)
+        w, h = glfw.get_window_size(window)
 
-    if w != w_prev or h != h_prev:
-        w_prev = w
-        h_prev = h
-        tile_size[0] = (w - 2 * (offset + 1)) / len(maze[0])
-        tile_size[1] = (h - 2 * (offset + 1)) / len(maze)
-        agents.set_client_tile_size(w, h, tile_size)
-        mazeTexture.reconstruct(w, h, tile_size)
+        if w != w_prev or h != h_prev:
+            w_prev = w
+            h_prev = h
+            tile_size[0] = (w - 2 * (offset + 1)) / len(maze[0])
+            tile_size[1] = (h - 2 * (offset + 1)) / len(maze)
+            agents.set_client_tile_size(w, h, tile_size)
+            mazeTexture.reconstruct(w, h, tile_size)
 
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    glOrtho(0, w, 0, h, -10, 10)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glOrtho(0, w, 0, h, -10, 10)
 
-    glMatrixMode(GL_MODELVIEW)
+        glMatrixMode(GL_MODELVIEW)
 
-    mazeTexture.draw()
-
-    agents.draw_all()
-
-    glfw.swap_buffers(window)
+        mazeTexture.draw()
+        agents.draw_all()
+        glfw.swap_buffers(window)
 
     # intensity = random.randint(0, 100)
     # if intensity < global_intensity:
@@ -234,9 +241,6 @@ while not glfw.window_should_close(window):
     entrance2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
     entrance_1_rv = random.random()
 
-    if frame_count > 500:
-        continue
-
     if entrance_1_rv < entrance_1_probability:
         agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)
         agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)
@@ -245,12 +249,14 @@ while not glfw.window_should_close(window):
     if entrance_2_rv < entrance_2_probability:
         agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
 
+    #  Set the window to close terminate the outer whileloop
+    if frame_count > FINAL_FRAME_COUNT:
+        glfw.set_window_should_close(window, True)
 
 print(agents.zuidDensity, agents.noordDensity, agents.gardiDensity)
 print(agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList)
 
 
-plot_heatmap(agents.heatmap)
-
 mazeTexture.release()
 glfw.terminate()
+plot_heatmap(agents.heatmap)

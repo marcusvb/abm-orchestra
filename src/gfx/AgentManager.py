@@ -5,6 +5,9 @@ from model.agent.Agent import ExitReached
 import numpy as np
 import pandas as pd
 from scipy import stats
+from model.gradient_agent.MapConfs import Chances
+from model.gradient_agent.MapConfs import RunTime
+
 
 
 
@@ -171,7 +174,7 @@ class AgentManager:
 
         # 5 % will go to the stairs garderobe (start map 1)
         garderobe_choice = np.random.random()
-        if garderobe_choice < 0.05:
+        if garderobe_choice < Chances.STAIRS_GARDEROBE:
             all_directions.append(self.start_goals[1])
             stairs_garderobe = 1
         else:
@@ -181,13 +184,13 @@ class AgentManager:
         all_directions = all_directions + self.direct
 
         entrance_choice = np.random.random()
-        if entrance_choice < 0.14:
+        if entrance_choice < Chances.TORENTJE:
             # torentje entrances
             entrances = self.end_goals[0]
         else:
             # zaal entrances, 1/3 achteringang
             entrance_choice = np.random.random()
-            if entrance_choice < (1/3):
+            if entrance_choice < Chances.BACK_ENTRANCE:
 
                 # achteringang entrances
                 entrances = self.end_goals[1][1]
@@ -203,18 +206,10 @@ class AgentManager:
         # add to direction as final entrance
         all_directions.append(entrance)
 
-        # decide moving chance of the agent with
-        # Random position where our agents start, lower right bottom
-        s = np.random.exponential(0.75, 1000)
-        s = s * (0.5 / np.amax(s))
-
-        # TODO dit misschien steeds opnieuw doen bij elke move? want anders lopen sommige mensen de hele tijd heel sloom
-        moving_chance = s
+        # decide moving chance of the agent, now everyone the same always walking
         moving_chance = 1
 
-        # TODO dit veranderen in distribution
-
-        end_goal_frame = self.scaleDistribution(current_frame - 1, 500)
+        end_goal_frame = self.scaleDistribution(current_frame - 1, RunTime.MAX_FRAMES)
 
         return all_directions, stairs_garderobe, moving_chance, end_goal_frame
 
