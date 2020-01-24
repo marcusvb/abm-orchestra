@@ -11,11 +11,12 @@ from gfx.AgentManager import AgentManager
 from resources.handling.reading import load_direction_from_file, load_map_from_file
 from resources.handling.generatingHeatmap import heatmap_from_map
 from model.gradient.gradient_map import gradient_from_direction_map
+from model.gradient_agent.MapConfs import RunTime
 
 import numpy as np
 
 BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
-FINAL_FRAME_COUNT = 8000
+FINAL_FRAME_COUNT = RunTime.MAX_FRAMES
 VISUALIZE = True
 
 if not glfw.init():
@@ -160,8 +161,8 @@ previous_time = glfw.get_time()
 # variables for the quarter updates
 frame_count = 0
 agent_colors = [[1.0, 1.0, 1.0], [1.0, 0.5, 0.31], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
-zuid_2_probabilities = [0.2, 0.15, 0.15, 0.1]
-zuid_1_probabilities = [0.1, 0.075, 0.075, 0.05]
+zuid_2_probabilities = [RunTime.Z2_Q1, RunTime.Z2_Q2, RunTime.Z2_Q3, RunTime.Z2_Q4]
+zuid_1_probabilities = [RunTime.Z1_Q1, RunTime.Z1_Q2, RunTime.Z1_Q3, RunTime.Z1_Q4]
 agent_color_nr = 0
 entrance_1_probability = zuid_2_probabilities[0]
 entrance_2_probability = zuid_1_probabilities[0]
@@ -173,7 +174,7 @@ while not glfw.window_should_close(window):
     frame_count += 1
 
     # next quarter changes
-    if frame_count % 100 == 0:
+    if frame_count % (RunTime.MAX_FRAMES / 4) == 0:
 
         agents.flowvalidation_update()
         agents.density_count()

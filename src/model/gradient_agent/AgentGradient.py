@@ -8,6 +8,7 @@ from model.agent.Agent import ExitReached
 from model.environment.environment_enum import Env
 from model.gradient_agent.RunConf import RunConf
 from model.gradient_agent.MapConfs import MapConfs
+from model.gradient_agent.MapConfs import Chances
 
 
 class Agent:
@@ -35,7 +36,7 @@ class Agent:
         self.viewing_range = 2
         self.value = 10
         self.update_gradient(self.value)
-        self.agent_weight_percent = 0.10
+        self.agent_weight_percent = Chances.AGENT_WEIGHT_PERCENT
         self.go_to_path = None
 
         # to make sure everyone moves at their own pace
@@ -45,19 +46,23 @@ class Agent:
         self.current_frame = current_frame
 
         # chances where to walk
-        self.toilet_chance = 0.2
-        self.nz_chance = 0.4
-        self.jb_chance = 0.2
-        self.spiegel_chance = 0.15
-        self.champ_chance = 0.05
-        self.round_walking_chance = 0.1
-        self.round_nr = 0
+        self.toilet_chance = Chances.TOILET
+        self.nz_chance = Chances.NOORD_ZUID
+        self.jb_chance = Chances.JUUL_BEA
+        self.spiegel_chance = Chances.SPIEGEL
+        self.champ_chance = Chances.CHAMP
+        self.round_walking_chance = Chances.ROUND_WALKING
+
 
         # for the random moving and drink drinking
+        self.round_nr = 0
         self.moving_random = False
         self.random_moves = 0
         self.max_random_moves = 0
         self.drinking_frames = 0
+        self.min_random_steps = Chances.MIN_RAND_STEPS
+        self.max_random_steps = Chances.MAX_RAND_STEPS
+        self.max_drinking_frames = Chances.DRINKING_FRAMES
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
@@ -246,6 +251,11 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
 
+            if 0 < self.which_gradient_map < 5 and self.random_moves == 0:
+                # agent just got a drink, walk random to a random place
+                self.moving_random = True
+                self.max_random_moves = np.random.randint(self.min_random_steps, self.max_random_steps, 1)[0]
+
             # if agent went to directUpstairs, remove
             elif self.stairs_garderobe == 1:
                 self.update_gradient(-self.value)
@@ -260,7 +270,6 @@ class Agent:
                     new_direction = 5
                 self.which_gradient_map = new_direction
                 self.direction_map = self.all_gradients[self.which_gradient_map]
-
 
             else:
                 # choose 1 of the directions in between or walk around if agent did not already
@@ -339,14 +348,14 @@ class Agent:
             if 0 < self.which_gradient_map < 5 and self.random_moves == 0:
                 # agent just got a drink, walk random to a random place
                 self.moving_random = True
-                self.max_random_moves = np.random.randint(5, 15, 1)[0]
+                self.max_random_moves = np.random.randint(self.min_random_steps, self.max_random_steps, 1)[0]
 
             # if agent went to directUpstairs, remove
             elif self.stairs_garderobe == 1:
                 self.update_gradient(-self.value)
                 raise ExitReached
 
-            # if agent is currently walking in rounds, go to next location TODO: magic numbers weghalen?
+            # if agent is currently walking in rounds, go to next location
             if 0 < self.round_nr < 4:
                 new_direction = self.which_gradient_map + 1
 
@@ -440,8 +449,8 @@ class Agent:
                 return self.random_mover()
             else:
 
-                # walked far enough, now drink your drink for 5 mins (1000 frames)
-                if self.drinking_frames < 1000:
+                # walked far enough, now drink your drink for 5 mins
+                if self.drinking_frames < self.max_drinking_frames:
                     self.drinking_frames += 1
                     return 0
 
