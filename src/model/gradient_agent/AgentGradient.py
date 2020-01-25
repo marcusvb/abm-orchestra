@@ -16,6 +16,7 @@ class Agent:
                  collision_map: [[(int, int)]], stairs_garderobe, end_goal_frame, current_frame, moving_chance, which_gradient_map=0, bound_size=2, pathing_config=RunConf.GRADIENT):
         self.start = start_position
         self.end = end_position
+        self.wait_a_little = False
         self.current_pos = self.start
         self.front_collision_size = bound_size
         self.direction_map = gradient_maps[which_gradient_map]
@@ -52,13 +53,10 @@ class Agent:
         self.spiegel_chance = Chances.SPIEGEL
         self.champ_chance = Chances.CHAMP
         self.round_walking_chance = Chances.ROUND_WALKING
-
+        self.round_nr = 0
 
         # for the random moving and drink drinking
-        self.round_nr = 0
         self.moving_random = False
-        self.random_moves = 0
-        self.max_random_moves = 0
         self.drinking_frames = 0
         self.min_random_steps = Chances.MIN_RAND_STEPS
         self.max_random_steps = Chances.MAX_RAND_STEPS
@@ -205,7 +203,6 @@ class Agent:
         return None
 
     def step_dijkstra(self):
-
         if self.go_to_path is None:
             best_pos = self.gen_step_and_return_next_step_dijkstra()
         elif len(self.go_to_path) == 0:
@@ -251,7 +248,7 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
 
-            if 0 < self.which_gradient_map < 5 and self.random_moves == 0:
+            if 0 < self.which_gradient_map < 5 and not self.moving_random:
                 # agent just got a drink, walk random to a random place
                 self.moving_random = True
                 self.max_random_moves = np.random.randint(self.min_random_steps, self.max_random_steps, 1)[0]
@@ -329,10 +326,11 @@ class Agent:
 
         available_positions = self.get_available_moves_gradient()
         best_pos = self.get_best_move_gradient(available_positions)
+        self.PATHING_CONFIG = RunConf.GRADIENT
 
         if best_pos is None:
-            # self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
-            return 0
+            self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
+            # return 0
             return self.run_dijkstra()
 
         self.unblock_point(self.current_pos)
@@ -345,7 +343,7 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
 
-            if 0 < self.which_gradient_map < 5 and self.random_moves == 0:
+            if 0 < self.which_gradient_map < 5 and not self.moving_random:
                 # agent just got a drink, walk random to a random place
                 self.moving_random = True
                 self.max_random_moves = np.random.randint(self.min_random_steps, self.max_random_steps, 1)[0]
@@ -429,6 +427,22 @@ class Agent:
 
         return 0
 
+    def walk_around_and_drink(self):
+        # If we need to random move
+        if self.drinking_frames < self.max_drinking_frames:
+            if self.drinking_frames % 10 == 0 and not self.wait_a_little:
+                self.wait_a_little = True
+                self.random_mover()
+            else:
+                self.drinking_frames += 1
+                self.wait_a_little = False
+                return 0
+        else:
+            self.moving_random = False
+            self.drinking_frames = 0
+        return 0
+
+
     def move(self):
         self.current_frame += 1
 
@@ -443,24 +457,8 @@ class Agent:
         if move_chance > self.moving_chance:
             return 0
 
-        if self.moving_random and self.current_frame < self.end_goal_frame:
-            if self.random_moves <= self.max_random_moves:
-                self.random_moves += 1
-                return self.random_mover()
-            else:
-
-                # walked far enough, now drink your drink for 5 mins
-                if self.drinking_frames < self.max_drinking_frames:
-                    self.drinking_frames += 1
-                    return 0
-
-                # five mins are over, go to next goal in next frame
-                else:
-                    self.moving_random = False
-                    self.drinking_frames = 0
-                    self.random_moves = 0
-                    return 0
-
+        if self.moving_random:
+            return self.walk_around_and_drink()
 
         elif self.PATHING_CONFIG == RunConf.DIJKSTRA:
             return self.run_dijkstra()

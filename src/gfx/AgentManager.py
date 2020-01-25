@@ -7,6 +7,7 @@ import pandas as pd
 from scipy import stats
 from model.gradient_agent.MapConfs import Chances
 from model.gradient_agent.MapConfs import RunTime
+from model.gradient_agent.RunConf import RunConf
 
 
 
@@ -54,8 +55,16 @@ class AgentManager:
             agent.position = correct_pos
 
     def draw_all(self):
+        dijkstra_count = 0
+        count = 0
         for agent in self.agent_list:
-            agent.draw(self.agent_radius)
+            conf = agent.draw(self.agent_radius)
+            if conf == RunConf.DIJKSTRA:
+                dijkstra_count += 1
+            count += 1
+
+        if count:
+            print("This frame", np.round(dijkstra_count/count, 2) * 100, "% were dijkstra")
 
     def density_count(self):
 
@@ -220,7 +229,10 @@ class AgentManager:
     def scaleDistribution(self, CurrentFrame, MaxFrame):
         # If Agent enters building in the last quarter, he is in a hurry. So we sample from normal distribution
         if CurrentFrame > 0.75 * MaxFrame:
-            sample = int((CurrentFrame + MaxFrame) / 2 + np.random.normal(0, (MaxFrame - CurrentFrame) / 10, 1))
+            try:
+                sample = int((CurrentFrame + MaxFrame) / 2 + np.random.normal(0, (MaxFrame - CurrentFrame) / 10, 1))
+            except:
+                return CurrentFrame
             return sample
 
         # Else we sample from a skewed normal distribution, so there is a larger chance that agent enters in the last quarter
