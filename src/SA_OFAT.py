@@ -29,8 +29,6 @@ import gradient_main as Model
 
 
 
-
-
 class FixedBatchRunner(model_cls, parameters_list=None, fixed_parameters=None, iterations=1, max_steps=1000, model_reporters=None, agent_reporters=None, display_progress=True):
     """ This class is instantiated with a model class, and model parameters
     associated with one or more values. It is also instantiated with model and
