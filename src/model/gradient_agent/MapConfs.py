@@ -10,7 +10,7 @@ class Chances():
     # chance for end goal
     TORENTJE = 0.14
     STAIRS_GARDEROBE = 0.05
-    BACK_ENTRANCE = 1/3
+    BACK_ENTRANCE = 1./3
 
 
     # chances where to go
@@ -22,14 +22,14 @@ class Chances():
     ROUND_WALKING = 0.1
     MIN_RAND_STEPS = 5
     MAX_RAND_STEPS = 15
-    DRINKING_FRAMES = 1000
+    DRINKING_FRAMES = 200
 
     # used for the gradient map for dijkstra
     AGENT_WEIGHT_PERCENT = 0.10
 
 class RunTime():
 
-    MAX_FRAMES = 1000
+    MAX_FRAMES = 100
     Z2_Q1 = 0.2
     Z2_Q2 = 0.15
     Z2_Q3 = 0.15

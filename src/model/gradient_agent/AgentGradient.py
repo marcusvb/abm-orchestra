@@ -53,6 +53,15 @@ class Agent:
         self.champ_chance = Chances.CHAMP
         self.round_walking_chance = Chances.ROUND_WALKING
 
+        # toilet waiting
+        self.sitting_on_toilet = False
+        self.current_toilettime = 0
+        self.total_toilettime = 200
+
+        # waiting for coatcheck
+        self.waitingongarderobe = False
+        self.current_coatchecktime = 0
+        self.total_coatchecktime = 20
 
         # for the random moving and drink drinking
         self.round_nr = 0
@@ -204,6 +213,21 @@ class Agent:
 
         return None
 
+    def toiletbreak(self):
+        self.current_toilettime += 1
+        if self.current_toilettime == self.total_toilettime:
+            self.sitting_on_toilet = False
+            self.current_toilettime = 0
+        return 0
+
+    def garderobewait(self):
+        self.current_coatchecktime += 1
+        if self.current_coatchecktime == self.total_coatchecktime:
+            self.waitingongarderobe = False
+            self.current_coatchecktime = 0
+        return 0
+
+
     def step_dijkstra(self):
 
         if self.go_to_path is None:
@@ -255,6 +279,8 @@ class Agent:
                 # agent just got a drink, walk random to a random place
                 self.moving_random = True
                 self.max_random_moves = np.random.randint(self.min_random_steps, self.max_random_steps, 1)[0]
+
+
 
             # if agent went to directUpstairs, remove
             elif self.stairs_garderobe == 1:
@@ -332,7 +358,7 @@ class Agent:
 
         if best_pos is None:
             # self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
-            return 0
+            # return 0
             return self.run_dijkstra()
 
         self.unblock_point(self.current_pos)
@@ -345,10 +371,19 @@ class Agent:
                 self.update_gradient(-self.value)
                 raise ExitReached
 
+            if self.which_gradient_map == 0:
+                # agent has to wait for
+                self.waitingongarderobe = True
+
+
             if 0 < self.which_gradient_map < 5 and self.random_moves == 0:
                 # agent just got a drink, walk random to a random place
                 self.moving_random = True
                 self.max_random_moves = np.random.randint(self.min_random_steps, self.max_random_steps, 1)[0]
+
+            if 4 < self.which_gradient_map < 7 and self.random_moves == 0:
+                # agent just went to the bathroom, sits on the toilet
+                self.sitting_on_toilet = True
 
             # if agent went to directUpstairs, remove
             elif self.stairs_garderobe == 1:
@@ -429,6 +464,8 @@ class Agent:
 
         return 0
 
+
+
     def move(self):
         self.current_frame += 1
 
@@ -442,6 +479,15 @@ class Agent:
         # moving_chance_nr = np.random.choice(self.moving_chance, 1)
         if move_chance > self.moving_chance:
             return 0
+
+
+        #sitting on the toilet
+        if self.sitting_on_toilet:
+            return self.toiletbreak()
+
+        #waiting on coat
+        if self.waitingongarderobe:
+            return self.garderobewait()
 
         if self.moving_random and self.current_frame < self.end_goal_frame:
             if self.random_moves <= self.max_random_moves:

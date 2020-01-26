@@ -44,9 +44,6 @@ maze_original = load_map_from_file(map_filename)
 maze = load_map_from_file(map_filename)
 
 heatmap = heatmap_from_map(maze)
-exit_points = []
-for i in range(40, 60):
-    exit_points.append(Point(99, i))
 
 # exit_points = []
 # for i in range(10, 20):
@@ -103,6 +100,7 @@ tile_size = [(w_prev - 2 * (offset + 1)) / len(maze[0]), (h_prev - 2 * (offset +
 
 # Here we give the direction maps to the agent manager
 agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, start_goals, mid_goals, end_goals, heatmap)
+
 # agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, ingangen, heatmap)
 
 mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
@@ -258,10 +256,7 @@ Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noor
 Validation_dataframe=np.transpose(Validation_dataframe)
 Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
 
-print([agents.noordDensity, agents.zuidDensity, agents.gardiDensity])
-
 Density_dataframe = pd.DataFrame([agents.noordDensity, agents.zuidDensity, agents.gardiDensity])
-print(Density_dataframe)
 Density_dataframe=np.transpose(Density_dataframe)
 Density_dataframe.columns =['Density Zuid', 'Density Noord', 'Density Garderobe']
 
@@ -269,6 +264,6 @@ print(Validation_dataframe)
 print(Density_dataframe)
 
 
-mazeTexture.release()
+# mazeTexture.release()
 glfw.terminate()
 plot_heatmap(agents.heatmap)
