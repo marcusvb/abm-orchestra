@@ -2,6 +2,7 @@ from OpenGL.GL import *
 from math import *
 from model.gradient_agent.AgentGradient import Agent
 #from model.agent.Agent import Agent
+from model.gradient_agent.RunConf import RunConf
 
 class AgentGfx:
     def __init__(self, position: [float, float], map_position: [int, int], angle: float, color: [float, float, float],
@@ -21,7 +22,10 @@ class AgentGfx:
     def draw(self, radius):
         direction = [cos(self.agent.facing_angle) + self.position[0], sin(self.agent.facing_angle) + self.position[1]]
 
-        glColor3f(self.color[0], self.color[1], self.color[2])
+        if self.agent.PATHING_CONFIG == RunConf.GRADIENT:
+            glColor3f(0, 1, 0)
+        else:
+            glColor3f(1, 0, 0)
 
         # draw circle
 
@@ -58,3 +62,5 @@ class AgentGfx:
         glVertex2f(self.position[0], self.position[1])
         glVertex2f(self.position[0] + vec[0], self.position[1] - vec[1])
         glEnd()
+
+        return self.agent.PATHING_CONFIG

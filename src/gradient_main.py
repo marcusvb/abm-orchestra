@@ -17,8 +17,7 @@ import pandas as pd
 import numpy as np
 
 BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
-FINAL_FRAME_COUNT = RunTime.MAX_FRAMES
-VISUALIZE = True
+VISUALIZE = RunTime.VISUALIZE
 
 if not glfw.init():
     exit(1)
@@ -249,7 +248,7 @@ while not glfw.window_should_close(window):
         agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
 
     #  Set the window to close terminate the outer whileloop
-    if frame_count > FINAL_FRAME_COUNT:
+    if frame_count > RunTime.FINAL_STOP_FRAME:
         glfw.set_window_should_close(window, True)
 
 Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])

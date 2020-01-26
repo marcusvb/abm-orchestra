@@ -16,6 +16,7 @@ class Agent:
                  collision_map: [[(int, int)]], stairs_garderobe, end_goal_frame, current_frame, moving_chance, which_gradient_map=0, bound_size=2, pathing_config=RunConf.GRADIENT):
         self.start = start_position
         self.end = end_position
+        self.wait_a_little = False
         self.current_pos = self.start
         self.front_collision_size = bound_size
         self.direction_map = gradient_maps[which_gradient_map]
@@ -65,6 +66,8 @@ class Agent:
 
         # for the random moving and drink drinking
         self.round_nr = 0
+
+        # for the random moving and drink drinking
         self.moving_random = False
         self.random_moves = 0
         self.max_random_moves = 0
@@ -280,8 +283,6 @@ class Agent:
                 self.moving_random = True
                 self.max_random_moves = np.random.randint(self.min_random_steps, self.max_random_steps, 1)[0]
 
-
-
             # if agent went to directUpstairs, remove
             elif self.stairs_garderobe == 1:
                 self.update_gradient(-self.value)
@@ -355,6 +356,7 @@ class Agent:
 
         available_positions = self.get_available_moves_gradient()
         best_pos = self.get_best_move_gradient(available_positions)
+        self.PATHING_CONFIG = RunConf.GRADIENT
 
         if best_pos is None:
             # self.PATHING_CONFIG = RunConf.DIJKSTRA   # Sets dijkstra running and calls the first dijkstra
@@ -464,6 +466,20 @@ class Agent:
 
         return 0
 
+    def walk_around_and_drink(self):
+        # If we need to random move
+        if self.drinking_frames < self.max_drinking_frames:
+            if self.drinking_frames % 10 == 0 and not self.wait_a_little:
+                self.wait_a_little = True
+                self.random_mover()
+            else:
+                self.drinking_frames += 1
+                self.wait_a_little = False
+                return 0
+        else:
+            self.moving_random = False
+            self.drinking_frames = 0
+        return 0
 
 
     def move(self):
