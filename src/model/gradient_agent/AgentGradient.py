@@ -7,18 +7,19 @@ from model.agent.Agent import ExitReached
 
 from model.environment.environment_enum import Env
 from model.gradient_agent.RunConf import RunConf
-from model.gradient_agent.MapConfs import MapConfs
-from model.gradient_agent.MapConfs import Chances
+
+
 
 
 class Agent:
     def __init__(self, start_position: (int, int), end_position: [(int, int)], gradient_maps,
-                 collision_map: [[(int, int)]], stairs_garderobe, end_goal_frame, current_frame, moving_chance, which_gradient_map=0, bound_size=2, pathing_config=RunConf.GRADIENT):
+                 collision_map: [[(int, int)]], stairs_garderobe, end_goal_frame, current_frame, moving_chance, MapConf, which_gradient_map=0, bound_size=2):
         self.start = start_position
         self.end = end_position
         self.wait_a_little = False
         self.current_pos = self.start
         self.front_collision_size = bound_size
+
         self.direction_map = gradient_maps[which_gradient_map]
         self.collision_map = collision_map
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, end_position[0])
@@ -26,8 +27,12 @@ class Agent:
         self.all_directions = gradient_maps
         self.gradient_space_size = 4
 
-        self.PATHING_CONFIG = pathing_config
-        self.GOAL_THRESHOLD = MapConfs.GOAL_THRESHOLD
+        print(MapConf)
+
+        self.MapConf = MapConf
+
+        self.PATHING_CONFIG = RunConf.GRADIENT
+        self.GOAL_THRESHOLD = self.MapConf.MapConfs.GOAL_THRESHOLD
         self.anger = 0
 
         # added for graph map
@@ -37,7 +42,7 @@ class Agent:
         self.viewing_range = 2
         self.value = 10
         self.update_gradient(self.value)
-        self.agent_weight_percent = Chances.AGENT_WEIGHT_PERCENT
+        self.agent_weight_percent = self.MapConf.Chances.AGENT_WEIGHT_PERCENT
         self.go_to_path = None
 
         # to make sure everyone moves at their own pace
@@ -47,12 +52,12 @@ class Agent:
         self.current_frame = current_frame
 
         # chances where to walk
-        self.toilet_chance = Chances.TOILET
-        self.nz_chance = Chances.NOORD_ZUID
-        self.jb_chance = Chances.JUUL_BEA
-        self.spiegel_chance = Chances.SPIEGEL
-        self.champ_chance = Chances.CHAMP
-        self.round_walking_chance = Chances.ROUND_WALKING
+        self.toilet_chance = self.MapConf.Chances.TOILET
+        self.nz_chance = self.MapConf.Chances.NOORD_ZUID
+        self.jb_chance = self.MapConf.Chances.JUUL_BEA
+        self.spiegel_chance = self.MapConf.Chances.SPIEGEL
+        self.champ_chance = self.MapConf.Chances.CHAMP
+        self.round_walking_chance = self.MapConf.Chances.ROUND_WALKING
 
         # toilet waiting
         self.sitting_on_toilet = False
@@ -62,7 +67,7 @@ class Agent:
         # waiting for coatcheck
         self.waitingongarderobe = False
         self.current_coatchecktime = 0
-        self.total_coatchecktime = 20
+        self.total_coatchecktime = 1
 
         # for the random moving and drink drinking
         self.round_nr = 0
@@ -72,9 +77,9 @@ class Agent:
         self.random_moves = 0
         self.max_random_moves = 0
         self.drinking_frames = 0
-        self.min_random_steps = Chances.MIN_RAND_STEPS
-        self.max_random_steps = Chances.MAX_RAND_STEPS
-        self.max_drinking_frames = Chances.DRINKING_FRAMES
+        self.min_random_steps = self.MapConf.Chances.MIN_RAND_STEPS
+        self.max_random_steps = self.MapConf.Chances.MAX_RAND_STEPS
+        self.max_drinking_frames = self.MapConf.Chances.DRINKING_FRAMES
 
     def update_facing_angle(self, new_pos):
         self.facing_angle = nav.get_angle_of_direction_between_points(self.current_pos, new_pos)
@@ -270,7 +275,7 @@ class Agent:
 
         # Validations passed, move the agent
         self.unblock_point(self.current_pos)
-        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.GOAL_THRESHOLD:
+        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.MapConf.MapConfs.GOAL_THRESHOLD:
 
             # check if agent is at a location where it should be removed.
             if self.which_gradient_map == len(self.all_gradients) - 1:
@@ -365,7 +370,7 @@ class Agent:
 
         self.unblock_point(self.current_pos)
 
-        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.GOAL_THRESHOLD:
+        if best_pos == Env.EXIT or self.direction_map[best_pos[0]][best_pos[1]] < self.MapConf.MapConfs.GOAL_THRESHOLD:
 
             # check if agent is at a location where it should be removed.
             if self.which_gradient_map == len(self.all_gradients) - 1:
@@ -411,6 +416,11 @@ class Agent:
                                                      p=[0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
                     self.which_gradient_map = new_direction[0]
                 else:
+                    print(self.jb_chance, self.spiegel_chance, self.champ_chance,
+                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2)
+                    print(sum([self.jb_chance, self.spiegel_chance, self.champ_chance,
+                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2]))
+
                     new_direction = np.random.choice(len(self.all_gradients), 1,
                                                      p=[0, self.jb_chance, self.spiegel_chance, self.champ_chance,
                                                         self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,

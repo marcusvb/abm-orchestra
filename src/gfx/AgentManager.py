@@ -5,16 +5,13 @@ from model.agent.Agent import ExitReached
 import numpy as np
 import pandas as pd
 from scipy import stats
-from model.gradient_agent.MapConfs import Chances
-from model.gradient_agent.MapConfs import RunTime
+
 from model.gradient_agent.RunConf import RunConf
-
-
 
 
 class AgentManager:
     def __init__(self, initial_tile_size: [float, float], client_width: int, client_height: int, map_offset: int,
-                 exit, maze, start_goals, direct, end_goals, heatmap):
+                 exit, maze, start_goals, direct, end_goals, heatmap, MapConf):
         self.agent_list = list()
         self.tile_size = initial_tile_size
         self.agent_radius = (initial_tile_size[1] - initial_tile_size[1] / 5) / 2
@@ -28,6 +25,7 @@ class AgentManager:
         self.heatmap = heatmap
         self.start_goals = start_goals
         self.end_goals = end_goals
+        self.MapConf = MapConf
 
         self.zuidValidationCount = 0
         self.noordValidationCount = 0
@@ -67,7 +65,6 @@ class AgentManager:
             print("This frame", np.round(dijkstra_count/count, 2) * 100, "% were dijkstra")
 
     def density_count(self):
-
 
         xmin_Noord = 100
         xmax_Noord = 149
@@ -117,7 +114,7 @@ class AgentManager:
         ]
 
         if self.maze_for_agent[position[0]][position[1]] == 0:
-            self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, all_directions, stairs_garderobe, end_goal_frame, current_frame, moving_chance))
+            self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, all_directions, stairs_garderobe, end_goal_frame, current_frame, moving_chance, self.MapConf))
         else:
             print('Agent can not be added on this pos')
 
@@ -186,7 +183,7 @@ class AgentManager:
 
         # 5 % will go to the stairs garderobe (start map 1)
         garderobe_choice = np.random.random()
-        if garderobe_choice < Chances.STAIRS_GARDEROBE:
+        if garderobe_choice < self.MapConf.Chances.STAIRS_GARDEROBE:
             all_directions.append(self.start_goals[1])
             stairs_garderobe = 1
         else:
@@ -196,13 +193,13 @@ class AgentManager:
         all_directions = all_directions + self.direct
 
         entrance_choice = np.random.random()
-        if entrance_choice < Chances.TORENTJE:
+        if entrance_choice < self.MapConf.Chances.TORENTJE:
             # torentje entrances
             entrances = self.end_goals[0]
         else:
             # zaal entrances, 1/3 achteringang
             entrance_choice = np.random.random()
-            if entrance_choice < Chances.BACK_ENTRANCE:
+            if entrance_choice < self.MapConf.Chances.BACK_ENTRANCE:
 
                 # achteringang entrances
                 entrances = self.end_goals[1][1]
@@ -221,7 +218,7 @@ class AgentManager:
         # decide moving chance of the agent, now everyone the same always walking
         moving_chance = 1
 
-        end_goal_frame = self.scaleDistribution(current_frame - 1, RunTime.MAX_FRAMES)
+        end_goal_frame = self.scaleDistribution(current_frame - 1, self.MapConf.RunTime.MAX_FRAMES)
 
         return all_directions, stairs_garderobe, moving_chance, end_goal_frame
 
