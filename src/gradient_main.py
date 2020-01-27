@@ -26,7 +26,7 @@ class GradientMain:
     def __init__(self, mapConf):
         self.MapConf = mapConf
 
-    def run(self):
+    def run(self, sema=None):
         if not glfw.init():
             exit(1)
 
@@ -278,6 +278,8 @@ class GradientMain:
 
         # mazeTexture.release()
         glfw.terminate()
-        plot_heatmap(agents.heatmap)
+        # plot_heatmap(agents.heatmap)
+        sema.release()
 
+        return 0
 

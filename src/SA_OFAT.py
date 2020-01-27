@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 from gradient_main import GradientMain
 from model.gradient_agent import MapConfs as mapConf
+import multiprocessing
 
 
 # We define our variables and bounds
@@ -28,11 +29,10 @@ problem = {
 # Generate samples
 param_values = saltelli.sample(problem, 1000)
 
-print(param_values)
-#
+
+sema = multiprocessing.Semaphore(multiprocessing.cpu_count())
+jobs = []
 for par in param_values:
-
-
     # change params in MapConfs.py
 
     parameterMapConf = mapConf
@@ -49,6 +49,12 @@ for par in param_values:
     parameterMapConf.Chances.SPIEGEL = parameterMapConf.Chances.SPIEGEL / SCALE_VARIABLE
     parameterMapConf.Chances.CHAMP = parameterMapConf.Chances.CHAMP / SCALE_VARIABLE
 
+    sema.acquire()
+    G = GradientMain(parameterMapConf)
 
-    GradientMain(parameterMapConf).run()
+    p = multiprocessing.Process(target=G.run, args=(sema,))
+    jobs.append(p)
+    p.start()
 
+for p in jobs:
+    p.join()
