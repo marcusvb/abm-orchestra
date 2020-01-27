@@ -416,11 +416,11 @@ class Agent:
                                                      p=[0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
                     self.which_gradient_map = new_direction[0]
                 else:
-                    print(self.jb_chance, self.spiegel_chance, self.champ_chance,
-                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2)
-                    print(sum([self.jb_chance, self.spiegel_chance, self.champ_chance,
-                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2]))
-
+                    print(sum([0, self.jb_chance, self.spiegel_chance, self.champ_chance,
+                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,
+                                                        0, 0, 0, 0, 0]), [0, self.jb_chance, self.spiegel_chance, self.champ_chance,
+                                                        self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,
+                                                        0, 0, 0, 0, 0])
                     new_direction = np.random.choice(len(self.all_gradients), 1,
                                                      p=[0, self.jb_chance, self.spiegel_chance, self.champ_chance,
                                                         self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,

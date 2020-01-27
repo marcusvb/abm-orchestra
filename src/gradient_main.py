@@ -268,13 +268,8 @@ class GradientMain:
         Density_dataframe=np.transpose(Density_dataframe)
         Density_dataframe.columns =['Density Zuid', 'Density Noord', 'Density Garderobe']
 
-        print(Validation_dataframe)
-        print(Density_dataframe)
-
-
         # mazeTexture.release()
         glfw.terminate()
         plot_heatmap(agents.heatmap)
 
-x = GradientMain(MapConf)
-x.run()
+

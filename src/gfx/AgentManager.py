@@ -61,8 +61,8 @@ class AgentManager:
                 dijkstra_count += 1
             count += 1
 
-        if count:
-            print("This frame", np.round(dijkstra_count/count, 2) * 100, "% were dijkstra")
+        # if count:
+            # print("This frame", np.round(dijkstra_count/count, 2) * 100, "% were dijkstra")
 
     def density_count(self):
 

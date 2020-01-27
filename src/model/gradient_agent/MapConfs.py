@@ -12,7 +12,7 @@ class Chances():
     BACK_ENTRANCE = 1/3
 
     # chances where to go
-    TOILET = 0.85
+    TOILET = 0.2
     NOORD_ZUID = 0.4
     JUUL_BEA = 0.15
     SPIEGEL = 0.2
