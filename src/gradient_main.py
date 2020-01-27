@@ -274,6 +274,7 @@ class GradientMain:
             #  Set the window to close terminate the outer whileloop
             if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME/8:
 
+                agents.density_count()
                 csv_Dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList,
                                               agents.champagneValidationCountList, agents.noordDensity,
                                               agents.zuidDensity, agents.gardiDensity])
@@ -304,3 +305,4 @@ class GradientMain:
 
         return 0
 
+# GradientMain(MapConf).run()

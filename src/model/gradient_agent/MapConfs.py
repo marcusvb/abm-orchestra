@@ -31,7 +31,7 @@ class Chances():
 
     MIN_RAND_STEPS = 5
     MAX_RAND_STEPS = 15
-    DRINKING_FRAMES = int(1000/5)
+    DRINKING_FRAMES = int(1000/4)
 
     # used for the gradient map for dijkstra
     AGENT_WEIGHT_PERCENT = 0.10

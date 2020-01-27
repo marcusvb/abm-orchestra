@@ -15,24 +15,23 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 from gradient_main import GradientMain
 from model.gradient_agent import MapConfs as mapConf
-import multiprocess
+import multiprocessing as multiprocess
 
 
 # We define our variables and bounds
 problem = {
     'num_vars': 3,
     'names': ['Agent Weight', 'Random walker probability', 'Toilet probability'],
-    'bounds': [[0.01, 0.5], [0.01, 0.5], [0.01, 0.5]]
+    'bounds': [[0.1, 0.7], [0.1, 0.7], [0.1, 0.7]]
 }
 
 
 if __name__ == '__main__':   
     # Generate samples
     param_values = saltelli.sample(problem, 1000)
-
-
     sema = multiprocess.Semaphore(multiprocess.cpu_count())
     lock = multiprocess.Lock()
+
     jobs = []
     id_holder = 0
     for par in param_values:
