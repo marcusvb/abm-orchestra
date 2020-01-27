@@ -31,7 +31,9 @@ param_values = saltelli.sample(problem, 1000)
 
 
 sema = multiprocessing.Semaphore(multiprocessing.cpu_count())
+lock = multiprocessing.Lock()
 jobs = []
+id_holder = 0
 for par in param_values:
     # change params in MapConfs.py
 
@@ -52,9 +54,10 @@ for par in param_values:
     sema.acquire()
     G = GradientMain(parameterMapConf)
 
-    p = multiprocessing.Process(target=G.run, args=(sema,))
+    p = multiprocessing.Process(target=G.run, args=(sema, lock, id_holder))
     jobs.append(p)
     p.start()
+    id_holder += 1
 
 for p in jobs:
     p.join()

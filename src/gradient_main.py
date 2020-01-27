@@ -26,7 +26,7 @@ class GradientMain:
     def __init__(self, mapConf):
         self.MapConf = mapConf
 
-    def run(self, sema=None):
+    def run(self, sema=None, lock=None, id=0):
         if not glfw.init():
             exit(1)
 
@@ -202,7 +202,7 @@ class GradientMain:
                 agents.step()
 
             if current_time - previous_time >= 1.0:
-                title = BASE_TITLE + " ( FRAME COUNT: " + str(frame_count) + " | Number Of Agents: " + str(
+                title = "ID: " + str(id) + " :: " +  BASE_TITLE + " ( FRAME COUNT: " + str(frame_count) + " | Number Of Agents: " + str(
                     len(agents.agent_list)) + " )" + " intensity: " + str(global_intensity)
                 glfw.set_window_title(window, title)
 
@@ -265,7 +265,10 @@ class GradientMain:
                                               agents.zuidDensity, agents.gardiDensity])
                 csv_Dataframe = np.transpose(csv_Dataframe)
 
+                # Use lock to mitigate datarace
+                lock.acquire()
                 csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                lock.release()
 
                 glfw.set_window_should_close(window, True)
 
