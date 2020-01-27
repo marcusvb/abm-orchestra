@@ -257,16 +257,24 @@ class GradientMain:
                 agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
 
             #  Set the window to close terminate the outer whileloop
-            if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME:
+            if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME/4:
+
+                csv_Dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList,
+                                              agents.champagneValidationCountList, agents.noordDensity,
+                                              agents.zuidDensity, agents.gardiDensity])
+                csv_Dataframe = np.transpose(csv_Dataframe)
+
+                csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+
                 glfw.set_window_should_close(window, True)
 
-        Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
-        Validation_dataframe=np.transpose(Validation_dataframe)
-        Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
-
-        Density_dataframe = pd.DataFrame([agents.noordDensity, agents.zuidDensity, agents.gardiDensity])
-        Density_dataframe=np.transpose(Density_dataframe)
-        Density_dataframe.columns =['Density Zuid', 'Density Noord', 'Density Garderobe']
+        # Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
+        # Validation_dataframe=np.transpose(Validation_dataframe)
+        # Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
+        #
+        # Density_dataframe = pd.DataFrame([agents.noordDensity, agents.zuidDensity, agents.gardiDensity])
+        # Density_dataframe=np.transpose(Density_dataframe)
+        # Density_dataframe.columns =['Density Zuid', 'Density Noord', 'Density Garderobe']
 
         # mazeTexture.release()
         glfw.terminate()

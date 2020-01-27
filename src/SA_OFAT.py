@@ -49,8 +49,6 @@ for par in param_values:
     parameterMapConf.Chances.SPIEGEL = parameterMapConf.Chances.SPIEGEL / SCALE_VARIABLE
     parameterMapConf.Chances.CHAMP = parameterMapConf.Chances.CHAMP / SCALE_VARIABLE
 
-    print(par[0], par[1], par[2])
-    # print(parameterMapConf)
 
     GradientMain(parameterMapConf).run()
 
