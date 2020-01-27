@@ -275,9 +275,9 @@ class GradientMain:
             if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME/8:
 
                 agents.density_count()
-                csv_Dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList,
-                                              agents.champagneValidationCountList, agents.noordDensity,
-                                              agents.zuidDensity, agents.gardiDensity])
+                csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
+                                              agents.champagneValidationCount, agents.noordDensity[0],
+                                              agents.zuidDensity[0], agents.gardiDensity[0]])
                 csv_Dataframe = np.transpose(csv_Dataframe)
 
                 # Use lock to mitigate datarace
