@@ -208,7 +208,8 @@ class GradientMain:
 
                 # If we don't opengl visualization we print the sim status to stdout
                 if not self.MapConf.RunTime.VISUALIZE:
-                    print(title)
+                    if frame_count % 20 == 0:
+                        print(title)
 
                 # I commented this so I could use frame_count for changing the garderobe
                 # frame_count = 0

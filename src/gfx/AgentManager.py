@@ -116,7 +116,8 @@ class AgentManager:
         if self.maze_for_agent[position[0]][position[1]] == 0:
             self.agent_list.append(AgentGfx(correct_pos, position, angle, color, self.maze_for_agent, all_directions, stairs_garderobe, end_goal_frame, current_frame, moving_chance, self.MapConf))
         else:
-            print('Agent can not be added on this pos')
+            pass
+            # print('Agent can not be added on this pos')
 
     def flowvalidation_update(self):
         self.zuidValidationCountList.append(self.zuidValidationCount)
