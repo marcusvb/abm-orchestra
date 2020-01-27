@@ -19,17 +19,14 @@ from model.gradient_agent.RunConf import RunConf
 import pandas as pd
 import numpy as np
 
+
 BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
 
 class GradientMain:
     def __init__(self, mapConf):
         self.MapConf = mapConf
 
-    def run(self):
-
-        #validationlist=[]
-
-
+    def run(self, sema=None, lock=None, id=0):
         if not glfw.init():
             exit(1)
 
@@ -219,13 +216,14 @@ class GradientMain:
                 agents.step()
 
             if current_time - previous_time >= 1.0:
-                title = BASE_TITLE + " ( FRAME COUNT: " + str(frame_count) + " | Number Of Agents: " + str(
+                title = "ID: " + str(id) + " :: " +  BASE_TITLE + " ( FRAME COUNT: " + str(frame_count) + " | Number Of Agents: " + str(
                     len(agents.agent_list)) + " )" + " intensity: " + str(global_intensity)
                 glfw.set_window_title(window, title)
 
                 # If we don't opengl visualization we print the sim status to stdout
                 if not self.MapConf.RunTime.VISUALIZE:
-                    print(title)
+                    if frame_count % 20 == 0:
+                        print(title)
 
                 # I commented this so I could use frame_count for changing the garderobe
                 # frame_count = 0
@@ -281,7 +279,10 @@ class GradientMain:
                                               agents.zuidDensity, agents.gardiDensity])
                 csv_Dataframe = np.transpose(csv_Dataframe)
 
+                # Use lock to mitigate datarace
+                lock.acquire()
                 csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                lock.release()
 
                 glfw.set_window_should_close(window, True)
 
@@ -298,7 +299,8 @@ class GradientMain:
 
         # mazeTexture.release()
         glfw.terminate()
-        plot_heatmap(agents.heatmap)
+        # plot_heatmap(agents.heatmap)
+        sema.release()
 
+        return 0
 
-GradientMain(MapConf).run()

@@ -26,6 +26,7 @@ class Agent:
         self.all_gradients = gradient_maps
         self.all_directions = gradient_maps
         self.gradient_space_size = 4
+
         self.MapConf = MapConf
 
         self.PATHING_CONFIG = RunConf.GRADIENT
@@ -413,7 +414,6 @@ class Agent:
                                                      p=[0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0])
                     self.which_gradient_map = new_direction[0]
                 else:
-
                     new_direction = np.random.choice(len(self.all_gradients), 1,
                                                      p=[0, self.jb_chance, self.spiegel_chance, self.champ_chance,
                                                         self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,
