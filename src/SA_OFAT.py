@@ -15,7 +15,8 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 from gradient_main import GradientMain
 from model.gradient_agent import MapConfs as mapConf
-import multiprocessing as multiprocess
+# import multiprocessing as multiprocess # Only voor CEOtje
+import multiprocess
 
 
 # We define our variables and bounds
