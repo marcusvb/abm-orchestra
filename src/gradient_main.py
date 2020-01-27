@@ -19,7 +19,6 @@ from model.gradient_agent.RunConf import RunConf
 import pandas as pd
 import numpy as np
 
-
 BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
 
 class GradientMain:
@@ -27,6 +26,10 @@ class GradientMain:
         self.MapConf = mapConf
 
     def run(self):
+
+        #validationlist=[]
+
+
         if not glfw.init():
             exit(1)
 
@@ -114,9 +117,19 @@ class GradientMain:
         mazeTexture = MazeTexture(maze_original, w_prev, h_prev, offset, tile_size)
 
         def plot_heatmap(map):
+            plt.figure(dpi=300)
             sns.heatmap(map, cmap='jet')
             plt.show()
 
+
+        def count_crowded_area_spots(map):
+
+            measure = 0
+            for row in map[57:140]:
+                for point in row[81:90]:
+                    measure += point
+
+            return point
         """
         Model control via IO.
         This should actually go to a separate handler in folder, and then cleanup missing references
@@ -185,6 +198,10 @@ class GradientMain:
 
                 agents.flowvalidation_update()
                 agents.density_count()
+
+
+                #FOR VALIDATION ONLY TAKE THE VALUES IN ZUID AND APPEND TO VALIDATIONLIST
+                # validationlist.append(agents.flowvalidationZuid, agents.densityZuid)
 
                 # if statement can be removed when quarter is 2000 and runtime is 8000
                 if len(garderobes) > 1:
@@ -257,7 +274,7 @@ class GradientMain:
                 agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
 
             #  Set the window to close terminate the outer whileloop
-            if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME/4:
+            if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME/8:
 
                 csv_Dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList,
                                               agents.champagneValidationCountList, agents.noordDensity,
@@ -267,6 +284,9 @@ class GradientMain:
                 csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
 
                 glfw.set_window_should_close(window, True)
+
+        # validation_Dataframe = pd.DataFrame(Validationlist)
+        # csv_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
 
         # Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
         # Validation_dataframe=np.transpose(Validation_dataframe)
@@ -281,3 +301,4 @@ class GradientMain:
         plot_heatmap(agents.heatmap)
 
 
+GradientMain(MapConf).run()

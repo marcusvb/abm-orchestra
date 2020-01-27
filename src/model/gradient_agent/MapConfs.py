@@ -39,7 +39,7 @@ class Chances():
 class RunTime():
 
     VISUALIZE = True
-    MAX_FRAMES = 1000
+    MAX_FRAMES = 2000
     FINAL_STOP_FRAME = MAX_FRAMES
 
     Z2_Q1 = 0.2

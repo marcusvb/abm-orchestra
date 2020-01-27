@@ -154,8 +154,9 @@ class AgentManager:
                 self.validate_step(ag_x, ag_y)
 
                 #DO NOT ADD COFFEE DRINKING AGENTS INTO HEATMAP
-                if agent.agent.moving_random == False:
+                if agent.agent.moving_random == False or agent.agent.waitingongarderobe == False or agent.agent.sitting_on_toilet == False:
                     self.heatmap[ag_y][ag_x] += 1
+
 
                 try:
                     anger = agent.move()
