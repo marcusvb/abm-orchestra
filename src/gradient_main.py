@@ -293,9 +293,9 @@ class GradientMain:
         # Use lock to mitigate datarace
 
         validation_Dataframe = pd.DataFrame([validationlist])
-        # lock.acquire()
+        lock.acquire()
         validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-        # lock.release()
+        lock.release()
         # Validation_dat/aframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
         # Validation_dataframe=np.transpose(Validation_dataframe)
         # Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
@@ -309,11 +309,11 @@ class GradientMain:
         # plot_heatmap(agents.heatmap)
         with open(r'Logs/Heatmap_pickle', 'wb') as fp:
             pickle.dump(agents.heatmap, fp)
-        # sema.release()
+        sema.release()
 
         return 0
 
 # x = pd.read_csv(r'Logs/Validation_output.txt')
 # x.columns = ['Q1', 'Q2', 'Q3', 'Q4']
 
-GradientMain(MapConf).run()
+# GradientMain(MapConf).run()
