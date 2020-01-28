@@ -313,4 +313,4 @@ class GradientMain:
 # x = pd.read_csv(r'Logs/Validation_output.txt')
 # x.columns = ['Q1', 'Q2', 'Q3', 'Q4']
 
-GradientMain(MapConf).run()
+# GradientMain(MapConf).run()
