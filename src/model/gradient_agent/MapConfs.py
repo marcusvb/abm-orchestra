@@ -15,7 +15,7 @@ class Chances():
     TOILET = 0.1
     NOORD_ZUID = 0.5
     JUUL_BEA = 0.1
-    SPIEGEL = 0.05
+    SPIEGEL = 0.15
     CHAMP = 0.05
 
     SCALE_VARIABLE = TOILET + NOORD_ZUID + JUUL_BEA + SPIEGEL + CHAMP
@@ -38,7 +38,7 @@ class Chances():
 
 class RunTime():
 
-    VISUALIZE = True
+    VISUALIZE = False
     MAX_FRAMES = 8000
     FINAL_STOP_FRAME = MAX_FRAMES
 
