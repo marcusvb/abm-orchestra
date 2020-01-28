@@ -31,13 +31,9 @@ class AgentManager:
         self.noordValidationCount = 0
         self.champagneValidationCount = 0
 
-        self.zuidValidationCountList = []
-        self.noordValidationCountList = []
-        self.champagneValidationCountList = []
-
-        self.noordDensity = []
-        self.zuidDensity = []
-        self.gardiDensity = []
+        self.noordDensity = 0
+        self.zuidDensity = 0
+        self.gardiDensity = 0
 
     def set_client_tile_size(self, client_width: int, client_height: int, tile_size: [float, float]):
         self.width = client_width
@@ -77,7 +73,7 @@ class AgentManager:
             ag_y, ag_x = ag.agent.current_pos
             if ag_x > xmin_Noord and ag_x < xmax_Noord and ag_y > ymin_Noord and ag_y < ymax_Noord:
                 Noord += 1
-        self.noordDensity.append(Noord)
+        self.noordDensity = Noord
 
         xmin_Zuid = 94
         xmax_Zuid = 144
@@ -90,7 +86,7 @@ class AgentManager:
             ag_y, ag_x = ag.agent.current_pos
             if ag_x > xmin_Zuid and ag_x < xmax_Zuid and ag_y > ymin_Zuid and ag_y < ymax_Zuid:
                 Zuid += 1
-        self.zuidDensity.append(Zuid)
+        self.zuidDensity = Zuid
 
         xmin_Gard = 81
         xmax_Gard = 90
@@ -103,7 +99,7 @@ class AgentManager:
             ag_y, ag_x = ag.agent.current_pos
             if ag_x > xmin_Gard and ag_x < xmax_Gard and ag_y > ymin_Gard and ag_y < ymax_Gard:
                 Garderobe += 1
-        self.gardiDensity.append(Garderobe)
+        self.gardiDensity = Garderobe
 
     def add_new(self, position, angle: float, color: [float, float, float], current_frame):
         all_directions, stairs_garderobe, moving_chance, end_goal_frame = self.get_specifics(current_frame)
@@ -119,10 +115,7 @@ class AgentManager:
             pass
             # print('Agent can not be added on this pos')
 
-    def flowvalidation_update(self):
-        self.zuidValidationCountList.append(self.zuidValidationCount)
-        self.noordValidationCountList.append(self.noordValidationCount)
-        self.champagneValidationCountList.append(self.champagneValidationCount)
+    def flowvalidation_reset(self):
 
         self.zuidValidationCount = 0
         self.noordValidationCount = 0

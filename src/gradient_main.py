@@ -51,6 +51,7 @@ class GradientMain:
         maze = load_map_from_file(map_filename)
 
         heatmap = heatmap_from_map(maze)
+        validationlist = []
 
         # exit_points = []
         # for i in range(10, 20):
@@ -193,12 +194,11 @@ class GradientMain:
             # next quarter changes
             if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 4) == 0:
 
-                agents.flowvalidation_update()
-                agents.density_count()
-
-
                 #FOR VALIDATION ONLY TAKE THE VALUES IN ZUID AND APPEND TO VALIDATIONLIST
-                # validationlist.append(agents.flowvalidationZuid, agents.densityZuid)
+
+                agents.density_count()
+                validationlist.append([agents.zuidValidationCount, agents.zuidDensity])
+                agents.flowvalidation_reset()
 
                 # if statement can be removed when quarter is 2000 and runtime is 8000
                 if len(garderobes) > 1:
@@ -272,24 +272,29 @@ class GradientMain:
                 agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
 
             #  Set the window to close terminate the outer whileloop
-            if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME/8:
-
-                agents.density_count()
-                csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
-                                              agents.champagneValidationCount, agents.noordDensity[0],
-                                              agents.zuidDensity[0], agents.gardiDensity[0]])
-                csv_Dataframe = np.transpose(csv_Dataframe)
-
-                # Use lock to mitigate datarace
-                lock.acquire()
-                csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
-                lock.release()
-
+            if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME:
                 glfw.set_window_should_close(window, True)
 
-        # validation_Dataframe = pd.DataFrame(Validationlist)
-        # csv_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
 
+
+
+                # agents.density_count()
+                # csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
+                #                               agents.champagneValidationCount, agents.noordDensity[0],
+                #                               agents.zuidDensity[0], agents.gardiDensity[0]])
+                # csv_Dataframe = np.transpose(csv_Dataframe)
+                #
+                # # Use lock to mitigate datarace
+                # lock.acquire()
+                # csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                # lock.release()
+
+        # Use lock to mitigate datarace
+
+        validation_Dataframe = pd.DataFrame([validationlist])
+        lock.acquire()
+        validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
+        lock.release()
         # Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
         # Validation_dataframe=np.transpose(Validation_dataframe)
         # Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
@@ -305,4 +310,7 @@ class GradientMain:
 
         return 0
 
-# GradientMain(MapConf).run()
+# x = pd.read_csv(r'Logs/Validation_output.txt')
+# x.columns = ['Q1', 'Q2', 'Q3', 'Q4']
+
+GradientMain(MapConf).run()

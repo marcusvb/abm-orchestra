@@ -26,7 +26,7 @@ class Chances():
     SPIEGEL = SPIEGEL / SCALE_VARIABLE
     CHAMP = CHAMP / SCALE_VARIABLE
 
-    ROUND_WALKING = 0.2
+    ROUND_WALKING = 0.6
 
 
     MIN_RAND_STEPS = 5
@@ -42,14 +42,25 @@ class RunTime():
     MAX_FRAMES = 8000
     FINAL_STOP_FRAME = MAX_FRAMES
 
-    Z2_Q1 = 0.2
-    Z2_Q2 = 0.15
-    Z2_Q3 = 0.15
-    Z2_Q4 = 0.1
-    Z1_Q1 = 0.1
-    Z1_Q2 = 0.075
-    Z1_Q3 = 0.075
-    Z1_Q4 = 0.05
+    # Z2_Q1 = 0.2
+    # Z2_Q2 = 0.15
+    # Z2_Q3 = 0.15
+    # Z2_Q4 = 0.1
+    #
+    # Z1_Q1 = 0.1
+    # Z1_Q2 = 0.075
+    # Z1_Q3 = 0.075
+    # Z1_Q4 = 0.05
+
+    Z2_Q1 = 1/(4*6)
+    Z2_Q2 = 3/(16*6)
+    Z2_Q3 = 3/(16*6)
+    Z2_Q4 = 1/(8*6)
+
+    Z1_Q1 = 1/(8*12)
+    Z1_Q2 = 1/(12*12)
+    Z1_Q3 = 1/(12*12)
+    Z1_Q4 = 1/(16*12)
 
 
 
