@@ -65,7 +65,7 @@ class Agent:
         # waiting for coatcheck
         self.waitingongarderobe = False
         self.current_coatchecktime = 0
-        self.total_coatchecktime = 1
+        self.total_coatchecktime = 10
 
         # for the random moving and drink drinking
         self.round_nr = 0

@@ -12,8 +12,8 @@ class Chances():
     BACK_ENTRANCE = 1/3
 
     # chances where to go
-    TOILET = 0.2
-    NOORD_ZUID = 0.4
+    TOILET = 0.1
+    NOORD_ZUID = 0.5
     JUUL_BEA = 0.15
     SPIEGEL = 0.2
     CHAMP = 0.05
@@ -38,29 +38,23 @@ class Chances():
 
 class RunTime():
 
-    VISUALIZE = False
-    MAX_FRAMES = 8000
+    VISUALIZE = True
+    MAX_FRAMES = 1000
     FINAL_STOP_FRAME = MAX_FRAMES
 
-    # Z2_Q1 = 0.2
-    # Z2_Q2 = 0.15
-    # Z2_Q3 = 0.15
-    # Z2_Q4 = 0.1
-    #
-    # Z1_Q1 = 0.1
-    # Z1_Q2 = 0.075
-    # Z1_Q3 = 0.075
-    # Z1_Q4 = 0.05
+    FRACTION = 1/3 * 2000 / 8000  #fraction that enters is the total number of visitors divided by the number of frames
+    #1/3 comes from the fact that in gradient_main.py 2 people enter Z2 and 1 person enters Z1 if sample is less than the probability FRACTION
 
-    Z2_Q1 = 1/(4*6)
-    Z2_Q2 = 3/(16*6)
-    Z2_Q3 = 3/(16*6)
-    Z2_Q4 = 1/(8*6)
+    Z2_Q1 = FRACTION * 1.25
+    Z2_Q2 = FRACTION
+    Z2_Q3 = FRACTION
+    Z2_Q4 = FRACTION * 0.75
 
-    Z1_Q1 = 1/(8*12)
-    Z1_Q2 = 1/(12*12)
-    Z1_Q3 = 1/(12*12)
-    Z1_Q4 = 1/(16*12)
+
+    Z1_Q1 = FRACTION * 1.25
+    Z1_Q2 = FRACTION
+    Z1_Q3 = FRACTION
+    Z1_Q4 = FRACTION * 1.25
 
 
 

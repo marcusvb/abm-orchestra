@@ -3,6 +3,7 @@ from OpenGL.GL import *
 import random
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pickle
 
 from gfx.MazeTexture import MazeTexture
 from model.direction_map.DirectionMap import DirectionMap
@@ -292,10 +293,10 @@ class GradientMain:
         # Use lock to mitigate datarace
 
         validation_Dataframe = pd.DataFrame([validationlist])
-        lock.acquire()
+        # lock.acquire()
         validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-        lock.release()
-        # Validation_dataframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
+        # lock.release()
+        # Validation_dat/aframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
         # Validation_dataframe=np.transpose(Validation_dataframe)
         # Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
         #
@@ -306,7 +307,9 @@ class GradientMain:
         # mazeTexture.release()
         glfw.terminate()
         # plot_heatmap(agents.heatmap)
-        sema.release()
+        with open(r'Logs/Heatmap_pickle', 'a+') as fp:
+            pickle.dump(agents.heatmap, fp)
+        # sema.release()
 
         return 0
 
