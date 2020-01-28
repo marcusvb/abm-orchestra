@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     jobs = []
     id_holder = 0
-    maxruns 100
+    maxruns = 100
     for i in range(maxruns):
         # change params in MapConfs.py
 
