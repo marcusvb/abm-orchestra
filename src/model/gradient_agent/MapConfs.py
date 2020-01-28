@@ -42,7 +42,9 @@ class RunTime():
     MAX_FRAMES = 8000
     FINAL_STOP_FRAME = MAX_FRAMES
 
-    FRACTION = 1/(3*4) * 2000 / 8000  #fraction that enters is the total number of visitors divided by the number of frames
+    FRACTION = 1/(3*4) * 2000 / 8000  #500 visitors fraction that enters is the total number of visitors divided by the number of frames
+    # FRACTION = 1/(3*2) * 2000 / 8000  #1000 visitors fraction that enters is the total number of visitors divided by the number of frames
+
     #1/3 comes from the fact that in gradient_main.py 2 people enter Z2 and 1 person enters Z1 if sample is less than the probability FRACTION
 
     Z2_Q1 = FRACTION * 1.25
