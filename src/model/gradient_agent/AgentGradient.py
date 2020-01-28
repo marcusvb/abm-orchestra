@@ -418,7 +418,9 @@ class Agent:
                                                      p=[0, self.jb_chance, self.spiegel_chance, self.champ_chance,
                                                         self.nz_chance, self.toilet_chance / 2, self.toilet_chance / 2,
                                                         0, 0, 0, 0, 0])
+
                     self.which_gradient_map = new_direction[0]
+
                 self.direction_map = self.all_gradients[self.which_gradient_map]
 
 

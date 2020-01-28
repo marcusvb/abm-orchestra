@@ -307,7 +307,7 @@ class GradientMain:
         # mazeTexture.release()
         glfw.terminate()
         # plot_heatmap(agents.heatmap)
-        with open(r'Logs/Heatmap_pickle', 'a+') as fp:
+        with open(r'Logs/Heatmap_pickle', 'wb') as fp:
             pickle.dump(agents.heatmap, fp)
         # sema.release()
 

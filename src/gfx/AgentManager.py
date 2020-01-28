@@ -143,6 +143,9 @@ class AgentManager:
             any_moved = False
 
             for agent in moving_lsit:
+
+                # print(agent.agent.which_gradient_map)
+
                 ag_y, ag_x = agent.agent.current_pos
 
                 self.validate_step(ag_x, ag_y)
