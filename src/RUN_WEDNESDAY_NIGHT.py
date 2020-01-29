@@ -81,15 +81,15 @@ if __name__ == '__main__':
     for i in range(maxiter):
             parameterMapConf = mapConf
 
-            parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = 0.1
-            # parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = 0.2
+            parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = 0.1      #ELINE, MAARTEN
+            # parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = 0.2     #ALI, MILOU
 
-            parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.3
+            parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.3     #ELINE, ALI
             # parameterMapConf.RunTime.Z2_Q2 = parameterMapConf.RunTime.FRACTION
             # parameterMapConf.RunTime.Z2_Q3 = parameterMapConf.RunTime.FRACTION
             # parameterMapConf.RunTime.Z2_Q4 = parameterMapConf.RunTime.FRACTION * 0.7
 
-            parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.2
+            parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.2   #MAARTEN, MILOU
             parameterMapConf.RunTime.Z2_Q2 = parameterMapConf.RunTime.FRACTION * 1.2
             parameterMapConf.RunTime.Z2_Q3 = parameterMapConf.RunTime.FRACTION
             parameterMapConf.RunTime.Z2_Q4 = parameterMapConf.RunTime.FRACTION * 0.6
