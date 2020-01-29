@@ -286,9 +286,10 @@ class GradientMain:
                                               agents.champagneValidationCount, agents.noordDensity,
                                               agents.zuidDensity, agents.gardiDensity])
                 csv_Dataframe = np.transpose(csv_Dataframe)
-
                 # Use lock to mitigate datarace
                 lock.acquire()
+                # Prepend the ID to the array for ordering later
+                csv_Dataframe.insert(0, "id", id)
                 csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
                 lock.release()
 
