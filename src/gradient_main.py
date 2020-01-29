@@ -193,13 +193,14 @@ class GradientMain:
             frame_count += 1
 
             # next quarter changes
-            if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 4) == 0:
+            if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 8) == 0:
+            # if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 8) == 0:
 
                 #FOR VALIDATION ONLY TAKE THE VALUES IN ZUID AND APPEND TO VALIDATIONLIST
 
-                agents.density_count()
-                validationlist.append([agents.zuidValidationCount, agents.zuidDensity])
-                agents.flowvalidation_reset()
+                # agents.density_count()
+                # validationlist.append([agents.zuidValidationCount, agents.zuidDensity])
+                # agents.flowvalidation_reset()
 
                 # if statement can be removed when quarter is 2000 and runtime is 8000
                 if len(garderobes) > 1:
@@ -260,13 +261,15 @@ class GradientMain:
             # if intensity < global_intensity:
             #     agents.add_new(33.0, agent_colors[agent_color_nr])
 
-            entrance1 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
+            entrance1_1 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
+            entrance1_2 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
+
             entrance2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
             entrance_1_rv = random.random()
 
             if entrance_1_rv < entrance_1_probability:
-                agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)
-                agents.add_new(entrance1, 33.0, agent_colors[agent_color_nr], frame_count)
+                agents.add_new(entrance1_1, 33.0, agent_colors[agent_color_nr], frame_count)
+                agents.add_new(entrance1_2, 33.0, agent_colors[agent_color_nr], frame_count)
 
             entrance_2_rv = random.random()
             if entrance_2_rv < entrance_2_probability:
@@ -279,23 +282,25 @@ class GradientMain:
 
 
 
-                # agents.density_count()
-                # csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
-                #                               agents.champagneValidationCount, agents.noordDensity[0],
-                #                               agents.zuidDensity[0], agents.gardiDensity[0]])
-                # csv_Dataframe = np.transpose(csv_Dataframe)
-                #
-                # # Use lock to mitigate datarace
-                # lock.acquire()
-                # csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
-                # lock.release()
+                agents.density_count()
+                csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
+                                              agents.champagneValidationCount, agents.noordDensity,
+                                              agents.zuidDensity, agents.gardiDensity])
+                csv_Dataframe = np.transpose(csv_Dataframe)
+
+                # Use lock to mitigate datarace
+                lock.acquire()
+                csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                lock.release()
 
         # Use lock to mitigate datarace
 
-        validation_Dataframe = pd.DataFrame([validationlist])
-        lock.acquire()
-        validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-        lock.release()
+        # validation_Dataframe = pd.DataFrame([validationlist])
+        # lock.acquire()
+        # validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
+        # lock.release()
+
+
         # Validation_dat/aframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
         # Validation_dataframe=np.transpose(Validation_dataframe)
         # Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
@@ -307,8 +312,8 @@ class GradientMain:
         # mazeTexture.release()
         glfw.terminate()
         # plot_heatmap(agents.heatmap)
-        with open(r'Logs/Heatmap_pickle', 'wb') as fp:
-            pickle.dump(agents.heatmap, fp)
+        # with open(r'Logs/Heatmap_pickle', 'wb') as fp:
+        #     pickle.dump(agents.heatmap, fp)
         sema.release()
 
         return 0

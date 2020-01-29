@@ -296,8 +296,8 @@ class Agent:
                 new_direction = self.which_gradient_map + 1
 
                 # go to the first location of the rounds
-                if new_direction > 8:
-                    new_direction = 5
+                if new_direction > 10:
+                    new_direction = 7
                 self.which_gradient_map = new_direction
                 self.direction_map = self.all_gradients[self.which_gradient_map]
 

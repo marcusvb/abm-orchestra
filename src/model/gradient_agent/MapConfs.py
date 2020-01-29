@@ -26,7 +26,7 @@ class Chances():
     SPIEGEL = SPIEGEL / SCALE_VARIABLE
     CHAMP = CHAMP / SCALE_VARIABLE
 
-    ROUND_WALKING = 0.6
+    ROUND_WALKING = 0.2
 
 
     MIN_RAND_STEPS = 5
@@ -34,7 +34,7 @@ class Chances():
     DRINKING_FRAMES = int(1000/4)
 
     # used for the gradient map for dijkstra
-    AGENT_WEIGHT_PERCENT = 0.10
+    AGENT_WEIGHT_PERCENT = 0.1
 
 class RunTime():
 
@@ -56,7 +56,7 @@ class RunTime():
     Z1_Q1 = FRACTION * 1.25
     Z1_Q2 = FRACTION
     Z1_Q3 = FRACTION
-    Z1_Q4 = FRACTION * 1.25
+    Z1_Q4 = FRACTION * 0.75
 
 
 

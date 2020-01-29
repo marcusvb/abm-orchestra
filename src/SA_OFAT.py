@@ -23,7 +23,7 @@ import multiprocess
 problem = {
     'num_vars': 3,
     'names': ['Agent Weight', 'Random walker probability', 'Toilet probability'],
-    'bounds': [[0.1, 0.7], [0.1, 0.7], [0.1, 0.7]]
+    'bounds': [[0.01, 0.4], [0.01, 0.3], [0.1, 0.5]]
 }
 
 
@@ -36,23 +36,24 @@ if __name__ == '__main__':
 
     jobs = []
     id_holder = 0
-    maxruns = 100
-    for i in range(maxruns):
+    maxruns = 1000
+
+    for par in param_values:
         # change params in MapConfs.py
 
         parameterMapConf = mapConf
 
-        # parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = par[0]
-        # parameterMapConf.Chances.ROUND_WALKING = par[1]
-        # parameterMapConf.Chances.TOILET = par[2]
-        #
-        # SCALE_VARIABLE = parameterMapConf.Chances.TOILET + parameterMapConf.Chances.NOORD_ZUID + parameterMapConf.Chances.JUUL_BEA + parameterMapConf.Chances.SPIEGEL + parameterMapConf.Chances.CHAMP
-        #
-        # parameterMapConf.Chances.TOILET = parameterMapConf.Chances.TOILET / SCALE_VARIABLE
-        # parameterMapConf.Chances.NOORD_ZUID = parameterMapConf.Chances.NOORD_ZUID / SCALE_VARIABLE
-        # parameterMapConf.Chances.JUUL_BEA = parameterMapConf.Chances.JUUL_BEA / SCALE_VARIABLE
-        # parameterMapConf.Chances.SPIEGEL = parameterMapConf.Chances.SPIEGEL / SCALE_VARIABLE
-        # parameterMapConf.Chances.CHAMP = parameterMapConf.Chances.CHAMP / SCALE_VARIABLE
+        parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = par[0]
+        parameterMapConf.Chances.ROUND_WALKING = par[1]
+        parameterMapConf.Chances.TOILET = par[2]
+
+        SCALE_VARIABLE = parameterMapConf.Chances.TOILET + parameterMapConf.Chances.NOORD_ZUID + parameterMapConf.Chances.JUUL_BEA + parameterMapConf.Chances.SPIEGEL + parameterMapConf.Chances.CHAMP
+
+        parameterMapConf.Chances.TOILET = parameterMapConf.Chances.TOILET / SCALE_VARIABLE
+        parameterMapConf.Chances.NOORD_ZUID = parameterMapConf.Chances.NOORD_ZUID / SCALE_VARIABLE
+        parameterMapConf.Chances.JUUL_BEA = parameterMapConf.Chances.JUUL_BEA / SCALE_VARIABLE
+        parameterMapConf.Chances.SPIEGEL = parameterMapConf.Chances.SPIEGEL / SCALE_VARIABLE
+        parameterMapConf.Chances.CHAMP = parameterMapConf.Chances.CHAMP / SCALE_VARIABLE
 
         sema.acquire()
         G = GradientMain(parameterMapConf)
