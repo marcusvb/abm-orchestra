@@ -66,7 +66,7 @@ if __name__ == '__main__':
     id_holder = 0
 
     distinct_samples = 20
-    iterations = 10
+    iterations = 100
 
 
     # We define our variables and bounds
@@ -90,34 +90,37 @@ if __name__ == '__main__':
         id_holder = 0
 
         for parsample in parametersamples:
-            # change params in MapConfs.py
-            par = FixedValues
-            par[i] = parsample
 
-            parameterMapConf = mapConf
 
-            parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = par[0]
-            parameterMapConf.Chances.ROUND_WALKING = par[1]
-            parameterMapConf.Chances.TOILET = par[2]
+            for j in range(iterations):
+                # change params in MapConfs.py
+                par = FixedValues
+                par[i] = parsample
 
-            SCALE_VARIABLE = parameterMapConf.Chances.TOILET + parameterMapConf.Chances.NOORD_ZUID + parameterMapConf.Chances.JUUL_BEA + parameterMapConf.Chances.SPIEGEL + parameterMapConf.Chances.CHAMP
+                parameterMapConf = mapConf
 
-            parameterMapConf.Chances.TOILET = parameterMapConf.Chances.TOILET / SCALE_VARIABLE
-            parameterMapConf.Chances.NOORD_ZUID = parameterMapConf.Chances.NOORD_ZUID / SCALE_VARIABLE
-            parameterMapConf.Chances.JUUL_BEA = parameterMapConf.Chances.JUUL_BEA / SCALE_VARIABLE
-            parameterMapConf.Chances.SPIEGEL = parameterMapConf.Chances.SPIEGEL / SCALE_VARIABLE
-            parameterMapConf.Chances.CHAMP = parameterMapConf.Chances.CHAMP / SCALE_VARIABLE
+                parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = par[0]
+                parameterMapConf.Chances.ROUND_WALKING = par[1]
+                parameterMapConf.Chances.TOILET = par[2]
 
-            sema.acquire()
-            G = GradientMain(parameterMapConf)
+                SCALE_VARIABLE = parameterMapConf.Chances.TOILET + parameterMapConf.Chances.NOORD_ZUID + parameterMapConf.Chances.JUUL_BEA + parameterMapConf.Chances.SPIEGEL + parameterMapConf.Chances.CHAMP
 
-            p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder))
-            jobs.append(p)
-            p.start()
-            id_holder += 1
+                parameterMapConf.Chances.TOILET = parameterMapConf.Chances.TOILET / SCALE_VARIABLE
+                parameterMapConf.Chances.NOORD_ZUID = parameterMapConf.Chances.NOORD_ZUID / SCALE_VARIABLE
+                parameterMapConf.Chances.JUUL_BEA = parameterMapConf.Chances.JUUL_BEA / SCALE_VARIABLE
+                parameterMapConf.Chances.SPIEGEL = parameterMapConf.Chances.SPIEGEL / SCALE_VARIABLE
+                parameterMapConf.Chances.CHAMP = parameterMapConf.Chances.CHAMP / SCALE_VARIABLE
 
-        for p in jobs:
-            p.join()
+                sema.acquire()
+                G = GradientMain(parameterMapConf)
+
+                p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder))
+                jobs.append(p)
+                p.start()
+                id_holder += 1
+
+    for p in jobs:
+        p.join()
 
 
     #
