@@ -3,6 +3,8 @@ from OpenGL.GL import *
 import random
 import seaborn as sns
 import matplotlib.pyplot as plt
+from PIL import Image
+
 import pickle
 
 from gfx.MazeTexture import MazeTexture
@@ -267,6 +269,15 @@ class GradientMain:
                 agents.draw_all()
                 glfw.swap_buffers(window)
 
+                if frame_count > 1 and self.MapConf.RunTime.RECORD_VIS:
+                    x, y = 0, 0
+                    # w, h = 2484, 1364 # MARCUS Macbook res, (possible retina upscaling) ?
+                    w, h = 1280, 720 # Normal
+                    data = glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE)
+                    image = Image.frombytes("RGBA", (w, h), data)
+                    image = image.transpose(Image.FLIP_TOP_BOTTOM)
+                    image.save("images/pic" + str(frame_count).zfill(4) + ".png")
+
             # intensity = random.randint(0, 100)
             # if intensity < global_intensity:
             #     agents.add_new(33.0, agent_colors[agent_color_nr])
@@ -298,11 +309,12 @@ class GradientMain:
                                               agents.zuidDensity, agents.gardiDensity])
                 csv_Dataframe = np.transpose(csv_Dataframe)
                 # Use lock to mitigate datarace
-                lock.acquire()
-                # Prepend the ID to the array for ordering later
-                csv_Dataframe.insert(0, "id", id)
-                csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
-                lock.release()
+                if lock:
+                    lock.acquire()
+                    # Prepend the ID to the array for ordering later
+                    csv_Dataframe.insert(0, "id", id)
+                    csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                    lock.release()
 
         # with open(r'Logs/Heatmap_pickle', 'wb') as filepick:
         #     lock.acquire()
@@ -330,7 +342,8 @@ class GradientMain:
         # plot_heatmap(agents.heatmap)
         # with open(r'Logs/Heatmap_pickle', 'wb') as fp:
         #     pickle.dump(agents.heatmap, fp)
-        sema.release()
+        if sema:
+            sema.release()
 
         return 0
 
