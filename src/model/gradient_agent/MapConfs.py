@@ -28,7 +28,6 @@ class Chances():
 
     ROUND_WALKING = 0.2
 
-
     MIN_RAND_STEPS = 5
     MAX_RAND_STEPS = 15
     DRINKING_FRAMES = int(1000/4)
@@ -52,11 +51,9 @@ class RunTime():
     Z2_Q3 = FRACTION
     Z2_Q4 = FRACTION * 0.75
 
-
     Z1_Q1 = FRACTION * 1.25
     Z1_Q2 = FRACTION
     Z1_Q3 = FRACTION
     Z1_Q4 = FRACTION * 0.75
-
 
 
