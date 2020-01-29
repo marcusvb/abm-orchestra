@@ -193,8 +193,7 @@ class GradientMain:
             frame_count += 1
 
             # next quarter changes
-            if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 8) == 0:
-            # if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 8) == 0:
+            if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 4) == 0:
 
                 #FOR VALIDATION ONLY TAKE THE VALUES IN ZUID AND APPEND TO VALIDATIONLIST
 
