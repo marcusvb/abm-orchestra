@@ -31,6 +31,8 @@ class GradientMain:
         if not glfw.init():
             exit(1)
 
+        self.id = id
+
         # global_intensity: This dictates how many agents we will spawn somewhere in the simulation.
         # global global_intensity # irrelevant global call
 
@@ -52,7 +54,7 @@ class GradientMain:
         maze = load_map_from_file(map_filename)
 
         heatmap = heatmap_from_map(maze)
-        validationlist = []
+        # self.validationlist = []
 
         # exit_points = []
         # for i in range(10, 20):
@@ -198,8 +200,17 @@ class GradientMain:
                 #FOR VALIDATION ONLY TAKE THE VALUES IN ZUID AND APPEND TO VALIDATIONLIST
 
                 # agents.density_count()
-                # validationlist.append([agents.zuidValidationCount, agents.zuidDensity])
+                # self.validationlist.append([agents.zuidValidationCount, agents.zuidDensity])
                 # agents.flowvalidation_reset()
+
+                # Use lock to mitigate datarace
+
+                validation_Dataframe = pd.DataFrame([self.id, frame_count, agents.zuidValidationCount, agents.zuidDensity])
+                validation_Dataframe=np.transpose(validation_Dataframe)
+
+                lock.acquire()
+                validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
+                lock.release()
 
                 # if statement can be removed when quarter is 2000 and runtime is 8000
                 if len(garderobes) > 1:
@@ -280,25 +291,22 @@ class GradientMain:
 
 
 
+                #
+                # agents.density_count()
+                # csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
+                #                               agents.champagneValidationCount, agents.noordDensity,
+                #                               agents.zuidDensity, agents.gardiDensity])
+                # csv_Dataframe = np.transpose(csv_Dataframe)
+                #
+                # # Use lock to mitigate datarace
+                # lock.acquire()
+                # csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                # lock.release()
 
-                agents.density_count()
-                csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
-                                              agents.champagneValidationCount, agents.noordDensity,
-                                              agents.zuidDensity, agents.gardiDensity])
-                csv_Dataframe = np.transpose(csv_Dataframe)
-
-                # Use lock to mitigate datarace
-                lock.acquire()
-                csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
-                lock.release()
-
-        # Use lock to mitigate datarace
-
-        # validation_Dataframe = pd.DataFrame([validationlist])
-        # lock.acquire()
-        # validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-        # lock.release()
-
+        # with open(r'Logs/Heatmap_pickle', 'wb') as filepick:
+        #     lock.acquire()
+        #     pickle.dump(agents.heatmap, filepick)
+        #     lock.release()
 
         # Validation_dat/aframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
         # Validation_dataframe=np.transpose(Validation_dataframe)
@@ -311,8 +319,7 @@ class GradientMain:
         # mazeTexture.release()
         glfw.terminate()
         # plot_heatmap(agents.heatmap)
-        # with open(r'Logs/Heatmap_pickle', 'wb') as fp:
-        #     pickle.dump(agents.heatmap, fp)
+
         sema.release()
 
         return 0
