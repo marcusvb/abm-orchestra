@@ -3,7 +3,7 @@ from OpenGL.GL import *
 import random
 import seaborn as sns
 import matplotlib.pyplot as plt
-from PIL import Image
+# from PIL import Image
 
 import pickle
 
@@ -303,18 +303,18 @@ class GradientMain:
 
 
 
-                agents.density_count()
-                csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
-                                              agents.champagneValidationCount, agents.noordDensity,
-                                              agents.zuidDensity, agents.gardiDensity])
-                csv_Dataframe = np.transpose(csv_Dataframe)
-                # Use lock to mitigate datarace
-                if lock:
-                    lock.acquire()
-                    # Prepend the ID to the array for ordering later
-                    csv_Dataframe.insert(0, "id", id)
-                    csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
-                    lock.release()
+                # agents.density_count()
+                # csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
+                #                               agents.champagneValidationCount, agents.noordDensity,
+                #                               agents.zuidDensity, agents.gardiDensity])
+                # csv_Dataframe = np.transpose(csv_Dataframe)
+                # # Use lock to mitigate datarace
+                # if lock:
+                #     lock.acquire()
+                #     # Prepend the ID to the array for ordering later
+                #     csv_Dataframe.insert(0, "id", id)
+                #     csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                #     lock.release()
 
         # with open(r'Logs/Heatmap_pickle', 'wb') as filepick:
         #     lock.acquire()
