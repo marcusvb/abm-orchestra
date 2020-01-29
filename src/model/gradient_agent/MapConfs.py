@@ -46,7 +46,7 @@ class RunTime():
     """
     RECORD_VIS = False  # Recording of frames
     VISUALIZE = False
-    MAX_FRAMES = 200
+    MAX_FRAMES = 8000
     FINAL_STOP_FRAME = MAX_FRAMES/2
 
     FRACTION = 1/(3*4) * 2000 / 8000  #500 visitors fraction that enters is the total number of visitors divided by the number of frames
