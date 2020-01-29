@@ -199,7 +199,7 @@ class GradientMain:
 
                 #FOR VALIDATION ONLY TAKE THE VALUES IN ZUID AND APPEND TO VALIDATIONLIST
 
-                # agents.density_count()
+                agents.density_count()
                 # validationlist.append([agents.zuidValidationCount, agents.zuidDensity])
                 # agents.flowvalidation_reset()
 

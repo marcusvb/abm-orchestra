@@ -1,1 +1,1 @@
-'run id', 'Framecount', 'Zuid Flux', ' Zuid Density'0,250,8,0
+'run id', 'Framecount', 'Zuid Flux', ' Zuid Density'

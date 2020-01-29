@@ -87,6 +87,8 @@ if __name__ == '__main__':
     FixedValues = [0.1, 0.1, 0.1]
 
     for i, parametersamples in enumerate(Input):
+        id_holder = 0
+
         for parsample in parametersamples:
             # change params in MapConfs.py
             par = FixedValues
