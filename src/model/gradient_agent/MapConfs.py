@@ -39,6 +39,12 @@ class Chances():
 
 class RunTime():
 
+    """
+    To compile to mp4 run command in the images folder:
+    ffmpeg -r 30 -f image2 -s 1920x1080 -i pic%04d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p test.mp4
+    see https://hamelot.io/visualization/using-ffmpeg-to-convert-a-set-of-images-into-a-video/ for args
+    """
+    RECORD_VIS = False  # Recording of frames
     VISUALIZE = False
     MAX_FRAMES = 8000
     FINAL_STOP_FRAME = MAX_FRAMES/4
