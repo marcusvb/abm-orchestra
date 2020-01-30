@@ -12,11 +12,11 @@ class Chances():
     BACK_ENTRANCE = 1/3
 
     # chances where to go
-    TOILET = 0.1
-    NOORD_ZUID = 0.5
-    JUUL_BEA = 0.1
-    SPIEGEL = 0.15
-    CHAMP = 0.05
+    TOILET = 0.15
+    NOORD_ZUID = 0.4
+    JUUL_BEA = 0.15
+    SPIEGEL = 0.2
+    CHAMP = 0.10
 
     SCALE_VARIABLE = TOILET + NOORD_ZUID + JUUL_BEA + SPIEGEL + CHAMP
 
@@ -27,15 +27,15 @@ class Chances():
     CHAMP = CHAMP / SCALE_VARIABLE
 
 
-    ROUND_WALKING = 0.2
+    ROUND_WALKING = 0.1
 
 
     MIN_RAND_STEPS = 5
     MAX_RAND_STEPS = 15
-    DRINKING_FRAMES = int(1000/4)
+    DRINKING_FRAMES = 150
 
     # used for the gradient map for dijkstra
-    AGENT_WEIGHT_PERCENT = 0.1
+    AGENT_WEIGHT_PERCENT = 0.05
 
 class RunTime():
 
@@ -46,13 +46,15 @@ class RunTime():
     """
     RECORD_VIS = False  # Recording of frames
     VISUALIZE = False
-    MAX_FRAMES = 8000
-    FINAL_STOP_FRAME = MAX_FRAMES/2
-
-    # FRACTION = 1/(3*4) * 2000 / 8000  #500 visitors fraction that enters is the total number of visitors divided by the number of frames
-    FRACTION = 1/(3*2) * 2000 / 8000  #1000 visitors fraction that enters is the total number of visitors divided by the number of frames
+    MAX_FRAMES = 2000
+    FINAL_STOP_FRAME = MAX_FRAMES
+    AGENTS = 500
+    FRACTION = 1/(3) * AGENTS / MAX_FRAMES  #500 visitors fraction that enters is the total number of visitors divided by the number of frames
 
     #1/3 comes from the fact that in gradient_main.py 2 people enter Z2 and 1 person enters Z1 if sample is less than the probability FRACTION
+
+
+
 
     Z2_Q1 = FRACTION * 1.25
     Z2_Q2 = FRACTION

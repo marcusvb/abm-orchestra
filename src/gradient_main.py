@@ -207,12 +207,12 @@ class GradientMain:
 
                 # Use lock to mitigate datarace
 
-                validation_Dataframe = pd.DataFrame([self.id, frame_count, agents.zuidValidationCount, agents.zuidDensity])
-                validation_Dataframe=np.transpose(validation_Dataframe)
-
-                lock.acquire()
-                validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-                lock.release()
+                # validation_Dataframe = pd.DataFrame([self.id, frame_count, agents.zuidValidationCount, agents.zuidDensity])
+                # validation_Dataframe=np.transpose(validation_Dataframe)
+                #
+                # lock.acquire()
+                # validation_Dataframe.to_csv(r'Logs/OFAT_output.txt', header=None, index=None, sep=',', mode='a')
+                # lock.release()
 
                 # if statement can be removed when quarter is 2000 and runtime is 8000
                 if len(garderobes) > 1:
@@ -316,10 +316,10 @@ class GradientMain:
                 #     csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
                 #     lock.release()
 
-        # with open(r'Logs/Heatmap_pickle', 'wb') as filepick:
-        #     lock.acquire()
-        #     pickle.dump(agents.heatmap, filepick)
-        #     lock.release()
+        with open(r'Logs/Heatmap_pickle', 'wb') as filepick:
+            lock.acquire()
+            pickle.dump(agents.heatmap, filepick)
+            lock.release()
 
         # Use lock to mitigate datarace
 

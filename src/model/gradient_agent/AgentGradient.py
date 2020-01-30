@@ -65,7 +65,7 @@ class Agent:
         # waiting for coatcheck
         self.waitingongarderobe = False
         self.current_coatchecktime = 0
-        self.total_coatchecktime = 10
+        self.total_coatchecktime = 3
 
         # for the random moving and drink drinking
         self.round_nr = 0
@@ -397,13 +397,17 @@ class Agent:
 
             # if agent is currently walking in rounds, go to next location
             if 0 < self.round_nr < 4:
-                new_direction = self.which_gradient_map + 1
 
-                # go to the first location of the rounds
-                if new_direction > 10:
-                    new_direction = 7
-                self.which_gradient_map = new_direction
-                self.direction_map = self.all_gradients[self.which_gradient_map]
+                new_direction = np.random.choice([1,2,3,4], 1)
+                # print(new_direction)
+
+                # # go to the first location of the rounds
+                # if new_direction > 10:
+                #     new_direction = 7
+                self.which_gradient_map = new_direction[0]
+
+
+                self.direction_map = self.all_gradients[7 + self.which_gradient_map]
 
             else:
                 # choose 1 of the directions in between or walk around if agent did not already
@@ -420,7 +424,6 @@ class Agent:
                                                         0, 0, 0, 0, 0])
 
                     self.which_gradient_map = new_direction[0]
-
                 self.direction_map = self.all_gradients[self.which_gradient_map]
 
 

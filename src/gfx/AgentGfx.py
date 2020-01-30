@@ -17,6 +17,7 @@ class AgentGfx:
         self.fx_pos = (0, 0)
 
     def move(self):
+
         result = self.agent.move()
         return result
 
