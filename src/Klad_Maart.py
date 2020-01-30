@@ -13,7 +13,10 @@ from SALib.sample import saltelli
 import pandas as pd
 import matplotlib.pyplot as plt
 from itertools import combinations
-from gradient_main import GradientMain
+
+# from gradient_main import GradientMain       #Milou
+from Gradient_main_Noord import GradientMain       #Marcus
+
 from model.gradient_agent import MapConfs as mapConf
 import multiprocessing as multiprocess # Only voor CEOtje
 # import multiprocess
@@ -34,7 +37,7 @@ if __name__ == '__main__':
 
     proportionsZI = [3/10, 3/15]              #Push voor MILOU
     proportionsZII = [27/20, 42/30]
-    # proportionsZI = [3/2, 1, 3/5, 3/10, 3/15]
+    # proportionsZI = [3/2, 1, 3/5, 3/10, 3/15]     #Marcus
     # proportionsZII = [3/4, 1, 12/10, 27/20, 42/30]
 
     for i, prop in enumerate(proportionsZI):
