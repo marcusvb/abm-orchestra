@@ -288,13 +288,14 @@ class GradientMain:
             entrance2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
             entrance_1_rv = random.random()
 
-            if entrance_1_rv < entrance_1_probability:
-                agents.add_new(entrance1_1, 33.0, agent_colors[agent_color_nr], frame_count)
-                agents.add_new(entrance1_2, 33.0, agent_colors[agent_color_nr], frame_count)
+            if frame_count < self.MapConf.RunTime.MAX_FRAMES:
+                if entrance_1_rv < entrance_1_probability:
+                    agents.add_new(entrance1_1, 33.0, agent_colors[agent_color_nr], frame_count)
+                    agents.add_new(entrance1_2, 33.0, agent_colors[agent_color_nr], frame_count)
 
-            entrance_2_rv = random.random()
-            if entrance_2_rv < entrance_2_probability:
-                agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
+                entrance_2_rv = random.random()
+                if entrance_2_rv < entrance_2_probability:
+                    agents.add_new(entrance2, 33.0, agent_colors[agent_color_nr], frame_count)
 
             #  Set the window to close terminate the outer whileloop
             if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME:
