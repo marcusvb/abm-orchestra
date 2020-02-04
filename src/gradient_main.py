@@ -161,7 +161,7 @@ class GradientMain:
                 # Use lock to mitigate datarace
 
                 validation_Dataframe = pd.DataFrame([self.id, frame_count, agents.zuidValidationCount, agents.zuidDensity])
-                np.transpose(validation_Dataframe)
+                validation_Dataframe = np.transpose(validation_Dataframe)
 
                 if lock:
                     lock.acquire()

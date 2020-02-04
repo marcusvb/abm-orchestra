@@ -4,7 +4,6 @@ from model.gradient_agent import MapConfs as mapConf
 Dependency management on OS for multiprocessing
 """
 from sys import platform as _platform
-
 if _platform == "win32" or _platform == "win64" or _platform == "darwin":
     import multiprocessing as multiprocess
 else:
