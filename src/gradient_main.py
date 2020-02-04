@@ -1,24 +1,20 @@
-import glfw
-from OpenGL.GL import *
+import pickle
 import random
-import seaborn as sns
+
+import glfw
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from OpenGL.GL import *
 from PIL import Image
 
-import pickle
-
-from gfx.MazeTexture import MazeTexture
-from model.direction_map.DirectionMap import DirectionMap
-from model.environment.line import Point
 from gfx.AgentManager import AgentManager
-from resources.handling.reading import load_direction_from_file, load_map_from_file
-from resources.handling.generatingHeatmap import heatmap_from_map
+from gfx.MazeTexture import MazeTexture
 from model.gradient.gradient_map import gradient_from_direction_map
 from model.gradient_agent import MapConfs as MapConf
-
-import pandas as pd
-import numpy as np
-
+from resources.handling.generatingHeatmap import heatmap_from_map
+from resources.handling.reading import load_map_from_file
 
 BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
 
@@ -271,7 +267,7 @@ class GradientMain:
                 #     lock.release()
 
         # Append heatmap data in pickle format
-        with open(r'Logs/Heatmap_pickle', 'ab') as filepick:
+        with open(r'Logs/Heatmap_pickle_entrance_'+str(new_entrance), 'ab') as filepick:
             if lock:
                 lock.acquire()
                 pickle.dump(agents.heatmap, filepick)

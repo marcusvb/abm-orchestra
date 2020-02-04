@@ -1,7 +1,8 @@
-import matplotlib.pyplot as plt
 import pickle
+
+import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
+
 
 def plot_heatmap(map):
     # plt.figure(dpi=300)
@@ -25,6 +26,10 @@ def loadall(filename):
                 break
     return da
 
-items = loadall(r'Logs/Heatmap_pickle')
+items = loadall(r'Logs/Heatmap_pickle_entrance_True')
+for heatmap in items:
+    plot_heatmap(heatmap)
+
+items = loadall(r'Logs/Heatmap_pickle_entrance_False')
 for heatmap in items:
     plot_heatmap(heatmap)
