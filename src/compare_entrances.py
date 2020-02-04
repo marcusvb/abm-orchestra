@@ -10,7 +10,7 @@ if _platform == "win32" or _platform == "win64" or _platform == "darwin":
 else:
     import multiprocess
 
-
+# TODO: the proportions arents looking right
 def get_proportions(new_entrance):
     if new_entrance:
         return [3/2, 1, 3/5, 3/10, 3/15], [3/4, 1, 12/10, 27/20, 42/30]
@@ -53,8 +53,11 @@ def run_sim(new_entrance):
             p.start()
             id_holder += 1
 
+    count = 0
     for p in jobs:
+        count += 1
         p.join()
+        print("jobs done...", count)
 
 if __name__ == '__main__':
     # Old entrance

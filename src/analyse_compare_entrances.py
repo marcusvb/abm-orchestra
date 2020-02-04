@@ -26,10 +26,10 @@ def loadall(filename):
                 break
     return da
 
-items = loadall(r'Logs/Heatmap_pickle_entrance_True')
+items = loadall(r'Logs/Heatmap_pickle_entrance_False')
 for heatmap in items:
     plot_heatmap(heatmap)
 
-items = loadall(r'Logs/Heatmap_pickle_entrance_False')
+items = loadall(r'Logs/Heatmap_pickle_entrance_True')
 for heatmap in items:
     plot_heatmap(heatmap)
