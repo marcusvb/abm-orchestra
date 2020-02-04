@@ -1,44 +1,34 @@
-import glfw
-from OpenGL.GL import *
-import random
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-import pandas as pd
-import numpy as np
-
-
-from SALib.sample import saltelli
-# from SALib.analyze import sobol
-import pandas as pd
-import matplotlib.pyplot as plt
-from itertools import combinations
-
-# from gradient_main import GradientMain       #Milou
-from Gradient_main_Noord import GradientMain       #Marcus
-
+from gradient_main import GradientMain
 from model.gradient_agent import MapConfs as mapConf
-import multiprocessing as multiprocess # Only voor CEOtje
-# import multiprocess
+"""
+Dependency management on OS for multiprocessing
+"""
+from sys import platform as _platform
+
+if _platform == "win32" or _platform == "win64" or _platform == "darwin":
+    import multiprocessing as multiprocess
+else:
+    import multiprocess
 
 
-
+def get_proportions(new_entrance):
+    if new_entrance:
+        return [3/2, 1, 3/5, 3/10, 3/15], [3/4, 1, 12/10, 27/20, 42/30]
+    return [3/10, 3/15], [27/20, 42/30]
 
 
 if __name__ == '__main__':
     # Generate samples
     sema = multiprocess.Semaphore(multiprocess.cpu_count())
     lock = multiprocess.Lock()
-
     jobs = []
     id_holder = 0
 
     iterations = 12
 
-    proportionsZI = [3/10, 3/15]              #Push voor MILOU
-    proportionsZII = [27/20, 42/30]
-    # proportionsZI = [3/2, 1, 3/5, 3/10, 3/15]     #Marcus
-    # proportionsZII = [3/4, 1, 12/10, 27/20, 42/30]
+    # Change this if we want the New entrance
+    new_entrance = False
+    proportionsZI, proportionsZII = get_proportions(new_entrance)
 
     for i, prop in enumerate(proportionsZI):
         for j in range(iterations):
@@ -61,7 +51,8 @@ if __name__ == '__main__':
             sema.acquire()
             G = GradientMain(parameterMapConf)
 
-            p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder))
+            p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder, new_entrance))
+
             jobs.append(p)
             p.start()
             id_holder += 1

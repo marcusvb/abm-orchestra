@@ -3,7 +3,7 @@ from OpenGL.GL import *
 import random
 import seaborn as sns
 import matplotlib.pyplot as plt
-# from PIL import Image
+from PIL import Image
 
 import pickle
 
@@ -14,10 +14,7 @@ from gfx.AgentManager import AgentManager
 from resources.handling.reading import load_direction_from_file, load_map_from_file
 from resources.handling.generatingHeatmap import heatmap_from_map
 from model.gradient.gradient_map import gradient_from_direction_map
-
-
 from model.gradient_agent import MapConfs as MapConf
-from model.gradient_agent.RunConf import RunConf
 
 import pandas as pd
 import numpy as np
@@ -29,16 +26,22 @@ class GradientMain:
     def __init__(self, mapConf):
         self.MapConf = mapConf
 
-    def run(self, sema=None, lock=None, id=0):
+    def load_Direct_upstairs_entrance(self, new_entrance):
+        if new_entrance:
+            return gradient_from_direction_map("FINAL_MAPS/Gradient/DirectUpstairsNoordEntrance")
+        return gradient_from_direction_map("FINAL_MAPS/Gradient/DirectUpstairs")
+
+    def load_entrance_2_chances(self, new_entrance):
+        if new_entrance:
+            return [57, np.random.randint(162, 168)]
+        return [139, np.random.randint(162, 168)]
+
+
+    def run(self, sema=None, lock=None, id=0, new_entrance=False):
         if not glfw.init():
             exit(1)
 
         self.id = id
-
-        # global_intensity: This dictates how many agents we will spawn somewhere in the simulation.
-        # global global_intensity # irrelevant global call
-
-        global_intensity = 50
 
         window = glfw.create_window(1280, 720, BASE_TITLE, None, None)
         glfw.make_context_current(window)
@@ -50,7 +53,6 @@ class GradientMain:
             exit(1)
 
         map_filename = "FINAL_MAPS/FINAL_concertgebouwmap.txt" # Seems to be the maze
-        # map_filename = "concertgebouwmap_advanced.txt" # Seems to be the maze
 
         maze_original = load_map_from_file(map_filename)
         maze = load_map_from_file(map_filename)
@@ -58,9 +60,6 @@ class GradientMain:
         heatmap = heatmap_from_map(maze)
         validationlist = []
 
-        # exit_points = []
-        # for i in range(10, 20):
-        #     exit_points.append(Point(99, i))
         exit_points = None
 
         # directions = direction_map(maze, exit_points, 1) #seems to be the direction map for the agents.
@@ -76,7 +75,7 @@ class GradientMain:
         Trappenhuis_LO = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_LO")
         Trappenhuis_RB = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RB")
         Trappenhuis_RO = gradient_from_direction_map("FINAL_MAPS/Gradient/TRAPPENHUIS_RO")
-        DirectUpstairs = gradient_from_direction_map("FINAL_MAPS/Gradient/DirectUpstairs")
+        DirectUpstairs = self.load_Direct_upstairs_entrance(new_entrance)
         achteringang1 = gradient_from_direction_map("FINAL_MAPS/Gradient/achteringang1")
         achteringang2 = gradient_from_direction_map("FINAL_MAPS/Gradient/achteringang2")
         achteringang3 = gradient_from_direction_map("FINAL_MAPS/Gradient/achteringang3")
@@ -126,59 +125,13 @@ class GradientMain:
 
 
         def count_crowded_area_spots(map):
-
             measure = 0
             for row in map[57:140]:
                 for point in row[81:90]:
                     measure += point
 
             return point
-        """
-        Model control via IO.
-        This should actually go to a separate handler in folder, and then cleanup missing references
-        to global variables etc. etc. 
-        """
-        def mouse_button_callback(window, button, action, mods):
-            if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
-                pos_x, pos_y = glfw.get_cursor_pos(window)
 
-                pos_x -= offset
-                pos_y -= offset
-
-                pos = [-1, -1]
-                for it in range(len(maze)):
-                    if tile_size[1] * it < pos_y < tile_size[1] * (it + 1):
-                        pos[0] = it
-                for it in range(len(maze[0])):
-                    if tile_size[0] * it < pos_x < tile_size[0] * (it + 1):
-                        pos[1] = it
-                if pos[0] != -1 and pos[1] != -1 and maze[pos[0]][pos[1]] != 1:
-
-                    # add agent at entrance 1
-                    agents.add_new([139, np.random.randint(83, 89)], 33.0, [.9, .9, .9], frame_count)
-
-
-        def key_callback(window, key, scancode, action, mods):
-            global global_intensity
-            if key == glfw.KEY_KP_ADD and action == glfw.RELEASE:
-                global_intensity += 10
-                if global_intensity > 100:
-                    global_intensity = 100
-            if key == glfw.KEY_KP_SUBTRACT and action == glfw.RELEASE:
-                global_intensity -= 10
-                if global_intensity < 0:
-                    global_intensity = 0
-            if key == glfw.KEY_KP_ADD and action == glfw.RELEASE:
-                print("Wcisnalem!")
-            if key == glfw.KEY_SPACE and action == glfw.PRESS:
-                global simulation_running
-                simulation_running = not (simulation_running and True)
-
-        if self.MapConf.RunTime.VISUALIZE:
-            glfw.set_mouse_button_callback(window, mouse_button_callback)
-            glfw.set_key_callback(window, key_callback)
-
-        old_step_time = glfw.get_time()
         previous_time = glfw.get_time()
 
         # variables for the quarter updates
@@ -207,12 +160,16 @@ class GradientMain:
 
                 # Use lock to mitigate datarace
 
-                # validation_Dataframe = pd.DataFrame([self.id, frame_count, agents.zuidValidationCount, agents.zuidDensity])
-                # validation_Dataframe=np.transpose(validation_Dataframe)
-                #
-                # lock.acquire()
-                # validation_Dataframe.to_csv(r'Logs/OFAT_output.txt', header=None, index=None, sep=',', mode='a')
-                # lock.release()
+                validation_Dataframe = pd.DataFrame([self.id, frame_count, agents.zuidValidationCount, agents.zuidDensity])
+                np.transpose(validation_Dataframe)
+
+                if lock:
+                    lock.acquire()
+                    validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
+                    lock.release()
+                else:
+                    validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
+
 
                 # if statement can be removed when quarter is 2000 and runtime is 8000
                 if len(garderobes) > 1:
@@ -230,8 +187,7 @@ class GradientMain:
                 agents.step()
 
             if current_time - previous_time >= 1.0:
-                title = "ID: " + str(id) + " :: " +  BASE_TITLE + " ( FRAME COUNT: " + str(frame_count) + " | Number Of Agents: " + str(
-                    len(agents.agent_list)) + " )" + " intensity: " + str(global_intensity)
+                title = "ID: " + str(id) + " :: " + BASE_TITLE + " ( FRAME COUNT: " + str(frame_count) + " | Number Of Agents: " + str(len(agents.agent_list)) + " ) NEW ENTRANCE: " + str(new_entrance)
                 glfw.set_window_title(window, title)
 
                 # If we don't opengl visualization we print the sim status to stdout
@@ -239,8 +195,6 @@ class GradientMain:
                     if frame_count % 20 == 0:
                         print(title)
 
-                # I commented this so I could use frame_count for changing the garderobe
-                # frame_count = 0
                 previous_time = current_time
 
             if self.MapConf.RunTime.VISUALIZE:
@@ -269,23 +223,22 @@ class GradientMain:
                 agents.draw_all()
                 glfw.swap_buffers(window)
 
+                """
+                Dump OpenGL Buffer to png file for film making!
+                """
                 if frame_count > 1 and self.MapConf.RunTime.RECORD_VIS:
                     x, y = 0, 0
-                    # w, h = 2484, 1364 # MARCUS Macbook res, (possible retina upscaling) ?
-                    w, h = 1280, 720 # Normal
+                    w, h = 2484, 1364 # MARCUS Macbook res, (possible retina upscaling) ?
+                    # w, h = 1280, 720 # Normal
                     data = glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE)
                     image = Image.frombytes("RGBA", (w, h), data)
                     image = image.transpose(Image.FLIP_TOP_BOTTOM)
                     image.save("images/pic" + str(frame_count).zfill(4) + ".png")
 
-            # intensity = random.randint(0, 100)
-            # if intensity < global_intensity:
-            #     agents.add_new(33.0, agent_colors[agent_color_nr])
-
             entrance1_1 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
             entrance1_2 = [139, np.random.randint(83, 89)]  # ZUID 2 INGANG
 
-            entrance2 = [139, np.random.randint(162, 168)]  # ZUID 1 INGANG
+            entrance2 = self.load_entrance_2_chances(new_entrance)  # Chances for North or South entrance
             entrance_1_rv = random.random()
 
             if frame_count < self.MapConf.RunTime.MAX_FRAMES:
@@ -317,12 +270,15 @@ class GradientMain:
                 #     csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
                 #     lock.release()
 
-        with open(r'Logs/Heatmap_pickle', 'wb') as filepick:
-            lock.acquire()
-            pickle.dump(agents.heatmap, filepick)
-            lock.release()
+        # Append heatmap data in pickle format
+        with open(r'Logs/Heatmap_pickle', 'ab') as filepick:
+            if lock:
+                lock.acquire()
+                pickle.dump(agents.heatmap, filepick)
+                lock.release()
+            else:
+                pickle.dump(agents.heatmap, filepick)
 
-        # Use lock to mitigate datarace
 
         # validation_Dataframe = pd.DataFrame([validationlist])
         # lock.acquire()
@@ -350,5 +306,3 @@ class GradientMain:
 
 # x = pd.read_csv(r'Logs/Validation_output.txt')
 # x.columns = ['Q1', 'Q2', 'Q3', 'Q4']
-
-# GradientMain(MapConf).run()
