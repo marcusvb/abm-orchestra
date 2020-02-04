@@ -6,16 +6,10 @@ Dependency management on OS for multiprocessing
 """
 from sys import platform as _platform
 if _platform == "win32" or _platform == "win64" or _platform == "darwin":
-    import multiprocessing as multiprocess
-else:
     import multiprocess
+else:
+    import multiprocessing as multiprocess
 
-# TODO: the proportions arents looking right
-def get_proportions(new_entrance):
-    return [1], [1]
-    # if new_entrance:
-    #     return [3/2, 1, 3/5, 3/10, 3/15], [3/4, 1, 12/10, 27/20, 42/30]
-    # return [3/10, 3/15], [27/20, 42/30]
 
 def run_sim(new_entrance):
     # Generate samples
@@ -24,35 +18,29 @@ def run_sim(new_entrance):
     jobs = []
     id_holder = 0
 
-    iterations = 10
+    iters = 50
+    for _ in range(iters):
+        # change params in MapConfs.py
+        parameterMapConf = mapConf
 
-    # Change this if we want the New entrance
-    proportionsZI, proportionsZII = get_proportions(new_entrance)
+        parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
+        parameterMapConf.RunTime.Z2_Q2 = parameterMapConf.RunTime.FRACTION
+        parameterMapConf.RunTime.Z2_Q3 = parameterMapConf.RunTime.FRACTION
+        parameterMapConf.RunTime.Z2_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
 
-    for i, prop in enumerate(proportionsZI):
-        for j in range(iterations):
-            # change params in MapConfs.py
+        parameterMapConf.RunTime.Z1_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
+        parameterMapConf.RunTime.Z1_Q2 = parameterMapConf.RunTime.FRACTION
+        parameterMapConf.RunTime.Z1_Q3 = parameterMapConf.RunTime.FRACTION
+        parameterMapConf.RunTime.Z1_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
 
-            parameterMapConf = mapConf
+        sema.acquire()
+        G = GradientMain(parameterMapConf)
 
-            parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.25 * proportionsZII[i]
-            parameterMapConf.RunTime.Z2_Q2 = parameterMapConf.RunTime.FRACTION * proportionsZII[i]
-            parameterMapConf.RunTime.Z2_Q3 = parameterMapConf.RunTime.FRACTION * proportionsZII[i]
-            parameterMapConf.RunTime.Z2_Q4 = parameterMapConf.RunTime.FRACTION * 0.75 * proportionsZII[i]
+        p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder, new_entrance))
 
-            parameterMapConf.RunTime.Z1_Q1 = parameterMapConf.RunTime.FRACTION * 1.25 * prop
-            parameterMapConf.RunTime.Z1_Q2 = parameterMapConf.RunTime.FRACTION * prop
-            parameterMapConf.RunTime.Z1_Q3 = parameterMapConf.RunTime.FRACTION * prop
-            parameterMapConf.RunTime.Z1_Q4 = parameterMapConf.RunTime.FRACTION * 0.75 * prop
-
-            sema.acquire()
-            G = GradientMain(parameterMapConf)
-
-            p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder, new_entrance))
-
-            jobs.append(p)
-            p.start()
-            id_holder += 1
+        jobs.append(p)
+        p.start()
+        id_holder += 1
 
     count = 0
     for p in jobs:
