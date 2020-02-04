@@ -12,9 +12,10 @@ else:
 
 # TODO: the proportions arents looking right
 def get_proportions(new_entrance):
-    if new_entrance:
-        return [3/2, 1, 3/5, 3/10, 3/15], [3/4, 1, 12/10, 27/20, 42/30]
-    return [3/10, 3/15], [27/20, 42/30]
+    return [1], [1]
+    # if new_entrance:
+    #     return [3/2, 1, 3/5, 3/10, 3/15], [3/4, 1, 12/10, 27/20, 42/30]
+    # return [3/10, 3/15], [27/20, 42/30]
 
 def run_sim(new_entrance):
     # Generate samples
