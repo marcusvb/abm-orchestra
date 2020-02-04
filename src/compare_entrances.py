@@ -18,8 +18,7 @@ def run_sim(new_entrance):
     jobs = []
     id_holder = 0
 
-    iters = 50
-    for _ in range(iters):
+    for _ in range(multiprocess.cpu_count()):
         # change params in MapConfs.py
         parameterMapConf = mapConf
 
@@ -49,7 +48,8 @@ def run_sim(new_entrance):
         print("jobs done...", count)
 
 if __name__ == '__main__':
-    # Old entrance
-    run_sim(False)
-    # New entrance
-    run_sim(True)
+    while True:
+        # Old entrance
+        run_sim(False)
+        # New entrance
+        run_sim(True)
