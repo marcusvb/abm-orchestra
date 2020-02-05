@@ -250,21 +250,26 @@ class GradientMain:
             if frame_count > self.MapConf.RunTime.FINAL_STOP_FRAME:
                 glfw.set_window_should_close(window, True)
 
+                """
+                For SA when we've reached the end of the simulation 
+                We write the densities to SA_Data.txt
+                """
+                agents.density_count()
+                csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
+                                              agents.champagneValidationCount, agents.noordDensity,
+                                              agents.zuidDensity, agents.gardiDensity])
+                csv_Dataframe = np.transpose(csv_Dataframe)
 
-
-
-                # agents.density_count()
-                # csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
-                #                               agents.champagneValidationCount, agents.noordDensity,
-                #                               agents.zuidDensity, agents.gardiDensity])
-                # csv_Dataframe = np.transpose(csv_Dataframe)
-                # # Use lock to mitigate datarace
-                # if lock:
-                #     lock.acquire()
-                #     # Prepend the ID to the array for ordering later
-                #     csv_Dataframe.insert(0, "id", id)
-                #     csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
-                #     lock.release()
+                # Use lock to mitigate datarace
+                if lock:
+                    lock.acquire()
+                    # Prepend the ID to the array for ordering later
+                    csv_Dataframe.insert(0, "id", id)
+                    csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                    lock.release()
+                else: # Running in single proc mode, so just write it
+                    csv_Dataframe.insert(0, "id", id)
+                    csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
 
         # Append heatmap data in pickle format
         with open(r'Logs/Heatmap_pickle_entrance_'+str(new_entrance), 'ab') as filepick:
@@ -276,29 +281,8 @@ class GradientMain:
                 pickle.dump(agents.heatmap, filepick)
 
 
-        # validation_Dataframe = pd.DataFrame([validationlist])
-        # lock.acquire()
-        # validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-        # lock.release()
-
-
-        # Validation_dat/aframe = pd.DataFrame([agents.zuidValidationCountList, agents.noordValidationCountList, agents.champagneValidationCountList])
-        # Validation_dataframe=np.transpose(Validation_dataframe)
-        # Validation_dataframe.columns = ['Validation Zuid', 'Validation Noord', 'Validation Champagne']
-        #
-        # Density_dataframe = pd.DataFrame([agents.noordDensity, agents.zuidDensity, agents.gardiDensity])
-        # Density_dataframe=np.transpose(Density_dataframe)
-        # Density_dataframe.columns =['Density Zuid', 'Density Noord', 'Density Garderobe']
-
-        # mazeTexture.release()
         glfw.terminate()
-        # plot_heatmap(agents.heatmap)
-        # with open(r'Logs/Heatmap_pickle', 'wb') as fp:
-        #     pickle.dump(agents.heatmap, fp)
         if sema:
             sema.release()
 
         return 0
-
-# x = pd.read_csv(r'Logs/Validation_output.txt')
-# x.columns = ['Q1', 'Q2', 'Q3', 'Q4']

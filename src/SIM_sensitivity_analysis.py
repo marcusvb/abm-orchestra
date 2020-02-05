@@ -14,6 +14,27 @@ else:
     import multiprocessing as multiprocess
 
 
+def setup_confs_for_simulation(parameterMapConf):
+    parameterMapConf.RunTime.RECORD_VIS = False  # Recording of frames
+    parameterMapConf.RunTime.VISUALIZE = True
+    parameterMapConf.RunTime.MAX_FRAMES = 8000
+    parameterMapConf.RunTime.FINAL_STOP_FRAME = parameterMapConf.RunTime.MAX_FRAMES / 8
+    parameterMapConf.RunTime.AGENTS = 500
+    parameterMapConf.RunTime.FRACTION = 1 / (3*2) * parameterMapConf.RunTime.AGENTS / parameterMapConf.RunTime.MAX_FRAMES
+
+    parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
+    parameterMapConf.RunTime.Z2_Q2 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z2_Q3 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z2_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
+
+    parameterMapConf.RunTime.Z1_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
+    parameterMapConf.RunTime.Z1_Q2 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z1_Q3 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z1_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
+
+    return parameterMapConf
+
+
 def Global_SA():
     # We define our variables and bounds
     problem = {
@@ -30,14 +51,15 @@ def Global_SA():
     jobs = []
     id_holder = 0
     for par in param_values:
-        # change params in MapConfs.py
+        # Setups the mapConf for this simulation
+        parameterMapConf = setup_confs_for_simulation(mapConf)
 
-        parameterMapConf = mapConf
-
+        # Get the new parameters we're testing with SA
         parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = par[0]
         parameterMapConf.Chances.ROUND_WALKING = par[1]
         parameterMapConf.Chances.TOILET = par[2]
 
+        # Rescale the other chances, so that it all fits to 1
         SCALE_VARIABLE = parameterMapConf.Chances.TOILET + parameterMapConf.Chances.NOORD_ZUID + parameterMapConf.Chances.JUUL_BEA + parameterMapConf.Chances.SPIEGEL + parameterMapConf.Chances.CHAMP
 
         parameterMapConf.Chances.TOILET = parameterMapConf.Chances.TOILET / SCALE_VARIABLE
@@ -155,3 +177,7 @@ def OFAT():
     #
     # for p in jobs:
     #     p.join()
+
+
+if __name__ == '__main__':
+    Global_SA()
