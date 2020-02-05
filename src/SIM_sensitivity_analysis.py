@@ -93,7 +93,7 @@ def OFAT():
     FixedValues = [0.1, 0.1, 0.1]    #ground state of each variable during OFAT
     ParameterSamples = [0.01, 0.05, 0.1, 0.2,0.5, 0.8]   #each parameter will be evaluated at these settings
 
-    Parameters = ['Agent Weight', 'Random walker probability', 'Toilet probability']
+    Parameters = ['agent_weight', 'random_walker_probability', 'toilet_probability']
     for i, Name in enumerate(Parameters):     #three loops for each input variable
         for Parameter in ParameterSamples:
             for j in range(iterations):
@@ -108,6 +108,8 @@ def OFAT():
                 parameterMapConf.Chances.ROUND_WALKING = par[1]
                 parameterMapConf.Chances.TOILET = par[2]
 
+                print("Params", "Agent_weight", par[0], "Round walk", par[1], "Toilet", par[2])
+
                 SCALE_VARIABLE = parameterMapConf.Chances.TOILET + parameterMapConf.Chances.NOORD_ZUID + parameterMapConf.Chances.JUUL_BEA + parameterMapConf.Chances.SPIEGEL + parameterMapConf.Chances.CHAMP
 
                 parameterMapConf.Chances.TOILET = parameterMapConf.Chances.TOILET / SCALE_VARIABLE
@@ -119,7 +121,8 @@ def OFAT():
                 sema.acquire()
                 G = GradientMain(parameterMapConf)
 
-                p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder))
+                file_name = "OFAT_param_" + Name
+                p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder, False, file_name))
                 jobs.append(p)
                 p.start()
                 id_holder += 1
@@ -130,3 +133,4 @@ def OFAT():
 
 if __name__ == '__main__':
     Global_SA()
+    OFAT()

@@ -33,7 +33,7 @@ class GradientMain:
         return [139, np.random.randint(162, 168)]
 
 
-    def run(self, sema=None, lock=None, id=0, new_entrance=False):
+    def run(self, sema=None, lock=None, id=0, new_entrance=False, sa_file_name=None):
         if not glfw.init():
             exit(1)
 
@@ -251,8 +251,9 @@ class GradientMain:
                 glfw.set_window_should_close(window, True)
 
                 """
-                For SA when we've reached the end of the simulation 
-                We write the densities to SA_Data.txt
+                SA
+                - calculate the densities
+                - write the densities to either Global SA or OFAT (3 different files for what we're testing) 
                 """
                 agents.density_count()
                 csv_Dataframe = pd.DataFrame([agents.zuidValidationCount, agents.noordValidationCount,
@@ -260,16 +261,17 @@ class GradientMain:
                                               agents.zuidDensity, agents.gardiDensity])
                 csv_Dataframe = np.transpose(csv_Dataframe)
 
+                file_name = r"Logs/" + (sa_file_name if sa_file_name else "Global_SA")
                 # Use lock to mitigate datarace
                 if lock:
                     lock.acquire()
                     # Prepend the ID to the array for ordering later
                     csv_Dataframe.insert(0, "id", id)
-                    csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                    csv_Dataframe.to_csv(file_name, header=None, index=None, sep=',', mode='a')
                     lock.release()
-                else: # Running in single proc mode, so just write it
+                else:  # Running in single proc mode, so just write it
                     csv_Dataframe.insert(0, "id", id)
-                    csv_Dataframe.to_csv(r'Logs/SA_data.txt', header=None, index=None, sep=',', mode='a')
+                    csv_Dataframe.to_csv(file_name, header=None, index=None, sep=',', mode='a')
 
         # Append heatmap data in pickle format
         with open(r'Logs/Heatmap_pickle_entrance_'+str(new_entrance), 'ab') as filepick:
