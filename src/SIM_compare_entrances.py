@@ -31,6 +31,7 @@ def setup_confs_for_simulation(parameterMapConf):
 
     return parameterMapConf
 
+
 def run_sim(new_entrance):
     # Generate samples
     sema = multiprocess.Semaphore(multiprocess.cpu_count())
@@ -39,10 +40,8 @@ def run_sim(new_entrance):
     id_holder = 0
 
     for _ in range(multiprocess.cpu_count()):
-        parameterMapConf = mapConf
-
         # Setup the MapConf for this simulation
-        parameterMapConf = setup_confs_for_simulation(parameterMapConf)
+        parameterMapConf = setup_confs_for_simulation(mapConf)
 
         sema.acquire()
         G = GradientMain(parameterMapConf)
