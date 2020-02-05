@@ -10,7 +10,9 @@ if _platform == "win32" or _platform == "win64" or _platform == "darwin":
 else:
     import multiprocessing as multiprocess
 
-
+"""
+Eveyting divided by 4 due to computational limits and having to do multiple runs for stochasticity
+"""
 def setup_confs_for_simulation(parameterMapConf):
     parameterMapConf.RunTime.RECORD_VIS = False  # Recording of frames
     parameterMapConf.RunTime.VISUALIZE = True

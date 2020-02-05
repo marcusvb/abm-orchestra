@@ -18,7 +18,7 @@ def setup_confs_for_simulation(parameterMapConf):
     parameterMapConf.RunTime.VISUALIZE = True
     parameterMapConf.RunTime.MAX_FRAMES = 8000
     parameterMapConf.RunTime.FINAL_STOP_FRAME = parameterMapConf.RunTime.MAX_FRAMES / 8
-    parameterMapConf.RunTime.AGENTS = 500
+    parameterMapConf.RunTime.AGENTS = 2000
     parameterMapConf.RunTime.FRACTION = 1 / (3) * parameterMapConf.RunTime.AGENTS / parameterMapConf.RunTime.MAX_FRAMES
 
     parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.25

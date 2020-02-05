@@ -108,7 +108,7 @@ class GradientMain:
         # Window config end
 
         # Here we give the direction maps to the agent manager
-        agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, start_goals, mid_goals, end_goals, heatmap, MapConf)
+        agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, start_goals, mid_goals, end_goals, heatmap, self.MapConf)
 
         # agents = AgentManager(tile_size, w_prev, h_prev, offset, exit_points, maze, ingangen, heatmap)
 
