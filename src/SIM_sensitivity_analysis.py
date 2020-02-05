@@ -87,17 +87,13 @@ def OFAT():
     jobs = []
     id_holder = 0
 
-    iterations = 10
 
     FixedValues = [0.1, 0.1, 0.1]    #ground state of each variable during OFAT
-    ParameterSamples = [0.01, 0.05, 0.1, 0.2,0.5, 0.8]   #each parameter will be evaluated at these settings
+    ParameterSamples = [0.01, 0.05, 0.1, 0.2, 0.5, 0.8]   #each parameter will be evaluated at these settings
 
     Parameters = ['agent_weight', 'random_walker_probability', 'toilet_probability']
     for i, Name in enumerate(Parameters):     #three loops for each input variable
         for Parameter in ParameterSamples:
-            for j in range(iterations):
-                # change params in MapConfs.py
-
                 par = FixedValues
                 par[i] = Parameter
 
@@ -131,5 +127,7 @@ def OFAT():
 
 
 if __name__ == '__main__':
-    Global_SA()
-    OFAT()
+    # Global_SA()
+
+    while True:
+        OFAT()
