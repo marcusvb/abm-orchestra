@@ -36,11 +36,19 @@ def heatmapportion(map, yi, ye, xi, xe):
 
     flat_list = [item for sublist in portion for item in sublist]
 
-    high = len(flat_list)//70         #used for highest 10% from heatmap
-    high_portion = sorted(flat_list, reverse = True)[:high]   #sort the heatmap and take highest 10%
-    print(len(high_portion))
+    high = len(flat_list)//70  # used for highest 10% from heatmap
+    high_portion = sorted(flat_list, reverse = True)[:high]  # sort the heatmap and take highest 10%
+    # print(len(high_portion))
 
     return np.mean(high_portion)
+
+
+"""
+We load the data from the comapare entrances, 
+extract the ten most busy points of the runs for both
+North and South entrances. These are box-plotted 
+to see if we have a significant difference. 
+"""
 
 items = loadall(r'Logs/Heatmap_pickle_entrance_False')
 boxplot1 = []
@@ -65,5 +73,4 @@ plt.title('Ten most crowded grid spaces in the cloakroom area \n')
 colors = ['lightblue', 'lightgreen']
 for patch, color in zip(box['boxes'], colors):
     patch.set_facecolor(color)
-plt.savefig('Boxplot_heatmaps.png')
-plt.show()
+plt.savefig('plots/Boxplot_heatmaps.png')
