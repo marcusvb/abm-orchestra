@@ -1,5 +1,5 @@
 from SALib.sample import saltelli
-
+from copy import deepcopy
 from gradient_main import GradientMain
 from model.gradient_agent import MapConfs as mapConf
 
@@ -94,7 +94,7 @@ def OFAT():
     Parameters = ['agent_weight', 'random_walker_probability', 'toilet_probability']
     for i, Name in enumerate(Parameters):     #three loops for each input variable
         for Parameter in ParameterSamples:
-                par = FixedValues
+                par = deepcopy(FixedValues)
                 par[i] = Parameter
 
                 parameterMapConf = setup_confs_for_simulation(mapConf)
