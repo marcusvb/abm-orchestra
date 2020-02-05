@@ -12,7 +12,6 @@ from PIL import Image
 from gfx.AgentManager import AgentManager
 from gfx.MazeTexture import MazeTexture
 from model.gradient.gradient_map import gradient_from_direction_map
-from model.gradient_agent import MapConfs as MapConf
 from resources.handling.generatingHeatmap import heatmap_from_map
 from resources.handling.reading import load_map_from_file
 
@@ -145,29 +144,8 @@ class GradientMain:
 
             frame_count += 1
 
-            # next quarter changes
+            # Update probabilities per quarter for agents to enter into the system
             if frame_count % (self.MapConf.RunTime.MAX_FRAMES / 4) == 0:
-
-                #FOR VALIDATION ONLY TAKE THE VALUES IN ZUID AND APPEND TO VALIDATIONLIST
-
-                agents.density_count()
-                # validationlist.append([agents.zuidValidationCount, agents.zuidDensity])
-                # agents.flowvalidation_reset()
-
-                # Use lock to mitigate datarace
-
-                validation_Dataframe = pd.DataFrame([self.id, frame_count, agents.zuidValidationCount, agents.zuidDensity])
-                validation_Dataframe = np.transpose(validation_Dataframe)
-
-                if lock:
-                    lock.acquire()
-                    validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-                    lock.release()
-                else:
-                    validation_Dataframe.to_csv(r'Logs/Validation_output.txt', header=None, index=None, sep=',', mode='a')
-
-
-                # if statement can be removed when quarter is 2000 and runtime is 8000
                 if len(garderobes) > 1:
                     del garderobes[-1]
                     agents.start_goals = [garderobes[-1], DirectUpstairs]
