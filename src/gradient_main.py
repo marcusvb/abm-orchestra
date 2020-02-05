@@ -273,14 +273,15 @@ class GradientMain:
                     csv_Dataframe.insert(0, "id", id)
                     csv_Dataframe.to_csv(file_name, header=None, index=None, sep=',', mode='a')
 
-        # Append heatmap data in pickle format
-        with open(r'Logs/Heatmap_pickle_entrance_'+str(new_entrance), 'ab') as filepick:
-            if lock:
-                lock.acquire()
-                pickle.dump(agents.heatmap, filepick)
-                lock.release()
-            else:
-                pickle.dump(agents.heatmap, filepick)
+        # If we're not in SA mode, then the simulations write the heatmap
+        if not sa_file_name:
+            with open(r'Logs/Heatmap_pickle_entrance_'+str(new_entrance), 'ab') as filepick:
+                if lock:
+                    lock.acquire()
+                    pickle.dump(agents.heatmap, filepick)
+                    lock.release()
+                else:
+                    pickle.dump(agents.heatmap, filepick)
 
 
         glfw.terminate()
