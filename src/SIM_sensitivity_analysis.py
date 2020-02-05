@@ -88,39 +88,21 @@ def OFAT():
     jobs = []
     id_holder = 0
 
-    distinct_samples = 20
-    iterations = 100
+    iterations = 10
 
+    FixedValues = [0.1, 0.1, 0.1]    #ground state of each variable during OFAT
+    ParameterSamples = [0.01, 0.05, 0.1, 0.2,0.5, 0.8]   #each parameter will be evaluated at these settings
 
-    # We define our variables and bounds
-    problem = {
-        'num_vars': 3,
-        'names': ['Agent Weight', 'Random walker probability', 'Toilet probability'],
-        'bounds': [[0.01, 0.4], [0.01, 0.3], [0.1, 0.5]]
-    }
-
-    Input = []
-
-    for i, var in enumerate(problem['names']):
-        samples = np.linspace(*problem['bounds'][i], num=distinct_samples)
-        Input.append(samples)
-    # print(Input)
-    # InputTranspose = np.transpose(Input)
-    # print(InputTranspose)
-    FixedValues = [0.1, 0.1, 0.1]
-
-    for i, parametersamples in enumerate(Input):
-        id_holder = 0
-
-        for parsample in parametersamples:
-
-
+    Parameters = ['Agent Weight', 'Random walker probability', 'Toilet probability']
+    for i, Name in enumerate(Parameters):     #three loops for each input variable
+        for Parameter in ParameterSamples:
             for j in range(iterations):
                 # change params in MapConfs.py
-                par = FixedValues
-                par[i] = parsample
 
-                parameterMapConf = mapConf
+                par = FixedValues
+                par[i] = Parameter
+
+                parameterMapConf = setup_confs_for_simulation(mapConf)
 
                 parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = par[0]
                 parameterMapConf.Chances.ROUND_WALKING = par[1]
@@ -144,39 +126,6 @@ def OFAT():
 
     for p in jobs:
         p.join()
-
-
-    #
-    # for par in Input:
-    #
-    #     for i in range(iterations):
-    # # for par in param_values:
-    # #     # change params in MapConfs.py
-    # #
-    #         parameterMapConf = mapConf
-    #
-    #         parameterMapConf.Chances.AGENT_WEIGHT_PERCENT = par[0]
-    #         parameterMapConf.Chances.ROUND_WALKING = par[1]
-    #         parameterMapConf.Chances.TOILET = par[2]
-    #
-    #         SCALE_VARIABLE = parameterMapConf.Chances.TOILET + parameterMapConf.Chances.NOORD_ZUID + parameterMapConf.Chances.JUUL_BEA + parameterMapConf.Chances.SPIEGEL + parameterMapConf.Chances.CHAMP
-    #
-    #         parameterMapConf.Chances.TOILET = parameterMapConf.Chances.TOILET / SCALE_VARIABLE
-    #         parameterMapConf.Chances.NOORD_ZUID = parameterMapConf.Chances.NOORD_ZUID / SCALE_VARIABLE
-    #         parameterMapConf.Chances.JUUL_BEA = parameterMapConf.Chances.JUUL_BEA / SCALE_VARIABLE
-    #         parameterMapConf.Chances.SPIEGEL = parameterMapConf.Chances.SPIEGEL / SCALE_VARIABLE
-    #         parameterMapConf.Chances.CHAMP = parameterMapConf.Chances.CHAMP / SCALE_VARIABLE
-    #
-    #         sema.acquire()
-    #         G = GradientMain(parameterMapConf)
-    #
-    #         p = multiprocess.Process(target=G.run, args=(sema, lock, id_holder))
-    #         jobs.append(p)
-    #         p.start()
-    #         id_holder += 1
-    #
-    # for p in jobs:
-    #     p.join()
 
 
 if __name__ == '__main__':
