@@ -1,4 +1,3 @@
-import numpy as np
 from SALib.sample import saltelli
 
 from gradient_main import GradientMain
