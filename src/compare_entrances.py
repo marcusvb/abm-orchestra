@@ -11,6 +11,26 @@ else:
     import multiprocessing as multiprocess
 
 
+def setup_confs_for_simulation(parameterMapConf):
+    parameterMapConf.RunTime.RECORD_VIS = False  # Recording of frames
+    parameterMapConf.RunTime.VISUALIZE = True
+    parameterMapConf.RunTime.MAX_FRAMES = 2000
+    parameterMapConf.RunTime.FINAL_STOP_FRAME = parameterMapConf.RunTime.MAX_FRAMES + 300  # (plus 200 here is to give time for agents to go to their places)
+    parameterMapConf.RunTime.AGENTS = 500
+    parameterMapConf.RunTime.FRACTION = 1 / (3) * parameterMapConf.RunTime.AGENTS / parameterMapConf.RunTime.MAX_FRAMES # 500 visitors fraction that enters is the total number of visitors divided by the number of frames
+
+    parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
+    parameterMapConf.RunTime.Z2_Q2 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z2_Q3 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z2_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
+
+    parameterMapConf.RunTime.Z1_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
+    parameterMapConf.RunTime.Z1_Q2 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z1_Q3 = parameterMapConf.RunTime.FRACTION
+    parameterMapConf.RunTime.Z1_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
+
+    return parameterMapConf
+
 def run_sim(new_entrance):
     # Generate samples
     sema = multiprocess.Semaphore(multiprocess.cpu_count())
@@ -19,18 +39,10 @@ def run_sim(new_entrance):
     id_holder = 0
 
     for _ in range(multiprocess.cpu_count()):
-        # change params in MapConfs.py
         parameterMapConf = mapConf
 
-        parameterMapConf.RunTime.Z2_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
-        parameterMapConf.RunTime.Z2_Q2 = parameterMapConf.RunTime.FRACTION
-        parameterMapConf.RunTime.Z2_Q3 = parameterMapConf.RunTime.FRACTION
-        parameterMapConf.RunTime.Z2_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
-
-        parameterMapConf.RunTime.Z1_Q1 = parameterMapConf.RunTime.FRACTION * 1.25
-        parameterMapConf.RunTime.Z1_Q2 = parameterMapConf.RunTime.FRACTION
-        parameterMapConf.RunTime.Z1_Q3 = parameterMapConf.RunTime.FRACTION
-        parameterMapConf.RunTime.Z1_Q4 = parameterMapConf.RunTime.FRACTION * 0.75
+        # Setup the MapConf for this simulation
+        parameterMapConf = setup_confs_for_simulation(parameterMapConf)
 
         sema.acquire()
         G = GradientMain(parameterMapConf)

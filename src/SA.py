@@ -20,38 +20,6 @@ import multiprocess
 
 
 
-# # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-# replicates = 10
-# max_steps = 100
-# distinct_samples = 20
-#
-# # Set the outputs
-# model_reporters = {"Wolves": lambda m: m.schedule.get_breed_count(Wolf),
-#                    "Sheep": lambda m: m.schedule.get_breed_count(Sheep)}
-#
-# data = {}
-#
-# for i, var in enumerate(problem['names']):
-#     # Get the bounds for this variable and get <distinct_samples> samples within this space (uniform)
-#     samples = np.linspace(*problem['bounds'][i], num=distinct_samples)
-#
-#     # Keep in mind that wolf_gain_from_food should be integers. You will have to change
-#     # your code to acommidate for this or sample in such a way that you only get integers.
-#     if var == 'wolf_gain_from_food':
-#         samples = np.linspace(*problem['bounds'][i], num=distinct_samples, dtype=int)
-#
-#     batch = BatchRunner(WolfSheep,
-#                         max_steps=max_steps,
-#                         iterations=replicates,
-#                         variable_parameters={var: samples},
-#                         model_reporters=model_reporters,
-#                         display_progress=True)
-#
-#     batch.run_all()
-#
-#     data[var] = batch.get_model_vars_dataframe()
-
-
 
 
 
