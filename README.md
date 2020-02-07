@@ -12,8 +12,9 @@ part of our code runs using their functions.
 We have however pivoted the function of the original model (evacuation) to work for crowdflow simulations in a building.
 
 ### src/ structure:
-0. `gradient_main.py` This is the main class which is used to start the simulations. You can run it without modifying the `MapConf` (parameters for the simulation)
-by running it with the default values as `example_simulation = GradientMain(None).run()`
+0. Simplest way of running the model: `gradient_main.py` This is the main class which is used to start the simulations. You can run it without modifying the `MapConf` (parameters for the simulation)
+by running it with the default values. To do so uncomment the most lower line in the class: `G = GradientMain(None).run()`. This initialises a GradientMain (full simulation) with default parameters.
+You can this also import the GradientMain file in order to run the simulation in parallels or with other parameters, for Sensitivity Analysis for instance (see below).
 
 1. `SIM_compare_entrances.py` this file modifies the ConfigMap in order to start the simulations
 as we have run them for our report. It then uses multiprocessing to run multiple instances of our model using the max

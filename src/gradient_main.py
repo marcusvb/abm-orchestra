@@ -272,3 +272,5 @@ class GradientMain:
             sema.release()
 
         return 0
+
+# G = GradientMain(None).run()
