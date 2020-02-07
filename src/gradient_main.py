@@ -9,6 +9,8 @@ import seaborn as sns
 from OpenGL.GL import *
 from PIL import Image
 
+from model.gradient_agent import MapConfs as default_mapconf
+
 from gfx.AgentManager import AgentManager
 from gfx.MazeTexture import MazeTexture
 from model.gradient.gradient_map import gradient_from_direction_map
@@ -19,7 +21,10 @@ BASE_TITLE = "ABM: Het Concertgebouw Crowd Simulation "
 
 class GradientMain:
     def __init__(self, mapConf):
-        self.MapConf = mapConf
+        if not mapConf:
+            self.MapConf = default_mapconf
+        else:
+            self.MapConf = mapConf
 
     def load_Direct_upstairs_entrance(self, new_entrance):
         if new_entrance:
@@ -267,3 +272,5 @@ class GradientMain:
             sema.release()
 
         return 0
+
+# G = GradientMain(None).run()
