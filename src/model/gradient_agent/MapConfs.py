@@ -29,7 +29,6 @@ class Chances():
 
     ROUND_WALKING = 0.1
 
-
     MIN_RAND_STEPS = 5
     MAX_RAND_STEPS = 15
     DRINKING_FRAMES = 150
@@ -45,9 +44,9 @@ class RunTime():
     see https://hamelot.io/visualization/using-ffmpeg-to-convert-a-set-of-images-into-a-video/ for args
     """
     RECORD_VIS = False  # Recording of frames
-    VISUALIZE = False
+    VISUALIZE = True
     MAX_FRAMES = 2000
-    FINAL_STOP_FRAME = MAX_FRAMES
+    FINAL_STOP_FRAME = MAX_FRAMES + 300 # (plus 200 here is to give time for agents to go to their places)
     AGENTS = 500
     FRACTION = 1/(3) * AGENTS / MAX_FRAMES  #500 visitors fraction that enters is the total number of visitors divided by the number of frames
 
