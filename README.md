@@ -36,3 +36,14 @@ between the South vs North entrance of the simulations.
 4. `analyses_OFAT.py` file which performs analysis on the `SIM_sensitivity_analysis.py` data, only OFAT.
 5. `analyse_GlobalSA.py` file which performs analysis on the `SIM_sensitivity_analysis.py` data, but this time Global SA. 
 6. `generate_direction_maps.py` is used to create the direction maps for `Het Concertgebouw`. This final maps both direction and gradient can be found in src\FINAL_MAPS.
+
+### The model
+The model's agents are all instances of `AgentGradient`. This is heavily modified of the original repository. The `AgentGradient`
+class contains all the logic of the agents when they are in the environment. The probabilities and distributions are given
+via the `AgentManager` class. The Dijkstra Step (weighted Dijkstra) part of the agent movement, which could use the most optmisation is located in src/mode/graph. The constant
+translation from lists to `networkx` graphs is what makes the computational complexity of the model very high. 
+
+### Visualizations
+You can find three videos on Youtube of the model. These videos were achieved by setting `RECORD_VIS = True` and `VISUALIZE = True` in `MapConfs`, which dumps the OpenGL buffers to `.png`s in the src/images folder.
+Here we show with the correct parameters the model [running as it should](https://youtu.be/pwq_kpS9ins).
+We also show how two other validation attempts [fai](https://youtu.be/EWgem9_qXLo)[led](https://youtu.be/HTfG4hHILic)
