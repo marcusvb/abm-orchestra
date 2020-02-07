@@ -74,3 +74,4 @@ colors = ['lightblue', 'lightgreen']
 for patch, color in zip(box['boxes'], colors):
     patch.set_facecolor(color)
 plt.savefig('plots/Boxplot_heatmaps.png')
+plt.show()

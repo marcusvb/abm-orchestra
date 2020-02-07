@@ -63,15 +63,15 @@ Si_garderobe = sobol.analyze(problem, x['Garderobe Density'][:96].as_matrix(), p
 
 titles = ['Zuid Count', 'Garderobe Density']
 
-# for i, Si in enumerate([Si_zuid, Si_garderobe]):
-#
-#     # First order
-#
-#     plot_index(Si, problem['names'], '1', 'First order sensitivity: '+titles[i])
-#     # Total order
-#     plot_index(Si, problem['names'], 'T', 'Total order sensitivity: '+titles[i])
-#
-# plt.show()
+for i, Si in enumerate([Si_zuid, Si_garderobe]):
+
+    # First order
+
+    plot_index(Si, problem['names'], '1', 'First order sensitivity: '+titles[i])
+    # Total order
+    plot_index(Si, problem['names'], 'T', 'Total order sensitivity: '+titles[i])
+
+plt.show()
 
 
 
