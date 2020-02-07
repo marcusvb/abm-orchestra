@@ -10,7 +10,7 @@ You can find analysis of this in our [report.](report.pdf)
 ![](src/images/runs/0/pic1001.png "Snapshot of our model")
 
 ## Code overview
-Firstly, this repository started as a fork of @mblasiak [CrowdMovmentSimulation repository](https://github.com/mblasiak/CrowdMovmentSimulation). A huge thanks to them as a large
+Firstly, this repository started as a fork of @mblasiak @potrkedra and @Piturzasty [CrowdMovmentSimulation repository](https://github.com/mblasiak/CrowdMovmentSimulation). A huge thanks to them as a large
 part of our code runs using their functions (mainly the OpenGL drawing, GradientMap generation, and part of the AgentManager code).
 
 We have however pivoted the function of the original model (evacuation) to work for crowdflow simulations in a building.
