@@ -7,7 +7,7 @@ A statistical test concludes that the new entrance does help reducing crowd dens
 
 You can find analysis of this in our [report.](report.pdf)
 
-![](src/images/runs/0/pic1001.png "Snapshot of our model" =200x)
+![](src/images/runs/0/pic1001.png "Snapshot of our model")
 
 ## Code overview
 Firstly, this repository started as a fork of @mblasiak [CrowdMovmentSimulation repository](https://github.com/mblasiak/CrowdMovmentSimulation). A huge thanks to them as a large
