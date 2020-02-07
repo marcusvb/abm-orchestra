@@ -11,7 +11,7 @@ part of our code runs using their functions.
 
 We have however pivoted the function of the original model (evacuation) to work for crowdflow simulations in a building.
 
-### How to run:
+### src/ structure:
 0. `gradient_main.py` This is the main class which is used to start the simulations. You can run it without modifying the `MapConf` (parameters for the simulation)
 by running it with the default values as `example_simulation = GradientMain(None).run()`
 
@@ -33,5 +33,6 @@ of the model, where the output is also written to src/Logs.
 A boxplot is generated of the data in src/plots. It also outputs the t-test values to report on statistical difference
 between the South vs North entrance of the simulations. 
 
-4. `OFAT_analyses.py` file which performs analysis on the `SIM_sensitivity_analysis.py` data, only OFAT.
-5. `Global_sa.py` file which performs analysis on the `SIM_sensitivity_analysis.py` data, but this time Global SA. 
+4. `analyses_OFAT.py` file which performs analysis on the `SIM_sensitivity_analysis.py` data, only OFAT.
+5. `analyse_GlobalSA.py` file which performs analysis on the `SIM_sensitivity_analysis.py` data, but this time Global SA. 
+6. `generate_direction_maps.py` is used to create the direction maps for `Het Concertgebouw`. This final maps both direction and gradient can be found in src\FINAL_MAPS.
