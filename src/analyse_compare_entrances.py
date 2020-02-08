@@ -3,6 +3,7 @@ import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from scipy import stats
 
 plt.style.use('ggplot')
 
@@ -63,6 +64,10 @@ for heatmap in items:
     # plot_heatmap(heatmap)
     heatmap_portion = heatmapportion(heatmap, 57, 141, 81, 90)
     boxplot2.append(heatmap_portion)
+
+
+stat = stats.ttest_ind(boxplot1, boxplot2)
+print("T-test data", stat)
 
 plt.figure(dpi=120)
 box = plt.boxplot([boxplot1, boxplot2], patch_artist=True, labels=['Zuid Entrance', 'Noord Entrance'])
