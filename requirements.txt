@@ -1,5 +1,5 @@
 glfw==1.7.0
-numpy==1.16.0
+numpy==1.22.0
 seaborn
 PyOpenGL==3.1.0
 networkx
